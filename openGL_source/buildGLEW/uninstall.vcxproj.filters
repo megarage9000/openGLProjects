@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gtom_\source\repos\openGLProjects\GL\buildGLEW\CMakeFiles\0cc33aca46243eb76d7f5f177f6a0ec8\uninstall.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\gtom_\source\repos\openGLProjects\GL\glew-2.1.0\build\cmake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\gtom_\source\repos\openGLProjects\GL\buildGLEW\CMakeFiles\uninstall" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{C94B2220-B2BE-330B-868B-408D3CC8CBFC}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

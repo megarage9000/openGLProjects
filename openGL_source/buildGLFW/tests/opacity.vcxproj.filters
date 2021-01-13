@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\gtom_\source\repos\openGLProjects\GL\glfw-3.3.2\tests\opacity.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\gtom_\source\repos\openGLProjects\GL\glfw-3.3.2\deps\glad_gl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\gtom_\source\repos\openGLProjects\GL\glfw-3.3.2\deps\glad\gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gtom_\source\repos\openGLProjects\GL\glfw-3.3.2\tests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{63F4820B-2CFA-3126-BAFE-28357277054D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C60ABD91-E10B-3712-A56C-DAAC4CABE0EA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
