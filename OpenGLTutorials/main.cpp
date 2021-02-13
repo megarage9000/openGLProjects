@@ -7,6 +7,7 @@
 
 int main() {
 	
+	// Initialise glfw
 	if (!glfwInit()) {
 		fprintf(stderr, "ERROR: could not start GLFW3\n");
 		return -1;
