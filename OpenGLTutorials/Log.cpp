@@ -1,4 +1,5 @@
 #include "Log.h"
+
 // --- Logging ---
 // Restarting/Starting log
 bool restart_gl_log() {

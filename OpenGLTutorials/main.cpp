@@ -4,14 +4,55 @@
 #include "Log.h"
 #include <stdio.h>
 
+// Reported Window Size
+int g_win_width = 640;
+int g_win_height = 480;
+
+// Frame Buffer Size
+int g_fb_width = 640;
+int g_fb_height = 480;
+
+// Callbacks
+void glfw_error_callback(int error, const char* description);
+void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
+void glfw_framebuffer_resize_callback(GLFWwindow* window, int width, int height);
+
+// OpenGL parameters
+void log_gl_params();
+
 int main() {
+
+	// Starting log
+	if (!restart_gl_log()) {
+		return -1;
+	}
+	
+	gl_log("starting GLFW \n%s\n", glfwGetVersionString());
+	glfwSetErrorCallback(glfw_error_callback);
 
 	if (!glfwInit()) {
 		fprintf(stderr, "ERROR: could not start GLFW3\n");
 		return -1;
 	}
 
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello triangle", NULL, NULL);
+	// Hinting for OpenGL 3.2 Forward-Compatible core profile
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// Enable Anti-aliasing
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	
+	// Setting monitor dimensions according to primary monitor
+	/*GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode * vmode = glfwGetVideoMode(monitor);
+	GLFWwindow* window = glfwCreateWindow(vmode->width, vmode->height, "Extended OpenGL Init", monitor, NULL);*/
+	GLFWwindow* window = glfwCreateWindow(g_win_width, g_win_height, "Extended Init OpenGL", NULL, NULL);
+
+	glfwSetWindowSizeCallback(window, glfw_window_resize_callback);
+	glfwSetFramebufferSizeCallback(window, glfw_framebuffer_resize_callback);
+
 
 	if (!window) {
 		fprintf(stderr, "ERROR, could not open window with GLFW3\n");
@@ -23,6 +64,7 @@ int main() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 	
+	log_gl_params();
 
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
@@ -93,6 +135,8 @@ int main() {
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glViewport(0, 0, g_fb_width, g_fb_height);
+
 		// Draw triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(vao);
@@ -102,8 +146,79 @@ int main() {
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(window, 1);
+		}
 	}
 	
 	glfwTerminate();
 	return 0;
+}
+
+void glfw_error_callback(int error, const char* description) {
+	gl_log_err("GLFW ERROR:code %i msg: %s\n", error, description);
+}
+
+void glfw_window_resize_callback(GLFWwindow* window, int width, int height)
+{
+	g_win_width = width;
+	g_win_height = height;
+}
+
+void glfw_framebuffer_resize_callback(GLFWwindow* window, int width, int height)
+{
+	g_fb_width = width;
+	g_fb_height = height;
+}
+
+void log_gl_params()
+{
+	GLenum params[] = {
+		GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+		GL_MAX_CUBE_MAP_TEXTURE_SIZE,
+		GL_MAX_DRAW_BUFFERS,
+		GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
+		GL_MAX_TEXTURE_IMAGE_UNITS,
+		GL_MAX_TEXTURE_SIZE,
+		GL_MAX_VARYING_FLOATS,
+		GL_MAX_VERTEX_ATTRIBS,
+		GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
+		GL_MAX_VERTEX_UNIFORM_COMPONENTS,
+		GL_MAX_VIEWPORT_DIMS,
+		GL_STEREO,
+	};
+
+	const char* names[]{
+		"GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS",
+		"GL_MAX_CUBE_MAP_TEXTURE_SIZE",
+		"GL_MAX_DRAW_BUFFERS",
+		"GL_MAX_FRAGMENT_UNIFORM_COMPONENTS",
+		"GL_MAX_TEXTURE_IMAGE_UNITS",
+		"GL_MAX_TEXTURE_SIZE",
+		"GL_MAX_VARYING_FLOATS",
+		"GL_MAX_VERTEX_ATTRIBS",
+		"GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS",
+		"GL_MAX_VERTEX_UNIFORM_COMPONENTS",
+		"GL_MAX_VIEWPORT_DIMS",
+		"GL_STEREO",
+	};
+
+	gl_log("GL Context Params:\n");
+
+	// Integer parameters
+	for (int i = 0; i < 10; i++) {
+		int v = 0;
+		glGetIntegerv(params[i], &v);
+		gl_log("%s: %i\n", names[i], v);
+	}
+
+	// Other parameters
+	int v[2];
+	v[0] = v[1] = 0;
+	glGetIntegerv(params[10], v);
+	gl_log("%s: %i, %i\n", names[10], v[0], v[1]);
+	unsigned char s = 0;
+	glGetBooleanv(params[11], &s);
+	gl_log("%s: %u\n", names[11], (unsigned int)s);
+	gl_log("------------------------\n");
 }
