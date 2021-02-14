@@ -12,6 +12,12 @@ int g_win_height = 480;
 int g_fb_width = 640;
 int g_fb_height = 480;
 
+// FPS tracking
+double previous_seconds;
+int frame_count;
+
+void _update_fps_counter(GLFWwindow* window);
+
 // Callbacks
 void glfw_error_callback(int error, const char* description);
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
@@ -74,6 +80,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);  
 	glDepthFunc(GL_LESS); 
 
+
 	//--- Triangle drawing ---
 
 	// Shaders: Vertex Shader
@@ -132,6 +139,8 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 
+		_update_fps_counter(window);
+
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -153,6 +162,25 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
+}
+
+void _update_fps_counter(GLFWwindow* window)
+{
+	double current_seconds;
+	double elapsed_seconds;
+
+	current_seconds = glfwGetTime();
+	elapsed_seconds = current_seconds - previous_seconds;
+
+	if (elapsed_seconds > 0.25) {
+		previous_seconds = current_seconds;
+		char tmp[128];
+		double fps = (double)frame_count / elapsed_seconds;
+		sprintf(tmp, "openGL @fps: %.2f", fps);
+		glfwSetWindowTitle(window, tmp);
+		frame_count = 0;
+	}
+	frame_count++;
 }
 
 void glfw_error_callback(int error, const char* description) {
