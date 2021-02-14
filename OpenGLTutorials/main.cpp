@@ -1,13 +1,11 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Log.h"
 #include <stdio.h>
 
-
-
 int main() {
-	
-	
+
 	if (!glfwInit()) {
 		fprintf(stderr, "ERROR: could not start GLFW3\n");
 		return -1;
@@ -22,9 +20,9 @@ int main() {
 	}
 
 	glfwMakeContextCurrent(window);
-
 	glewExperimental = GL_TRUE;
 	glewInit();
+	
 
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
@@ -105,7 +103,7 @@ int main() {
 		glfwSwapBuffers(window);
 
 	}
-
+	
 	glfwTerminate();
 	return 0;
 }
