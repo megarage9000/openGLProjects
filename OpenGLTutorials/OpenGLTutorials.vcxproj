@@ -146,7 +146,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fragmentShader.frag" />
     <None Include="glew32d.dll" />
+    <None Include="vertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Log.h" />
