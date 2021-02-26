@@ -26,6 +26,8 @@ void glfw_framebuffer_resize_callback(GLFWwindow* window, int width, int height)
 // OpenGL parameters
 void log_gl_params();
 
+char* loadShaderString(const char* shaderFileLocation);
+
 int main() {
 
 	// Starting log
@@ -84,20 +86,11 @@ int main() {
 	//--- Triangle drawing ---
 
 	// Shaders: Vertex Shader
-	const char* vertexShader =
-		"#version 410\n"
-		"in vec3 vp;"
-		"void main(){"
-		"	gl_Position = vec4(vp, 1.0);"
-		"}";
+	char* vertexShader = loadShaderString("vertexShader.vert");
 
 	// Shaders: Fragment Shader
-	const char* fragmentShader =
-		"#version 410\n"
-		"out vec4 frag_color;"
-		"void main(){"
-		"	frag_color = vec4(0.5, 0.0, 0.5, 1.0);"
-		"}";
+	char* fragmentShader = loadShaderString("fragmentShader.frag");
+
 
 	// Shaders: Loading and Compilation
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -250,3 +243,19 @@ void log_gl_params()
 	gl_log("%s: %u\n", names[11], (unsigned int)s);
 	gl_log("------------------------\n");
 }
+
+char * loadShaderString(const char * shaderFileLocation){
+	char buffer[1000];
+	FILE* shaderFile = fopen(shaderFileLocation, "r");
+	if (!shaderFile) {
+		gl_log_err("Unable to open shader file at ", shaderFileLocation);
+		return nullptr;
+	}
+
+	int length = sizeof(buffer);
+	while (fgets(buffer, length, shaderFile));
+	gl_log(buffer, "\n");
+	return buffer;
+}
+
+// Try using https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/ for this!
