@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Log.h"
 #include <stdio.h>
+#include <malloc.h>
 
 // Reported Window Size
 int g_win_width = 640;
@@ -107,6 +108,10 @@ int main() {
 	glAttachShader(shaderProgram, fs);
 	glLinkProgram(shaderProgram);
 
+	// getting the location of our uniform variable, input color!
+	GLuint inputColor = glGetUniformLocation(shaderProgram, "inputColor");
+	
+
 	// Our triangle points, going clockwise with xyz float coordinates
 	GLfloat points[] = {
 		0.0f, 0.5f, 0.0f, // top coordinates
@@ -141,6 +146,7 @@ int main() {
 
 		// Draw triangle
 		glUseProgram(shaderProgram);
+		glUniform4f(inputColor, (38.0 / 255.0), (60.0 / 255.0), (38.0 / 255.0), (1.0 / 255.0));
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -245,17 +251,27 @@ void log_gl_params()
 }
 
 char * loadShaderString(const char * shaderFileLocation){
-	char buffer[1000];
-	FILE* shaderFile = fopen(shaderFileLocation, "r");
-	if (!shaderFile) {
-		gl_log_err("Unable to open shader file at ", shaderFileLocation);
-		return nullptr;
-	}
+	
+	// From https://stackoverflow.com/questions/14002954/c-programming-how-to-read-the-whole-file-contents-into-a-buffer, cool ey?
+	FILE* f = fopen(shaderFileLocation, "rb");
 
-	int length = sizeof(buffer);
-	while (fgets(buffer, length, shaderFile));
-	gl_log(buffer, "\n");
-	return buffer;
+	if (f) {
+		// Seek to the end of the file, and use its position to determine the length of the buffer
+		fseek(f, 0, SEEK_END);
+		long fsize = ftell(f);
+
+		// Reset to the beginning
+		fseek(f, 0, SEEK_SET);
+
+		char* content = (char*)malloc(fsize + 1);
+		if (content) {
+			fread(content, 1, fsize, f);
+		}
+		fclose(f);
+		content[fsize] = 0;
+		return content;
+	}
+	return nullptr;
 }
 
 // Try using https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/ for this!
