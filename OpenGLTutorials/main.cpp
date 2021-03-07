@@ -27,7 +27,10 @@ void glfw_framebuffer_resize_callback(GLFWwindow* window, int width, int height)
 // OpenGL parameters
 void log_gl_params();
 
+// Shader functions
 char* loadShaderString(const char* shaderFileLocation);
+bool checkShaderCompilation(GLuint shaderIndex);
+void printShaderError(GLuint shaderIndex);
 
 int main() {
 
@@ -97,10 +100,12 @@ int main() {
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vs, 1, &vertexShader, NULL);
 	glCompileShader(vs);
+	checkShaderCompilation(vs);
 
 	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fs, 1, &fragmentShader, NULL);
 	glCompileShader(fs);
+	checkShaderCompilation(fs);
 	
 	// Shaders: Creating a Shader program
 	GLuint shaderProgram = glCreateProgram();
@@ -273,5 +278,28 @@ char * loadShaderString(const char * shaderFileLocation){
 	}
 	return nullptr;
 }
-
 // Try using https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/ for this!
+
+bool checkShaderCompilation(GLuint shaderIndex)
+{
+	int params = -1;
+	glGetShaderiv(shaderIndex, GL_COMPILE_STATUS, &params);
+	if (GL_TRUE != params) {
+		gl_log_err("ERROR: shader index %i didn't compile correctly!\n", shaderIndex);
+		printShaderError(shaderIndex);
+		return false;
+	}
+	return true;
+}
+
+void printShaderError(GLuint shaderIndex)
+{
+	int max_length = 2048;
+	int actual_length = 0;
+	char log[2048];
+
+	glGetShaderInfoLog(shaderIndex, max_length, &actual_length, log);
+	printf("Shader info for index %i: \n %s\n", shaderIndex, log);
+	gl_log("Shader info for index %i: \n %s\n", shaderIndex, log);
+}
+
