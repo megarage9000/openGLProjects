@@ -31,6 +31,12 @@ void log_gl_params();
 char* loadShaderString(const char* shaderFileLocation);
 bool checkShaderCompilation(GLuint shaderIndex);
 void printShaderError(GLuint shaderIndex);
+bool checkLinking(GLuint programIndex);
+void printLinkingError(GLuint programIndex);
+
+
+
+
 
 int main() {
 
@@ -95,23 +101,31 @@ int main() {
 	// Shaders: Fragment Shader
 	char* fragmentShader = loadShaderString("fragmentShader.frag");
 
+	
 
 	// Shaders: Loading and Compilation
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vs, 1, &vertexShader, NULL);
 	glCompileShader(vs);
-	checkShaderCompilation(vs);
+	if (!checkShaderCompilation(vs)) {
+		return -1;
+	}
 
 	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fs, 1, &fragmentShader, NULL);
 	glCompileShader(fs);
-	checkShaderCompilation(fs);
+	if (!checkShaderCompilation(fs)) {
+		return -1;
+	}
 	
 	// Shaders: Creating a Shader program
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vs);
 	glAttachShader(shaderProgram, fs);
 	glLinkProgram(shaderProgram);
+	if (!checkLinking(shaderProgram)) {
+		return -1;
+	}
 
 	// getting the location of our uniform variable, input color!
 	GLuint inputColor = glGetUniformLocation(shaderProgram, "inputColor");
@@ -301,5 +315,29 @@ void printShaderError(GLuint shaderIndex)
 	glGetShaderInfoLog(shaderIndex, max_length, &actual_length, log);
 	printf("Shader info for index %i: \n %s\n", shaderIndex, log);
 	gl_log("Shader info for index %i: \n %s\n", shaderIndex, log);
+}
+
+bool checkLinking(GLuint programIndex)
+{
+	int params = -1;
+	glGetProgramiv(programIndex, GL_LINK_STATUS, &params);
+	if (GL_TRUE != params) {
+		gl_log_err("ERROR: linking program for index %i did not work!\n", programIndex);
+		printLinkingError(programIndex);
+		return false;
+	}
+	return true;
+}
+
+void printLinkingError(GLuint programIndex)
+{
+	int max_length = 2048;
+	int actual_length = 0;
+	char log[2048];
+
+	glGetProgramInfoLog(programIndex, max_length, &actual_length, log);
+	printf("program info log for index %i:\n%s\n", programIndex, log);
+	gl_log("program info log for index %i:\n%s\n", programIndex, log);
+
 }
 
