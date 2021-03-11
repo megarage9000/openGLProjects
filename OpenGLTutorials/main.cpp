@@ -30,9 +30,12 @@ void log_gl_params();
 // Shader functions
 char* loadShaderString(const char* shaderFileLocation);
 bool checkShaderCompilation(GLuint shaderIndex);
-void printShaderError(GLuint shaderIndex);
+void printShaderInfo(GLuint shaderIndex);
 bool checkLinking(GLuint programIndex);
-void printLinkingError(GLuint programIndex);
+void printProgramInfo(GLuint programIndex);
+void printAll(GLuint programIndex);
+const char* GL_type_to_string(GLenum type);
+bool is_valid(GLuint programIndex);
 
 
 
@@ -127,9 +130,15 @@ int main() {
 		return -1;
 	}
 
+	if (!is_valid(shaderProgram)) {
+		return -1;
+	}
+
 	// getting the location of our uniform variable, input color!
 	GLuint inputColor = glGetUniformLocation(shaderProgram, "inputColor");
 	
+	printAll(shaderProgram);
+
 
 	// Our triangle points, going clockwise with xyz float coordinates
 	GLfloat points[] = {
@@ -300,13 +309,13 @@ bool checkShaderCompilation(GLuint shaderIndex)
 	glGetShaderiv(shaderIndex, GL_COMPILE_STATUS, &params);
 	if (GL_TRUE != params) {
 		gl_log_err("ERROR: shader index %i didn't compile correctly!\n", shaderIndex);
-		printShaderError(shaderIndex);
+		printShaderInfo(shaderIndex);
 		return false;
 	}
 	return true;
 }
 
-void printShaderError(GLuint shaderIndex)
+void printShaderInfo(GLuint shaderIndex)
 {
 	int max_length = 2048;
 	int actual_length = 0;
@@ -323,13 +332,13 @@ bool checkLinking(GLuint programIndex)
 	glGetProgramiv(programIndex, GL_LINK_STATUS, &params);
 	if (GL_TRUE != params) {
 		gl_log_err("ERROR: linking program for index %i did not work!\n", programIndex);
-		printLinkingError(programIndex);
+		printProgramInfo(programIndex);
 		return false;
 	}
 	return true;
 }
 
-void printLinkingError(GLuint programIndex)
+void printProgramInfo(GLuint programIndex)
 {
 	int max_length = 2048;
 	int actual_length = 0;
@@ -339,5 +348,100 @@ void printLinkingError(GLuint programIndex)
 	printf("program info log for index %i:\n%s\n", programIndex, log);
 	gl_log("program info log for index %i:\n%s\n", programIndex, log);
 
+}
+
+void printAll(GLuint programIndex)
+{
+	printf("-------------\n shader programme %i info: \n", programIndex);
+	int params = -1;
+
+	glGetProgramiv(programIndex, GL_LINK_STATUS, &params);
+	printf("GL_LINK_STATUS = %i\n", params);
+
+	glGetProgramiv(programIndex, GL_ATTACHED_SHADERS, &params);
+	printf("GL_ATTACHED_SHADERS = %i\n", params);
+
+
+	// Print attribute information
+	glGetProgramiv(programIndex, GL_ACTIVE_ATTRIBUTES, &params);
+	printf("GL_ACTIVE_ATTRIBUTES = %i\n", params);
+
+	for (GLuint i = 0; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLength = 64;
+		int actualLength = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveAttrib(programIndex, i, maxLength, &actualLength, &size, &type, name);
+		if (size > 1) {
+			for (int j = 0; j < size; j++) {
+				char longName[64];
+				sprintf(longName, "%s[%i]", name, j); // sprintf copies strings unto a buffer
+				int location = glGetAttribLocation(programIndex, longName);
+				printf("%i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), longName, location);
+			}
+		}
+	}
+
+	// Printing all active unifroms
+	glGetProgramiv(programIndex, GL_ACTIVE_UNIFORMS, &params);
+	printf("GL_ACTIVE_UNIFORMS = %i\n", params);
+	for (GLuint i = 0; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLength = 64;
+		int actualLength = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveUniform(programIndex, i, maxLength, &actualLength, &size, &type, name);
+		if (size > 1) {
+			for (int j = 0; j < size; j++) {
+				char longName[64];
+				sprintf(longName, "%s[%i]", name, j);
+				int location = glGetUniformLocation(programIndex, longName);
+				printf(" %i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), name, location);
+			}
+		}
+	}
+
+	printProgramInfo(programIndex);
+	
+}
+
+// We can always add other types here 
+const char* GL_type_to_string(GLenum type)
+{
+	switch (type) {
+	
+	case GL_BOOL: return "bool";
+	case GL_INT: return "int";
+	case GL_FLOAT: return "float";
+	case GL_FLOAT_VEC2: return "vec2";
+	case GL_FLOAT_VEC3: return "vec3";
+	case GL_FLOAT_VEC4: return "vec4";
+	case GL_FLOAT_MAT2: return "mat2";
+	case GL_FLOAT_MAT3: return "mat3";
+	case GL_FLOAT_MAT4: return "mat4";
+	case GL_SAMPLER_2D: return "sampler2D";
+	case GL_SAMPLER_3D: return "sampler3D";
+	case GL_SAMPLER_CUBE: return "samplerCube";
+	case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
+	default: return "other";
+
+	}
+}
+
+bool is_valid(GLuint programIndex)
+{
+	glValidateProgram(programIndex);
+	int params = -1;
+	glGetProgramiv(programIndex, GL_VALIDATE_STATUS, &params);
+	printf("program %i GL_VALIDATE_STATUS = %i\n", programIndex, params);
+	if (GL_TRUE != params) {
+		printProgramInfo(programIndex);
+		return false;
+	}
+	return true;
 }
 
