@@ -163,9 +163,7 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	// Changing the size of points
-	glEnable(GL_PROGRAM_POINT_SIZE);
-	glPointSize((GLfloat)100);
+	
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -180,7 +178,10 @@ int main() {
 		glUseProgram(shaderProgram);
 		glUniform4f(inputColor, (38.0 / 255.0), (60.0 / 255.0), (38.0 / 255.0), (1.0 / 255.0));
 		glBindVertexArray(vao);
-		glDrawArrays(GL_POINTS, 0, 3);
+		
+		// Drawing in polygon mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// track events 
 		glfwPollEvents();
