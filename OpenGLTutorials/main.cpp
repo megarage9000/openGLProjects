@@ -120,11 +120,18 @@ int main() {
 	if (!checkShaderCompilation(fs)) {
 		return -1;
 	}
+
+	
 	
 	// Shaders: Creating a Shader program
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vs);
 	glAttachShader(shaderProgram, fs);
+
+	// FOR MAC: Enabling attribute locations for shaders
+	//glBindAttribLocation(shaderProgram, 0, "vertex_position");
+	//glBindAttribLocation(shaderProgram, 1, "vertex_colour");
+
 	glLinkProgram(shaderProgram);
 	if (!checkLinking(shaderProgram)) {
 		return -1;
@@ -133,9 +140,6 @@ int main() {
 	if (!is_valid(shaderProgram)) {
 		return -1;
 	}
-
-	// getting the location of our uniform variable, input color!
-	GLuint inputColor = glGetUniformLocation(shaderProgram, "inputColor");
 	
 	printAll(shaderProgram);
 
@@ -147,6 +151,13 @@ int main() {
 		-0.5f, -0.5f, 0.0f // bottom left coordinates
 	};
 
+	GLfloat colours[] = {
+		1.0f, 0.0f, 0.0f, // Red
+		0.0f, 1.0f, 0.0f, // Green
+		0.0f, 0.0f, 1.0f  // Blue
+	};
+
+
 	// Generating a Vertex Buffer Object for our Triangle, to 
 	// store our points into memory
 	GLuint vbo = 0;
@@ -154,16 +165,31 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
-	// Generating a Vertex Array Object for our Triangle, to prevent having to
+	// Generating colour points vbo
+	GLuint colours_vbo = 0;
+	glGenBuffers(1, &colours_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colours), colours, GL_STATIC_DRAW);
+	
+	
+	// --- (VAO) --- Generating a Vertex Array Object for our Triangle, to prevent having to
 	// bind and defining memory per vertex buffer object
 	GLuint vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+
+	// 3. Enabling the arrays
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	
+	// 1. Adding the points vbo
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	
+	// 2. Adding the colors vbo
+	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -176,11 +202,14 @@ int main() {
 
 		// Draw triangle
 		glUseProgram(shaderProgram);
-		glUniform4f(inputColor, (38.0 / 255.0), (60.0 / 255.0), (38.0 / 255.0), (1.0 / 255.0));
 		glBindVertexArray(vao);
-		
-		// Drawing in polygon mode
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+		// Enable back face culling
+		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// track events 
