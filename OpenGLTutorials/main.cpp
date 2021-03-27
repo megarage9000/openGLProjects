@@ -143,6 +143,9 @@ int main() {
 	
 	printAll(shaderProgram);
 
+	// Getting our transformation matrix location
+	int matrix_location = glGetUniformLocation(shaderProgram, "matrix");
+
 
 	// Our triangle points, going clockwise with xyz float coordinates
 	GLfloat points[] = {
@@ -151,10 +154,18 @@ int main() {
 		-0.5f, -0.5f, 0.0f // bottom left coordinates
 	};
 
+	// Colours!
 	GLfloat colours[] = {
 		1.0f, 0.0f, 0.0f, // Red
 		0.0f, 1.0f, 0.0f, // Green
 		0.0f, 0.0f, 1.0f  // Blue
+	};
+
+	float matrix[] = {
+		1.0f, 0.0f, 0.0f, 0.0f, // First Column
+		0.0f, 1.0f, 0.0f, 0.0f, // Second Column
+		0.0f, 0.0f, 0.0f, 1.0f, // Third Column
+		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
 
@@ -203,13 +214,15 @@ int main() {
 		// Draw triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(vao);
+
+		// Applying matrix transformation
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
 	
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
-
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// track events 
