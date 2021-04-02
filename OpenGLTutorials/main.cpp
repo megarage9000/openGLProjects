@@ -202,6 +202,11 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+	// Setting up transformation speed
+	float speed = 1.0f;
+	float last_position = 0.0f;
+
+
 	while (!glfwWindowShouldClose(window)) {
 
 		_update_fps_counter(window);
@@ -216,6 +221,18 @@ int main() {
 		glBindVertexArray(vao);
 
 		// Applying matrix transformation
+		static double previous_seconds = glfwGetTime();
+		double current_seconds = glfwGetTime();
+		double elapsed_seconds = current_seconds - previous_seconds;
+		previous_seconds = current_seconds;
+
+		if (last_position > 1.0f || last_position < -1.0f) {
+			speed = -speed;
+		}
+
+		// updating the matrics for transformation
+		matrix[12] = elapsed_seconds * speed + last_position;
+		last_position = matrix[12];
 		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
 	
 		// Enable back face culling
