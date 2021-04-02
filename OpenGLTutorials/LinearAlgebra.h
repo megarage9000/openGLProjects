@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 
+void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int size);
+void test();
 
-
-#endif
+#endif LINEAR_ALGEBRA_H

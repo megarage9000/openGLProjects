@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
+#include "LinearAlgebra.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -206,7 +207,8 @@ int main() {
 	float speed = 1.0f;
 	float last_position = 0.0f;
 
-
+	test();
+	
 	while (!glfwWindowShouldClose(window)) {
 
 		_update_fps_counter(window);
