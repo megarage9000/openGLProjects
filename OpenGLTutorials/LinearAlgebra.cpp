@@ -2,32 +2,37 @@
 
 
 
-void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int size) {
+void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int matrixSize) {
+	int index = 0;
+	int length = (int)sqrt((double)matrixSize);
 
-		int index = 0;
-		int length = (int)sqrt((double)size);
-
-		for (int rowA = 0; rowA < length; rowA++) {
-			for (int colB = 0; colB < length; colB++) {
-				float result = 0;
-				for (int i = 0; i < length; i++) {
-					int columnResult = colB + (i * length);
-					int rowResult = (rowA * length) + i;
-					result += matrixA[rowResult] * matrixB[columnResult];
-				}
-				resultingMatrix[index] = result;
-				index++;
+	for (int rowA = 0; rowA < length; rowA++) {
+		for (int colB = 0; colB < length; colB++) {
+			float result = 0;
+			for (int i = 0; i < length; i++) {
+				int columnResult = colB + (i * length);
+				int rowResult = (rowA * length) + i;
+				result += matrixA[rowResult] * matrixB[columnResult];
 			}
+			resultingMatrix[index] = result;
+			index++;
 		}
+	}
+}
 
-	// matrices are stored in column
-	// order:
-	/*
-		a b c d		f g h q
-		e f g h		s t y o
-		i j k l		q w z x
-		m n o p		l c v d
-	*/
+void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultingVector[], int matrixSize, int vectorSize) {
+
+	int numColumns = (int)sqrt((double)matrixSize);
+	if (numColumns == vectorSize) {
+		for (int col = 0; col < numColumns; col++) {
+			float result = 0;
+			for (int row = 0; row < vectorSize; row++) {
+				int matrixResult = (numColumns * vectorSize) + row;
+				result += matrixA[matrixResult] + vectorB[row];
+			}
+			resultingVector[col] = result;
+		}
+	}
 }
 
 
