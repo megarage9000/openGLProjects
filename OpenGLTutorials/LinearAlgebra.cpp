@@ -111,3 +111,13 @@ void test() {
 
 
 }
+
+matrix* createMatrix(int rowCount, int colCount)
+{
+	
+}
+
+matrix* createMatrix(int rowCount, int colCount, float values[])
+{
+	return nullptr;
+}
