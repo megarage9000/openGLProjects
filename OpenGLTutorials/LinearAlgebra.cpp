@@ -1,6 +1,7 @@
 #include "LinearAlgebra.h"
 
 
+
 // Square matrices only 
 void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int matrixSize) {
 	int index = 0;
@@ -78,26 +79,26 @@ void test() {
 
 
 	float resultingMatrix[16];
-	
+
 	matrixMultiplication(matrixA, matrixB, resultingMatrix, 4, 4);
-	
+
 	int size = sizeof(resultingMatrix) / sizeof(resultingMatrix[0]);
 	for (int i = 0; i < size; i++) {
 		printf("%f, ", resultingMatrix[i]);
 	}
 	printf("Size = %d\n", size);
 
-	float resultingMatrixB[16];
+	//float resultingMatrixB[16];
 
 
-	size = sizeof(matrixA) / sizeof(matrixA[0]);
-	matrixMultiplication(matrixA, matrixB, resultingMatrixB, size);
+	//size = sizeof(matrixA) / sizeof(matrixA[0]);
+	//matrixMultiplication(matrixA, matrixB, resultingMatrixB, size);
 
 
-	for (int i = 0; i < size; i++) {
-		printf("%f, ", resultingMatrixB[i]);
-	}
-	printf("Size = %d\n", size);
+	//for (int i = 0; i < size; i++) {
+	//	printf("%f, ", resultingMatrixB[i]);
+	//}
+	//printf("Size = %d\n", size);
 
 	//float resultVector[4];
 
@@ -108,16 +109,50 @@ void test() {
 	//	printf("%f, ", resultVector[i]);
 	//}
 	//printf("Size = %d", size);
-
-
-}
-
-matrix* createMatrix(int rowCount, int colCount)
-{
 	
+	matrix4 AMatrix = createMatrix4(matrixA, sizeof(matrixA) / sizeof(matrixA[0]));
+	matrix4 BMatrix = createMatrix4(matrixB, sizeof(matrixB) / sizeof(matrixB[0]));
+	matrix4 resultMatrix = matrix4Multiplication(AMatrix, BMatrix);
+
+	for (int i = 0; i < size; i++) {
+		printf("%f, ", resultMatrix.values[i]);
+	}
+	printf("Size = %d\n", size);
 }
 
-matrix* createMatrix(int rowCount, int colCount, float values[])
-{
-	return nullptr;
+matrix4 createMatrix4() {
+	matrix4 resultMatrix = {
+		4,
+		{
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+		}
+	};
+	return resultMatrix;
+}
+
+matrix4 createMatrix4(float values[], int valuesSize) {
+	if (valuesSize == 16) {
+		matrix4 resultMatrix = {
+			4,
+			{
+				values[0], values[1], values[2], values[3],
+				values[4], values[5], values[6], values[7],
+				values[8], values[9], values[10], values[11],
+				values[12], values[13], values[14], values[15]
+			}
+		};
+
+		return resultMatrix;
+	}
+	else {
+		return createMatrix4();
+	}
+}
+
+matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
+	float resultingValues[16];
+	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, 16);
+	return createMatrix4(resultingValues, 16);
 }
