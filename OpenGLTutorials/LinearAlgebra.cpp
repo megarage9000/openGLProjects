@@ -1,6 +1,7 @@
 #include "LinearAlgebra.h"
 
 
+// --- LINEAR ALGEBRA METHODS --- //
 
 // Square matrices only 
 void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int matrixSize) {
@@ -43,7 +44,6 @@ void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatri
 
 
 void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultingVector[], int matrixSize, int vectorSize) {
-
 	int numColumns = (int)sqrt((double)matrixSize);
 	if (numColumns == vectorSize) {
 		for (int col = 0; col < numColumns; col++) {
@@ -56,6 +56,75 @@ void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultin
 		}
 	}
 }
+
+// --- LINEAR ALGEBRA METHODS --- //
+
+// --- MATRIX METHODS --- //
+matrix4 createMatrix4() {
+	matrix4 resultMatrix = {
+		4,
+		16,
+		{
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+		}
+	};
+	return resultMatrix;
+}
+
+matrix4 createMatrix4(float values[], int valuesSize) {
+	if (valuesSize == 16) {
+		matrix4 resultMatrix = {
+			4,
+			16,
+			{
+				values[0], values[1], values[2], values[3],
+				values[4], values[5], values[6], values[7],
+				values[8], values[9], values[10], values[11],
+				values[12], values[13], values[14], values[15]
+			}
+		};
+		return resultMatrix;
+	}
+	else {
+		return createMatrix4();
+	}
+}
+
+void transposeMatrix4(matrix4* matrix) {
+	float * values = matrix->values;
+	float newValues[] = {
+		values[0], values[4], values[8],  values[12],
+		values[1], values[5], values[9],  values[13],
+		values[2], values[6], values[10], values[14],
+		values[3], values[7], values[11], values[15]
+	};
+
+	for (int i = 0; i < 16; i++) {
+		values[i] = newValues[i];
+	}
+}
+
+void printMatrix4(matrix4 matrix) {
+	float * values = matrix.values;
+	printf("| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n",
+		values[0], values[1], values[2], values[3],
+		values[4], values[5], values[6], values[7],
+		values[8], values[9], values[10], values[11],
+		values[12], values[13], values[14], values[15]);
+}
+
+matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
+	float resultingValues[16];
+	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, matrixA.dimension, matrixB.dimension);
+	return createMatrix4(resultingValues, 16);
+}
+
+
+// --- MATRIX METHODS --- //
+
 
 
 void test() {
@@ -109,50 +178,18 @@ void test() {
 	//	printf("%f, ", resultVector[i]);
 	//}
 	//printf("Size = %d", size);
-	
+
 	matrix4 AMatrix = createMatrix4(matrixA, sizeof(matrixA) / sizeof(matrixA[0]));
 	matrix4 BMatrix = createMatrix4(matrixB, sizeof(matrixB) / sizeof(matrixB[0]));
 	matrix4 resultMatrix = matrix4Multiplication(AMatrix, BMatrix);
 
-	for (int i = 0; i < size; i++) {
-		printf("%f, ", resultMatrix.values[i]);
-	}
-	printf("Size = %d\n", size);
-}
-
-matrix4 createMatrix4() {
-	matrix4 resultMatrix = {
-		4,
-		{
-			0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
-		}
-	};
-	return resultMatrix;
-}
-
-matrix4 createMatrix4(float values[], int valuesSize) {
-	if (valuesSize == 16) {
-		matrix4 resultMatrix = {
-			4,
-			{
-				values[0], values[1], values[2], values[3],
-				values[4], values[5], values[6], values[7],
-				values[8], values[9], values[10], values[11],
-				values[12], values[13], values[14], values[15]
-			}
-		};
-
-		return resultMatrix;
-	}
-	else {
-		return createMatrix4();
-	}
-}
-
-matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
-	float resultingValues[16];
-	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, 16);
-	return createMatrix4(resultingValues, 16);
+	printMatrix4(resultMatrix);
+	printf("\n");
+	transposeMatrix4(&resultMatrix);
+	printMatrix4(resultMatrix);
+	printf("\n");
+	transposeMatrix4(&resultMatrix);
+	printMatrix4(resultMatrix);
+	printf("\n");
+	printMatrix4(IDENTITY_MATRIX_4);
 }
