@@ -32,7 +32,7 @@ void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatri
 				float result = 0;
 				for (int i = 0; i < numSum; i++) {
 					int colBIndex = colB + (matrixBColSize * i);
-					int rowAIndex = (rowA * matrixARowSize) ;
+					int rowAIndex = (rowA * matrixARowSize) + i;
 					result += matrixA[rowAIndex] * matrixB[colBIndex];
 				}
 				resultingMatrix[index] = result;
@@ -107,6 +107,14 @@ void transposeMatrix4(matrix4* matrix) {
 	}
 }
 
+
+// Look at this site: http://www.euclideanspace.com/maths/algebra/matrix/functions/determinant/fourD/index.htm 
+// To work on determinant
+float determinantMatrix4(matrix4 matrix) {
+	float* values = matrix.values;
+	return -1;
+}
+
 void printMatrix4(matrix4 matrix) {
 	float * values = matrix.values;
 	printf("| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n",
@@ -129,17 +137,17 @@ matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
 
 void test() {
 	float matrixA[] = {
-		2.0f, 2.0f, 2.0f, 2.0f,
-		3.0f, 3.0f, 3.0f, 3.0f,
-		4.0f, 4.0f, 4.0f, 4.0f,
-		5.0f, 5.0f, 5.0f, 5.0f
+		1.0f, 3.0f, 4.0f, 23.0f,
+		2.0f, 3.0f, 2.0f, 0.0f,
+		2.0f, 1.0f, 1.0f, 1.0f,
+		2.0f, 5.0f, 11.0f, 8.0f
 	};
 
 	float matrixB[] = {
-		3.0f, 3.0f, 3.0f, 3.0f,
-		6.0f, 6.0f, 6.0f, 6.0f,
-		7.0f, 7.0f, 7.0f, 7.0f,
-		1.0f, 1.0f, 1.0f, 1.0f
+		3.0f, 1.0f, 2.0f, 5.0f,
+		0.0f, 3.0f, 0.0f, 32.0f,
+		1.0f, 0.0f, 3.0f, 1.0f,
+		1.0f, 62.0f, 4.0f, 23.0f
 	};
 
 	float vectorA[] = {
@@ -192,4 +200,5 @@ void test() {
 	printMatrix4(resultMatrix);
 	printf("\n");
 	printMatrix4(IDENTITY_MATRIX_4);
+	printf("Determinant of result: %f\n", determinantMatrix4(resultMatrix));
 }

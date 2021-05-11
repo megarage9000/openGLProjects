@@ -11,7 +11,7 @@ void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultin
 void test();
 
 
-// Optimized versions of matrix4 and matrix3
+// --- MATRIX 4 --- //
 typedef struct matrix4Struct {
 	int dimension;
 	int valuesSize;
@@ -34,6 +34,8 @@ matrix4 createMatrix4(float values[], int valuesSize);
 matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB);
 void transposeMatrix4(matrix4* matrix);
 void printMatrix4(matrix4 matrix);
+float determinantMatrix4(matrix4 matrix);
+// --- MATRIX 4 --- //
 
 
 typedef struct matrix3Struct {
@@ -41,15 +43,14 @@ typedef struct matrix3Struct {
 	float values[3];
 } matrix3;
 
-
-
 matrix3 createMatrix3();
-matrix3 createMatrix3(float values[]);
+matrix3 createMatrix3(float values[], int valuesSize);
 
 //TODO 
 /*
-	1. Create more linear algebra methods
-	2. Create structs for matrix and vector, and helper methods
+	1. Work on matrix3 methods and determinant method
+	2. Work on matrix4 determinant and inverse method
+	3. Add another class to introduce transformations
 */
 
 #endif LINEAR_ALGEBRA_H
