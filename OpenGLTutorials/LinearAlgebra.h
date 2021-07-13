@@ -40,11 +40,12 @@ float determinantMatrix4(matrix4 matrix);
 
 typedef struct matrix3Struct {
 	int dimension;
-	float values[3];
+	float values[9];
 } matrix3;
 
 matrix3 createMatrix3();
 matrix3 createMatrix3(float values[], int valuesSize);
+float determinantMatrix3(matrix3 matrix);
 
 //TODO 
 /*

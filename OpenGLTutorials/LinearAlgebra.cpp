@@ -60,6 +60,7 @@ void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultin
 // --- LINEAR ALGEBRA METHODS --- //
 
 // --- MATRIX METHODS --- //
+// -- Matrix 4
 matrix4 createMatrix4() {
 	matrix4 resultMatrix = {
 		4,
@@ -112,8 +113,38 @@ void transposeMatrix4(matrix4* matrix) {
 // To work on determinant
 float determinantMatrix4(matrix4 matrix) {
 	float* values = matrix.values;
-	return -1;
+	
+	matrix3 M1 = createMatrix3(new float[] {
+		values[5], values[6], values[7],
+		values[9], values[10], values[11],
+		values[13], values[14], values[15]
+	}, 9);
+
+	matrix3 M2 = createMatrix3(new float[] {
+		values[4], values[6], values[7],
+			values[8], values[10], values[11],
+			values[12], values[14], values[15]
+		}, 9);
+
+	matrix3 M3 = createMatrix3(new float[] {
+		values[4], values[5], values[7],
+			values[8], values[9], values[11],
+			values[12], values[13], values[15]
+		}, 9);
+
+	matrix3 M4 = createMatrix3(new float[] {
+		values[4], values[5], values[6],
+			values[8], values[9], values[10],
+			values[12], values[13], values[14]
+		}, 9);
+
+	return values[0] * determinantMatrix3(M1) 
+		- values[1] * determinantMatrix3(M2)
+		+ values[2] * determinantMatrix3(M3)
+		- values[3] * determinantMatrix3(M4);
 }
+
+	
 
 void printMatrix4(matrix4 matrix) {
 	float * values = matrix.values;
@@ -121,7 +152,7 @@ void printMatrix4(matrix4 matrix) {
 		values[0], values[1], values[2], values[3],
 		values[4], values[5], values[6], values[7],
 		values[8], values[9], values[10], values[11],
-		values[12], values[13], values[14], values[15]);
+		values[12], values[13], values[14], values[15]); 
 }
 
 matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
@@ -130,6 +161,44 @@ matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
 	return createMatrix4(resultingValues, 16);
 }
 
+// -- Matrix3
+matrix3 createMatrix3() {
+	matrix3 resultMatrix = {
+		3,
+		{
+			0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f
+		}
+	};
+	return resultMatrix;
+}
+
+matrix3 createMatrix3(float values[], int valuesSize) {
+	if (valuesSize == 9) {
+		matrix3 matrix = {
+			3,
+			{
+				values[0], values[1], values[2],
+				values[3], values[4], values[5],
+				values[6], values[7], values[8]
+			}
+		};
+		return matrix;
+	}
+	return createMatrix3();
+
+}
+
+float determinantMatrix3(matrix3 matrix) {
+	float* values = matrix.values;
+	return (values[0] * values[4] * values[8])	// aei
+		+ (values[1] * values[5] * values[6])	// bfg
+		+ (values[2] * values[3] * values[7])	// cdh
+		- (values[2] * values[4] * values[6])	// ceg
+		- (values[1] * values[3] * values[8])	// bdi
+		- (values[0] * values[5] * values[7]);	// afh
+}
 
 // --- MATRIX METHODS --- //
 
