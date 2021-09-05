@@ -1,6 +1,5 @@
 #include "LinearAlgebra.h"
 
-
 // --- LINEAR ALGEBRA METHODS --- //
 
 // Square matrices only 
@@ -57,6 +56,7 @@ void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultin
 	}
 }
 
+
 // --- LINEAR ALGEBRA METHODS --- //
 
 // --- MATRIX METHODS --- //
@@ -64,7 +64,6 @@ void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultin
 matrix4 createMatrix4() {
 	matrix4 resultMatrix = {
 		4,
-		16,
 		{
 			0.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 0.0f, 0.0f,
@@ -79,7 +78,6 @@ matrix4 createMatrix4(float values[], int valuesSize) {
 	if (valuesSize == 16) {
 		matrix4 resultMatrix = {
 			4,
-			16,
 			{
 				values[0], values[1], values[2], values[3],
 				values[4], values[5], values[6], values[7],
@@ -103,9 +101,7 @@ void transposeMatrix4(matrix4* matrix) {
 		values[3], values[7], values[11], values[15]
 	};
 
-	for (int i = 0; i < 16; i++) {
-		values[i] = newValues[i];
-	}
+	memcpy(values, newValues, 16 * sizeof(float));
 }
 
 
@@ -146,6 +142,14 @@ float determinantMatrix4(matrix4 matrix) {
 
 	
 
+matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
+	float resultingValues[16];
+	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, matrixA.dimension, matrixB.dimension);
+	return createMatrix4(resultingValues, 16);
+}
+
+
+// Debugging matrix 4 operations
 void printMatrix4(matrix4 matrix) {
 	float * values = matrix.values;
 	printf("| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n",
@@ -155,10 +159,27 @@ void printMatrix4(matrix4 matrix) {
 		values[12], values[13], values[14], values[15]); 
 }
 
-matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
-	float resultingValues[16];
-	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, matrixA.dimension, matrixB.dimension);
-	return createMatrix4(resultingValues, 16);
+
+bool areEqualMatrix4(matrix4 matrixA, matrix4 matrixB) {
+	float* valuesA = matrixA.values;
+	float* valuesB = matrixB.values;
+
+	for (int i = 0; i < 16; i += 4) {
+		float a1 = valuesA[i];
+		float a2 = valuesA[i + 1];
+		float a3 = valuesA[i + 2];
+		float a4 = valuesA[i + 3];
+
+		float b1 = valuesB[i];
+		float b2 = valuesB[i + 1];
+		float b3 = valuesB[i + 2];
+		float b4 = valuesB[i + 3];
+
+		if (!(a1 == b1 && a2 == b2 && a3 == b3 && a4 == b4)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 // -- Matrix3
@@ -202,72 +223,3 @@ float determinantMatrix3(matrix3 matrix) {
 
 // --- MATRIX METHODS --- //
 
-
-
-void test() {
-	float matrixA[] = {
-		1.0f, 3.0f, 4.0f, 23.0f,
-		2.0f, 3.0f, 2.0f, 0.0f,
-		2.0f, 1.0f, 1.0f, 1.0f,
-		2.0f, 5.0f, 11.0f, 8.0f
-	};
-
-	float matrixB[] = {
-		3.0f, 1.0f, 2.0f, 5.0f,
-		0.0f, 3.0f, 0.0f, 32.0f,
-		1.0f, 0.0f, 3.0f, 1.0f,
-		1.0f, 62.0f, 4.0f, 23.0f
-	};
-
-	float vectorA[] = {
-		3.0f, 7.0f, 5.0f, 1.0f
-	};
-
-
-	float resultingMatrix[16];
-
-	matrixMultiplication(matrixA, matrixB, resultingMatrix, 4, 4);
-
-	int size = sizeof(resultingMatrix) / sizeof(resultingMatrix[0]);
-	for (int i = 0; i < size; i++) {
-		printf("%f, ", resultingMatrix[i]);
-	}
-	printf("Size = %d\n", size);
-
-	//float resultingMatrixB[16];
-
-
-	//size = sizeof(matrixA) / sizeof(matrixA[0]);
-	//matrixMultiplication(matrixA, matrixB, resultingMatrixB, size);
-
-
-	//for (int i = 0; i < size; i++) {
-	//	printf("%f, ", resultingMatrixB[i]);
-	//}
-	//printf("Size = %d\n", size);
-
-	//float resultVector[4];
-
-	//matrixVectorMultiplication(matrixA, vectorA, resultVector, (int)sizeof(matrixA) / sizeof(matrixA[0]), (int)sizeof(vectorA) / sizeof(vectorA[0]));
-
-	//int size = sizeof(vectorA) / sizeof(vectorA[0]);
-	//for (int i = 0; i < size; i++) {
-	//	printf("%f, ", resultVector[i]);
-	//}
-	//printf("Size = %d", size);
-
-	matrix4 AMatrix = createMatrix4(matrixA, sizeof(matrixA) / sizeof(matrixA[0]));
-	matrix4 BMatrix = createMatrix4(matrixB, sizeof(matrixB) / sizeof(matrixB[0]));
-	matrix4 resultMatrix = matrix4Multiplication(AMatrix, BMatrix);
-
-	printMatrix4(resultMatrix);
-	printf("\n");
-	transposeMatrix4(&resultMatrix);
-	printMatrix4(resultMatrix);
-	printf("\n");
-	transposeMatrix4(&resultMatrix);
-	printMatrix4(resultMatrix);
-	printf("\n");
-	printMatrix4(IDENTITY_MATRIX_4);
-	printf("Determinant of result: %f\n", determinantMatrix4(resultMatrix));
-}

@@ -39,9 +39,6 @@ const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
 
-
-
-
 int main() {
 
 	// Starting log
@@ -206,8 +203,6 @@ int main() {
 	// Setting up transformation speed
 	float speed = 1.0f;
 	float last_position = 0.0f;
-
-	test();
 	
 	while (!glfwWindowShouldClose(window)) {
 
