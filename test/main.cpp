@@ -9,24 +9,17 @@
 
 int main() {
    
-    float matrix_a[16] = {
-        15, 14, 13, 12,
-        1, 2, 3, 4,
-        80, 90, 70, 60,
-        10, 9, 8, 7
+    float matrix_a[9] = {
+        15, 14, 13, 
+        1, 2, 3, 
+        80, 90, 70
     };
-    float matrix_b[16] = {
-        18, 19, 20, 21,
-        5, 6, 7, 8,
-        100, 90, 80, 70,
-        50, 20, 75, 9
+    float matrix_b[9] = {
+        18, 19, 20, 
+        5, 6, 7, 
+        100, 90, 80
     };
-    float result[16];
-    LinearAlgebra::matrix4_multi(matrix_a, matrix_b, 16, 16, result);
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            std::cout << result[i * 4 + j] << ",";
-        }
-        std::cout << '\n';
-    }
+    float result[9];
+    float det = LinearAlgebra::determinant_mat_3(matrix_a);
+    std::cout << "det = " << det << '\n';
 }
