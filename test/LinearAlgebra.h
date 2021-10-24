@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <iterator>
+#include <iostream>
 #include <array>
 // Need to determine matrix multiplication
 

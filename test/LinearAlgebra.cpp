@@ -61,23 +61,29 @@ namespace LinearAlgebra {
         float det_c = a[2] * matrix4_cofact_val(a, 0, 2);
         float det_d = a[3] * matrix4_cofact_val(a, 0, 3);
         float det = det_a - det_b + det_c - det_d;
-        if(det != 0) {
+        if(det != 0.0) {
             
             float inv_det = 1/det;
 
             // Get Cofactors
             result_arr[0] = (det_a / a[0]) * inv_det;
-            result_arr[1] = (det_b / a[1]) * inv_det;
+            result_arr[1] = -(det_b / a[1]) * inv_det;
             result_arr[2] = (det_c / a[2]) * inv_det;
-            result_arr[3] = (det_d / a[3]) * inv_det;
+            result_arr[3] = -(det_d / a[3]) * inv_det;
 
+            bool isEven = false;
             for(int row = 1; row < 4; row++) {
                 for(int col = 0; col < 4; col++){
                     int pos = row * 4 + col;
                     result_arr[pos] = matrix4_cofact_val(a, row, col) * inv_det;
+                    // Apply Cofactor signage
+                    int logical_col = col + 1;
+                    if((logical_col % 2 == 0 && isEven) || (logical_col % 2 != 0 && !isEven)){
+                        result_arr[pos] = -result_arr[pos];
+                    }
                 }
+                isEven = !isEven;
             }
-
             // Get Adjugate(Transpose result)
             transpose_matrix4(result_arr);
         }
@@ -126,12 +132,28 @@ namespace LinearAlgebra {
                 cofact_ind++;
             }
         }
-        return determinant_matrix3(cofact);
+        float result = determinant_matrix3(cofact);
+        // Handles -0's, kinda of annoying
+        if(result == 0){
+            return 0;
+        }
+        return result;
     }
 
 
 
     // --- Matrix 3 --- //
+       /*
+        0 1 2
+        3 4 5
+        6 7 8
+    */
+    float determinant_matrix3(float a[]) {
+        return a[0] * (a[4] * a[8] - a[5] * a[7]) -
+            a[1] * (a[3] * a[8] - a[5] * a[6]) +
+            a[2] * (a[3] * a[7] - a[4] * a[6]);
+    }
+
     void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]){
         if(a_len == b_len && a_len == result_len && a_len == 9) {
             matrix3_multi(a, b, result_arr);
@@ -153,16 +175,5 @@ namespace LinearAlgebra {
                     a[start_a + 2] * b[start_b + 6];
             }
         }
-    }
-
-    /*
-        0 1 2
-        3 4 5
-        6 7 8
-    */
-    float determinant_matrix3(float a[]) {
-        return a[0] * (a[4] * a[8] - a[5] * a[7]) -
-            a[1] * (a[3] * a[8] - a[5] * a[6]) +
-            a[2] * (a[3] * a[7] - a[4] * a[6]);
     }
 }

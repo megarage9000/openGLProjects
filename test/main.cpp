@@ -2,6 +2,7 @@
 #include <array>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "LinearAlgebra.h"
 
 
@@ -16,17 +17,26 @@ int main() {
         10, 9, 8, 7
     };
     float matrix_b[16] = {
-        1, 2, 3, 4,
+        1, 2, 30, 4,
         11, 18, 19, 20, 
         12, 5, 6, 7,
         13, 100, 90, 80, 
     };
     float result[16];
-    LinearAlgebra::matrix4_inv(matrix_a, result);
+    LinearAlgebra::matrix4_inv(matrix_b, result);
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
             std::cout << result[i * 4 + j] << " ";
         }
         std:: cout << '\n';
     }
+    float identity[16];
+    LinearAlgebra::matrix4_multi(result, matrix_b, identity);
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++) {
+            std::cout << round(identity[i * 4 + j]) << " ";
+        }
+        std:: cout << '\n';
+    }
+
 }
