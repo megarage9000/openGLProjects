@@ -13,6 +13,10 @@ float IDENTITY_3[9] = {
     0.0f, 0.0f, 1.0f
 };
 
+float MAG_1_VEC4[4] = {
+    1.0f, 1.0f, 1.0f, 1.0f
+};
+
 void swap(float &a, float &b) {
     float temp = a;
     a = b;
@@ -29,25 +33,55 @@ namespace LinearAlgebra
         }
     }
 
-    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
-        if(a_len == b_len && a_len == result_len && a_len == 16){
-            matrix4_multi(a, b, result_arr);
+    void copy_from_vec4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 4) {
+            for(int i = 0; i < 4; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
+
+    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[], bool is_b_vec) {
+        if((a_len == b_len || a_len / 4 == b_len) && b_len == result_len) {
+            matrix4_multi(a, b, result_arr, is_b_vec);
         }
         else {
             copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
-    void matrix4_multi(float a[], float b[], float result_arr[]){
-        for(int row = 0; row < 4; row++){
-            for(int col = 0; col < 4; col++) {
-                int pos = (row * 4) + col;
-                int start_a = row * 4;
-                int start_b = col;
-                result_arr[pos] = a[start_a] * b[start_b] + 
-                    a[start_a + 1] * b[start_b + 4] +
-                    a[start_a + 2] * b[start_b + 8] +
-                    a[start_a + 3] * b[start_b + 12];
+    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec){
+        // Vector multiplication
+        if(is_b_vec) {
+            for(int i = 0; i < 4; i++) {
+                result_arr[i] = a[i * 4] * b[0] +
+                        a[i * 4 + 1] * b[1] +
+                        a[i * 4 + 2] * b[2] +
+                        a[i * 4 + 3] * b[3];
             }
+        }
+        // Matrix multiplication
+        else {
+            for(int row = 0; row < 4; row++){
+                for(int col = 0; col < 4; col++) {
+                    int pos = (row * 4) + col;
+                    int start_a = row * 4;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 4] +
+                        a[start_a + 2] * b[start_b + 8] +
+                        a[start_a + 3] * b[start_b + 12];
+                }
+            }
+        }
+    }
+
+    // Overloaded functions
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[], int a_len, int b_len, int result_len) {
+        if(a_len == 16 && b_len == result_len && b_len == 4) {
+            matrix4_multi(a_mat4, b_vec4, result_arr, true);
+        }
+        else {
+            copy_from_vec4(MAG_1_VEC4, result_arr, 4, result_len);
         }
     }
 
