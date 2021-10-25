@@ -19,16 +19,22 @@ void swap(float &a, float &b) {
     b=  temp;
 }
 
-namespace LinearAlgebra {
+namespace LinearAlgebra 
+{
+    void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 16) {
+            for(int i = 0; i < 16; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
 
     void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
         if(a_len == b_len && a_len == result_len && a_len == 16){
             matrix4_multi(a, b, result_arr);
         }
         else {
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
-            }
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
     void matrix4_multi(float a[], float b[], float result_arr[]){
@@ -50,9 +56,7 @@ namespace LinearAlgebra {
             matrix4_inv(a, result_arr);
         }
         else{
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
-            }
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
     void matrix4_inv(float a[], float result_arr[]){
@@ -62,7 +66,6 @@ namespace LinearAlgebra {
         float det_d = a[3] * matrix4_cofact_val(a, 0, 3);
         float det = det_a - det_b + det_c - det_d;
         if(det != 0.0) {
-            
             float inv_det = 1/det;
 
             // Get Cofactors
@@ -88,9 +91,7 @@ namespace LinearAlgebra {
             transpose_matrix4(result_arr);
         }
         else {
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
-            }
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, 16);
         }   
     }
 
@@ -148,6 +149,14 @@ namespace LinearAlgebra {
         3 4 5
         6 7 8
     */
+
+    void copy_from_matrix3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 9) {
+            for(int i = 0; i < 9; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
     float determinant_matrix3(float a[]) {
         return a[0] * (a[4] * a[8] - a[5] * a[7]) -
             a[1] * (a[3] * a[8] - a[5] * a[6]) +
@@ -159,9 +168,7 @@ namespace LinearAlgebra {
             matrix3_multi(a, b, result_arr);
         }
         else {
-            for(int i = 0; i < 9; i++) {
-                result_arr[i] = IDENTITY_3[i];
-            }
+            copy_from_matrix3(IDENTITY_3, result_arr, 16, result_len);
         }
     }
     void matrix3_multi(float a[], float b[], float result_arr[]) {
