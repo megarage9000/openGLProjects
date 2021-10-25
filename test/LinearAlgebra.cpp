@@ -17,6 +17,10 @@ float MAG_1_VEC4[4] = {
     1.0f, 1.0f, 1.0f, 1.0f
 };
 
+float MAG_1_VEC3[3] = {
+    1.0f, 1.0f, 1.0f
+};
+
 void swap(float &a, float &b) {
     float temp = a;
     a = b;
@@ -41,9 +45,9 @@ namespace LinearAlgebra
         }
     }
 
-    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[], bool is_b_vec) {
-        if((a_len == b_len || a_len / 4 == b_len) && b_len == result_len) {
-            matrix4_multi(a, b, result_arr, is_b_vec);
+    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
+        if(a_len == b_len  && b_len == result_len) {
+            matrix4_multi(a, b, result_arr, false);
         }
         else {
             copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
@@ -83,6 +87,14 @@ namespace LinearAlgebra
         else {
             copy_from_vec4(MAG_1_VEC4, result_arr, 4, result_len);
         }
+    }
+
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[]){
+        matrix4_multi(a_mat4, b_vec4, result_arr, true);
+    }
+
+    void matrix4_multi(float a[], float b[], float result_arr[]) {
+        matrix4_multi(a, b, result_arr, false);
     }
 
     void matrix4_inv(float a[], float result_arr[], int a_len, int result_len) {
@@ -191,6 +203,13 @@ namespace LinearAlgebra
             }
         }
     }
+    void copy_from_vec3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 3) {
+            for(int i = 0; i < 3; i++) {
+                src[i] = dest[i];
+            }
+        }
+    }
     float determinant_matrix3(float a[]) {
         return a[0] * (a[4] * a[8] - a[5] * a[7]) -
             a[1] * (a[3] * a[8] - a[5] * a[6]) +
@@ -198,23 +217,51 @@ namespace LinearAlgebra
     }
 
     void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]){
-        if(a_len == b_len && a_len == result_len && a_len == 9) {
-            matrix3_multi(a, b, result_arr);
+        if(a_len == b_len && b_len == result_len) {
+            matrix3_multi(a, b, result_arr, false);
         }
         else {
             copy_from_matrix3(IDENTITY_3, result_arr, 16, result_len);
         }
     }
-    void matrix3_multi(float a[], float b[], float result_arr[]) {
-        for(int row = 0; row < 3; row++){
-            for(int col = 0; col < 3; col++) {
-                int pos = (row * 3) + col;
-                int start_a = row * 3;
-                int start_b = col;
-                result_arr[pos] = a[start_a] * b[start_b] + 
-                    a[start_a + 1] * b[start_b + 3] +
-                    a[start_a + 2] * b[start_b + 6];
+    void matrix3_multi(float a[], float b[], float result_arr[], bool is_b_vec) {
+        if(is_b_vec) {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = a[i * 3] * b[0] +
+                        a[i * 3 + 1] * b[1] +
+                        a[i * 3 + 2] * b[2];
             }
         }
+        else {
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++) {
+                    int pos = (row * 3) + col;
+                    int start_a = row * 3;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 3] +
+                        a[start_a + 2] * b[start_b + 6];
+                }
+            }
+        }
+    }
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[], int a_len, int b_len, int result_len){
+        if(a_len / 3 == b_len && b_len == result_len && result_len == 3) {
+            matrix3_multi(a_mat3, b_vec3, result_arr, true);
+        }
+        else {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = MAG_1_VEC3[i];
+            }
+        }
+    }
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[]){
+        matrix3_multi(a_mat3, b_vec3, result_arr, true);
+    }
+
+    void matrix3_multi(float a[], float b[], float result_arr[]) {
+        matrix3_multi(a, b, result_arr, false);
     }
 }

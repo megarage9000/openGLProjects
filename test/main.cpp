@@ -35,12 +35,18 @@ int main() {
         std:: cout << '\n';
     }
     float identity[16];
-    LinearAlgebra::matrix4_multi(result, matrix_b, identity, false);
+    LinearAlgebra::matrix4_multi(result, matrix_b, identity);
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
             std::cout << round(identity[i * 4 + j]) << " ";
         }
         std:: cout << '\n';
     }
+    float result_vec4[4];
+    LinearAlgebra::matrix4_vec4_multi(matrix_b, vec_c, result_vec4);
+    for(int i = 0; i < 4; i++) {
+        std::cout << result_vec4[i] << " ";
+    }
+    std::cout << '\n';
 
 }
