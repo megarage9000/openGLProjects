@@ -2,8 +2,6 @@
 #define LINEAR_ALGEBRA
 
 #include <stdlib.h>
-// Need to determine matrix multiplication
-
 
 void swap(float &a, float &b);
 
