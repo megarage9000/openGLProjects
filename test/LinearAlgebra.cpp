@@ -13,36 +13,88 @@ float IDENTITY_3[9] = {
     0.0f, 0.0f, 1.0f
 };
 
+float MAG_1_VEC4[4] = {
+    1.0f, 1.0f, 1.0f, 1.0f
+};
+
+float MAG_1_VEC3[3] = {
+    1.0f, 1.0f, 1.0f
+};
+
 void swap(float &a, float &b) {
     float temp = a;
     a = b;
     b=  temp;
 }
 
-namespace LinearAlgebra {
-
-    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
-        if(a_len == b_len && a_len == result_len && a_len == 16){
-            matrix4_multi(a, b, result_arr);
-        }
-        else {
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
+namespace LinearAlgebra 
+{
+    void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 16) {
+            for(int i = 0; i < 16; i++) {
+                dest[i] = src[i];
             }
         }
     }
-    void matrix4_multi(float a[], float b[], float result_arr[]){
-        for(int row = 0; row < 4; row++){
-            for(int col = 0; col < 4; col++) {
-                int pos = (row * 4) + col;
-                int start_a = row * 4;
-                int start_b = col;
-                result_arr[pos] = a[start_a] * b[start_b] + 
-                    a[start_a + 1] * b[start_b + 4] +
-                    a[start_a + 2] * b[start_b + 8] +
-                    a[start_a + 3] * b[start_b + 12];
+
+    void copy_from_vec4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 4) {
+            for(int i = 0; i < 4; i++) {
+                dest[i] = src[i];
             }
         }
+    }
+
+    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
+        if(a_len == b_len  && b_len == result_len) {
+            matrix4_multi(a, b, result_arr, false);
+        }
+        else {
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
+        }
+    }
+    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec){
+        // Vector multiplication
+        if(is_b_vec) {
+            for(int i = 0; i < 4; i++) {
+                result_arr[i] = a[i * 4] * b[0] +
+                        a[i * 4 + 1] * b[1] +
+                        a[i * 4 + 2] * b[2] +
+                        a[i * 4 + 3] * b[3];
+            }
+        }
+        // Matrix multiplication
+        else {
+            for(int row = 0; row < 4; row++){
+                for(int col = 0; col < 4; col++) {
+                    int pos = (row * 4) + col;
+                    int start_a = row * 4;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 4] +
+                        a[start_a + 2] * b[start_b + 8] +
+                        a[start_a + 3] * b[start_b + 12];
+                }
+            }
+        }
+    }
+
+    // Overloaded functions
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[], int a_len, int b_len, int result_len) {
+        if(a_len == 16 && b_len == result_len && b_len == 4) {
+            matrix4_multi(a_mat4, b_vec4, result_arr, true);
+        }
+        else {
+            copy_from_vec4(MAG_1_VEC4, result_arr, 4, result_len);
+        }
+    }
+
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[]){
+        matrix4_multi(a_mat4, b_vec4, result_arr, true);
+    }
+
+    void matrix4_multi(float a[], float b[], float result_arr[]) {
+        matrix4_multi(a, b, result_arr, false);
     }
 
     void matrix4_inv(float a[], float result_arr[], int a_len, int result_len) {
@@ -50,9 +102,7 @@ namespace LinearAlgebra {
             matrix4_inv(a, result_arr);
         }
         else{
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
-            }
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
     void matrix4_inv(float a[], float result_arr[]){
@@ -62,7 +112,6 @@ namespace LinearAlgebra {
         float det_d = a[3] * matrix4_cofact_val(a, 0, 3);
         float det = det_a - det_b + det_c - det_d;
         if(det != 0.0) {
-            
             float inv_det = 1/det;
 
             // Get Cofactors
@@ -88,9 +137,7 @@ namespace LinearAlgebra {
             transpose_matrix4(result_arr);
         }
         else {
-            for(int i = 0;  i < 16; i++) {
-                result_arr[i] = IDENTITY_4[i];
-            }
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, 16);
         }   
     }
 
@@ -148,6 +195,21 @@ namespace LinearAlgebra {
         3 4 5
         6 7 8
     */
+
+    void copy_from_matrix3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 9) {
+            for(int i = 0; i < 9; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
+    void copy_from_vec3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 3) {
+            for(int i = 0; i < 3; i++) {
+                src[i] = dest[i];
+            }
+        }
+    }
     float determinant_matrix3(float a[]) {
         return a[0] * (a[4] * a[8] - a[5] * a[7]) -
             a[1] * (a[3] * a[8] - a[5] * a[6]) +
@@ -155,25 +217,51 @@ namespace LinearAlgebra {
     }
 
     void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]){
-        if(a_len == b_len && a_len == result_len && a_len == 9) {
-            matrix3_multi(a, b, result_arr);
+        if(a_len == b_len && b_len == result_len) {
+            matrix3_multi(a, b, result_arr, false);
         }
         else {
-            for(int i = 0; i < 9; i++) {
-                result_arr[i] = IDENTITY_3[i];
+            copy_from_matrix3(IDENTITY_3, result_arr, 16, result_len);
+        }
+    }
+    void matrix3_multi(float a[], float b[], float result_arr[], bool is_b_vec) {
+        if(is_b_vec) {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = a[i * 3] * b[0] +
+                        a[i * 3 + 1] * b[1] +
+                        a[i * 3 + 2] * b[2];
+            }
+        }
+        else {
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++) {
+                    int pos = (row * 3) + col;
+                    int start_a = row * 3;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 3] +
+                        a[start_a + 2] * b[start_b + 6];
+                }
             }
         }
     }
-    void matrix3_multi(float a[], float b[], float result_arr[]) {
-        for(int row = 0; row < 3; row++){
-            for(int col = 0; col < 3; col++) {
-                int pos = (row * 3) + col;
-                int start_a = row * 3;
-                int start_b = col;
-                result_arr[pos] = a[start_a] * b[start_b] + 
-                    a[start_a + 1] * b[start_b + 3] +
-                    a[start_a + 2] * b[start_b + 6];
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[], int a_len, int b_len, int result_len){
+        if(a_len / 3 == b_len && b_len == result_len && result_len == 3) {
+            matrix3_multi(a_mat3, b_vec3, result_arr, true);
+        }
+        else {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = MAG_1_VEC3[i];
             }
         }
+    }
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[]){
+        matrix3_multi(a_mat3, b_vec3, result_arr, true);
+    }
+
+    void matrix3_multi(float a[], float b[], float result_arr[]) {
+        matrix3_multi(a, b, result_arr, false);
     }
 }
