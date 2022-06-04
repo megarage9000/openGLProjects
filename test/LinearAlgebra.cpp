@@ -1,5 +1,6 @@
 #include "LinearAlgebra.h"
 
+// Identity Matrix 4
 float IDENTITY_4[16] = {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
@@ -7,24 +8,32 @@ float IDENTITY_4[16] = {
     0.0f, 0.0f, 0.0f, 1.0f
 };
 
+// Identity Matrix 3
 float IDENTITY_3[9] = {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 1.0f
 };
 
+// Vector 4 of magnitude 1
 float MAG_1_VEC4[4] = {
     1.0f, 1.0f, 1.0f, 1.0f
 };
 
+// Vector 3 of magnitude 1
 float MAG_1_VEC3[3] = {
     1.0f, 1.0f, 1.0f
 };
 
+// Private helper function
 void swap(float &a, float &b) {
     float temp = a;
     a = b;
     b=  temp;
+}
+
+bool float_equals(float a, float b){
+    return fabs(a - b) < EPISLON;
 }
 
 namespace LinearAlgebra 
@@ -106,31 +115,45 @@ namespace LinearAlgebra
         }
     }
     void matrix4_inv(float a[], float result_arr[]){
-        float det_a = a[0] * matrix4_cofact_val(a, 0, 0);
-        float det_b = a[1] * matrix4_cofact_val(a, 0, 1);
-        float det_c = a[2] * matrix4_cofact_val(a, 0, 2);
-        float det_d = a[3] * matrix4_cofact_val(a, 0, 3);
+
+        // Finding determinant using Laplace method
+        // - |M| = aM1 - bM2 + cM3 - dM4
+        // - Link: https://www.statlect.com/matrix-algebra/Laplace-expansion-minors-cofactors-adjoints
+        float det_a = a[0] * matrix4_minors_val(a, 0, 0);
+        float det_b = a[1] * matrix4_minors_val(a, 0, 1);
+        float det_c = a[2] * matrix4_minors_val(a, 0, 2);
+        float det_d = a[3] * matrix4_minors_val(a, 0, 3);
         float det = det_a - det_b + det_c - det_d;
-        if(det != 0.0) {
+
+        // Determines if the following method is a matrix via determinant
+        if(float_equals(det, 0.0) == false) {
+
+            // 3. Apply the 1 / determinant (see later in loop)
             float inv_det = 1/det;
 
-            // Get Cofactors
+            // Reuse the top row determinant values instead of including them
             result_arr[0] = (det_a / a[0]) * inv_det;
             result_arr[1] = -(det_b / a[1]) * inv_det;
             result_arr[2] = (det_c / a[2]) * inv_det;
             result_arr[3] = -(det_d / a[3]) * inv_det;
 
+            // For the cofactor step
             bool isEven = false;
             for(int row = 1; row < 4; row++) {
                 for(int col = 0; col < 4; col++){
+                    
+                    // 1. Get the Minors value per position
                     int pos = row * 4 + col;
-                    result_arr[pos] = matrix4_cofact_val(a, row, col) * inv_det;
-                    // Apply Cofactor signage
+                    result_arr[pos] = matrix4_minors_val(a, row, col) * inv_det;
+
+                    // 2. Apply Cofactor signage
+                    // - since we are using 0 index, add 1
                     int logical_col = col + 1;
                     if((logical_col % 2 == 0 && isEven) || (logical_col % 2 != 0 && !isEven)){
                         result_arr[pos] = -result_arr[pos];
                     }
                 }
+                // Alternate for C
                 isEven = !isEven;
             }
             // Get Adjugate(Transpose result)
@@ -163,7 +186,7 @@ namespace LinearAlgebra
         swap(a[14], a[11]);
     }
 
-    float matrix4_cofact_val(float a[], int row, int col) {
+    float matrix4_minors_val(float a[], int row, int col) {
         float cofact[9];
         int cofact_ind = 0;
         // Find ways to improve this!
@@ -180,10 +203,11 @@ namespace LinearAlgebra
             }
         }
         float result = determinant_matrix3(cofact);
+
         // Handles -0's, kinda of annoying
-        if(result == 0){
-            return 0;
-        }
+        // if(result == 0){
+        //     return 0;
+        // }
         return result;
     }
 
@@ -263,5 +287,9 @@ namespace LinearAlgebra
 
     void matrix3_multi(float a[], float b[], float result_arr[]) {
         matrix3_multi(a, b, result_arr, false);
+    }
+
+    void matrix3_inv(float a[], float result_arr[]) {
+        
     }
 }

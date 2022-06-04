@@ -1,9 +1,15 @@
 #ifndef LINEAR_ALGEBRA
 #define LINEAR_ALGEBRA
 
+#define EPISLON 0.000001
 #include <stdlib.h>
+#include <cmath>
+
+
+
 
 void swap(float &a, float &b);
+bool float_equals(float a, float b);
 
 namespace LinearAlgebra {
 
@@ -25,7 +31,6 @@ namespace LinearAlgebra {
     void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec);
 
     // --- Overloaded functions Matrix 4 --- //
-
     // Performs a matrix 4(a_mat4) x vector 4(b_vec4) multiplication
     void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[], int a_len, int b_len, int result_len);
 
@@ -40,11 +45,13 @@ namespace LinearAlgebra {
     // Calculates inverse of a matrix
     void matrix4_inv(float a[], float result_arr[], int a_len, int result_len);
 
-    // Assumes length are correct. Calculates inverse of a matrix
+    // Assumes length are correct. Calculates inverse of a matrix 4
+    // - Uses the Minors + Cofactors + Adjugate method
+    // - Link: https://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html
     void matrix4_inv(float a[], float result_arr[]);
 
-    // Gets cofactor values from a subset 3x3 matrix with a given row, column
-    float matrix4_cofact_val(float a[], int row, int col);
+    // Gets minors values from a subset 3x3 matrix with a given row, column
+    float matrix4_minors_val(float a[], int row, int col);
 
     // Performs an in-place transpose on the matrix
     void transpose_matrix4(float a[]);
@@ -67,7 +74,6 @@ namespace LinearAlgebra {
     void matrix3_multi(float a[], float b[], float result_arr[], bool is_b_vec);
 
     // --- Overloaded functions Matrix 3 --- //
-    
     // Performs matrix 3(a_mat3) x vector 3(b_vec3) multiplication
     void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[], int a_len, int b_len, int result_len);
 
@@ -79,9 +85,11 @@ namespace LinearAlgebra {
     // - Assumes a, b, result_arr len = 9
     void matrix3_multi(float a[], float b[], float result_arr[]);
 
+    // Assumes length are correct. Calculates inverse of a matrix 3
+    void matrix3_inv(float a[], float result_arr[]);
+
     // Returns determinant of a given matrix3
     float determinant_matrix3(float a[]);
 }
-
 
 #endif 
