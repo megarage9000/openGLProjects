@@ -53,7 +53,7 @@ namespace LinearAlgebra {
     // Gets minors values from a subset 3x3 matrix with a given row, column
     float matrix4_minors_val(float a[], int row, int col);
 
-    // Performs an in-place transpose on the matrix
+    // Performs an in-place transpose on the matrix 4
     void transpose_matrix4(float a[]);
 
     // --- Matrix 3 --- //
@@ -86,10 +86,18 @@ namespace LinearAlgebra {
     void matrix3_multi(float a[], float b[], float result_arr[]);
 
     // Assumes length are correct. Calculates inverse of a matrix 3
+    // - Uses the Minors + Cofactors + Adjugate method
+    // - Link: https://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html
     void matrix3_inv(float a[], float result_arr[]);
 
     // Returns determinant of a given matrix3
     float determinant_matrix3(float a[]);
+
+    // Gets minors values from a subset 2x2 matrix with a given row, column
+    float matrix3_minors_val(float a[], int row, int col);
+
+    // Performs an in-place transpose on the matrix 3
+    void transpose_matrix3(float a[]);
 }
 
 #endif 

@@ -187,8 +187,8 @@ namespace LinearAlgebra
     }
 
     float matrix4_minors_val(float a[], int row, int col) {
-        float cofact[9];
-        int cofact_ind = 0;
+        float minors[9];
+        int minors_ind = 0;
         // Find ways to improve this!
         for(int i = 0; i < 4; i++) {
             if(i == row) {
@@ -198,11 +198,11 @@ namespace LinearAlgebra
                 if(j == col) {
                     continue;
                 }
-                cofact[cofact_ind] = a[(i * 4) + j];
-                cofact_ind++;
+                minors[minors_ind] = a[(i * 4) + j];
+                minors_ind++;
             }
         }
-        float result = determinant_matrix3(cofact);
+        float result = determinant_matrix3(minors);
 
         // Handles -0's, kinda of annoying
         // if(result == 0){
@@ -290,6 +290,67 @@ namespace LinearAlgebra
     }
 
     void matrix3_inv(float a[], float result_arr[]) {
-        
+        // See matrix4_inv for detailed walkthrough
+
+        // Check determinant
+        float determinant = determinant_matrix3(a);
+        if(float_equals(determinant, 0.0) == false) {
+            
+            float inv_det = 1.0f / determinant;
+            bool isEven = false;
+            
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++){
+                    
+                    int pos = row * 3 + col;
+                    result_arr[pos] = inv_det * matrix3_minors_val(a, row, col);
+
+                    int logical_col = col + 1;
+                    if((logical_col % 2 == 0 && isEven) || (logical_col % 2 != 0 && !isEven)){
+                        result_arr[pos] = -result_arr[pos];
+                    }
+                }
+                isEven = !isEven;
+            }
+
+            transpose_matrix3(result_arr);
+        }
+        else{
+            copy_from_matrix3(IDENTITY_3, result_arr, 9, 9);
+        }
+    }
+
+    float matrix3_minors_val(float a[], int row, int col) {
+        float minors_val[4];
+        int minors_ind = 0;
+
+        for(int i = 0; i < 3; i++){
+            if(i == row){
+                continue;
+            }
+
+            for(int j = 0; j < 3; j++) {
+                if(j == col){
+                    continue;
+
+                    minors_val[minors_ind] = a[(i * 3) + j];
+                    minors_ind++;
+                }
+            }
+        }
+
+        return (minors_val[0] * minors_val[3]) - (minors_val[1] * minors_val[2]); 
+    }
+
+    /*
+        0 1 2
+        3 4 5
+        6 7 8
+    */
+    void transpose_matrix3(float a[]) {
+        // Don't need to swap 0, 4, and 8
+        swap(a[1], a[3]);
+        swap(a[2], a[6]);
+        swap(a[7], a[5]);
     }
 }
