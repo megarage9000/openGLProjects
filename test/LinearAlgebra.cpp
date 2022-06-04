@@ -332,10 +332,9 @@ namespace LinearAlgebra
             for(int j = 0; j < 3; j++) {
                 if(j == col){
                     continue;
-
-                    minors_val[minors_ind] = a[(i * 3) + j];
-                    minors_ind++;
                 }
+                minors_val[minors_ind] = a[(i * 3) + j];
+                minors_ind++;
             }
         }
 
