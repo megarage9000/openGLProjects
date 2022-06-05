@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include <cmath>
 
-
-
-
 void swap(float &a, float &b);
 bool float_equals(float a, float b);
 
@@ -98,6 +95,10 @@ namespace LinearAlgebra {
 
     // Performs an in-place transpose on the matrix 3
     void transpose_matrix3(float a[]);
+
+
+    // --- Vectors --- 
+    
 }
 
 #endif 
