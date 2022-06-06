@@ -353,8 +353,17 @@ namespace LinearAlgebra
     }
 
     // --- Vectors ---- 
-    // Calculates the vector magnitude
-    float vector_magnitude(float a[], float a_length) {
+    
+    void normalize_vector(float a[], int a_length) {
+        if(a_length != 0){
+            float magnitude = vector_magnitude(a, a_length);
+            for(int i = 0; i < a_length; i++){
+                a[i] = a[i] / magnitude;
+            }
+        }       
+    }
+
+    float vector_magnitude(float a[], int a_length) {
         float sumSquares = 0;
         for(int i = 0; i < a_length; i++){
             sumSquares += a[i] * a[i];
@@ -377,5 +386,11 @@ namespace LinearAlgebra
             return acos(a_b_product);
         }
         return 0;
+    }
+
+    float cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
+        result[0] = (a[1] * b[2]) - (a[2] * b[1]);
+        result[1] = (a[2] * b[0]) - (a[0] * b[2]);
+        result[2] = (a[0] * b[1]) - (a[1] * b[0]);
     }
 }

@@ -99,6 +99,9 @@ namespace LinearAlgebra {
 
     // --- Vectors --- 
 
+    // Normalizes vector a to length 1
+    void normalize_vector(float a[]);
+
     // Calculates the vector magnitude
     float vector_magnitude(float a[], float a_length);
     
@@ -106,9 +109,9 @@ namespace LinearAlgebra {
     // - a and b must be both of same length
     float dot_product(float a[], float b[], int a_length, int b_length);
 
-    // Calculates the cross product between vectors a and b
+    // Calculates the cross product between vectors a and b (supports vector 3s only)
     // - a and b must be both of same length
-    float cross_product(float a[], float b[], int a_length, int b_length);
+    float cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]);
 
 
 
