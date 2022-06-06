@@ -337,7 +337,6 @@ namespace LinearAlgebra
                 minors_ind++;
             }
         }
-
         return (minors_val[0] * minors_val[3]) - (minors_val[1] * minors_val[2]); 
     }
 
@@ -351,5 +350,32 @@ namespace LinearAlgebra
         swap(a[1], a[3]);
         swap(a[2], a[6]);
         swap(a[7], a[5]);
+    }
+
+    // --- Vectors ---- 
+    // Calculates the vector magnitude
+    float vector_magnitude(float a[], float a_length) {
+        float sumSquares = 0;
+        for(int i = 0; i < a_length; i++){
+            sumSquares += a[i] * a[i];
+        }
+        return sqrt(sumSquares);
+    }
+
+    float dot_product(float a[], float b[], int a_length, int b_length) {
+        if(a_length == b_length){
+            float a_mag = vector_magnitude(a, a_length);
+            float b_mag = vector_magnitude(b, b_length);
+
+            float a_b_product = 0;
+
+            for(int i = 0; i < a_length; i++) {
+                a_b_product = a[i] * b[i];
+            }
+
+            a_b_product = a_b_product / (a_mag * b_mag);
+            return acos(a_b_product);
+        }
+        return 0;
     }
 }

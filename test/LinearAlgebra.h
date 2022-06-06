@@ -98,7 +98,20 @@ namespace LinearAlgebra {
 
 
     // --- Vectors --- 
+
+    // Calculates the vector magnitude
+    float vector_magnitude(float a[], float a_length);
     
+    // Calculates the dot product between vectors a and b, returns angle in radians
+    // - a and b must be both of same length
+    float dot_product(float a[], float b[], int a_length, int b_length);
+
+    // Calculates the cross product between vectors a and b
+    // - a and b must be both of same length
+    float cross_product(float a[], float b[], int a_length, int b_length);
+
+
+
 }
 
 #endif 
