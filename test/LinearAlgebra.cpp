@@ -297,8 +297,8 @@ namespace LinearAlgebra
         if(float_equals(determinant, 0.0) == false) {
             
             float inv_det = 1.0f / determinant;
-            bool isEven = false;
             
+            bool isEven = true;
             for(int row = 0; row < 3; row++){
                 for(int col = 0; col < 3; col++){
                     
@@ -388,9 +388,51 @@ namespace LinearAlgebra
         return 0;
     }
 
-    float cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
+    void cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
+        if(a_length != 3 || b_length != 3) {
+            copy_from_vec3(MAG_1_VEC3, result, 3, 3);
+        }
         result[0] = (a[1] * b[2]) - (a[2] * b[1]);
         result[1] = (a[2] * b[0]) - (a[0] * b[2]);
         result[2] = (a[0] * b[1]) - (a[1] * b[0]);
     }
+
+    void print_mat4(float a[], int a_length) {
+        if(a_length != 16) {
+            print_mat4(IDENTITY_4, 16);
+        }
+
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int y = 0; y < 4; y++) {
+            for(int x = 0; x < 4; x++) {
+                std::cout << std::setw(8) << a[y * 4 + x];
+            }
+            std::cout << '\n';
+        }
+    }
+
+    void print_mat3(float a[], int a_length) {
+        if(a_length != 9) {
+            print_mat3(IDENTITY_3, 9);
+        }
+
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int y = 0; y < 3; y++) {
+            for(int x = 0; x < 3; x++) {
+                std::cout << std::setw(8) << a[y * 3 + x];
+            }
+            std::cout << '\n';
+        }
+    }
+
+    void print_vector(float a[], int a_length) {
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int i = 0; i < a_length; i++) {
+            std::cout << std::setw(8) << a[i];
+        }
+    }
+
 }

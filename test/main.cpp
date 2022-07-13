@@ -22,53 +22,29 @@ void testMatrix3() {
     float vec_c[9] = {
         13, 23, 43
     };
-    std::cout << "-------------------\n";
+    std::cout << "---------Matrix A-3 inverse----------\n";
     float result[9];
     LinearAlgebra::matrix3_inv(matrix_a, result);
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            std::cout << result[i * 3 + j] << " ";
-        }
-        std:: cout << '\n';
-    }
-    std::cout << "-------------------\n";
+    LinearAlgebra::print_mat3(result, 9);
+    std::cout << "---------Matrix A-3 inverse x Identity----------\n";
     float identity[9];
     LinearAlgebra::matrix3_multi(result, matrix_a, identity);
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            std::cout << round(identity[i * 3 + j]) << " ";
-        }
-        std:: cout << '\n';
-    }
-    std::cout << "-------------------\n";
+    LinearAlgebra::print_mat3(identity, 9);
+    std::cout << "---------Matrix B-3 x Vector C-3 ----------\n";
     float result_vec3[3];
-    LinearAlgebra::matrix3_vec3_multi(matrix_b, vec_c, result_vec3);
-    for(int i = 0; i < 3; i++) {
-        std::cout << result_vec3[i] << " ";
-    }
+    LinearAlgebra::print_vector(result_vec3, 3);
     std::cout << '\n';
-    std::cout << "-------------------\n";
+    std::cout << "--------Matrix A-3 Transpose-----------\n";
     float transpose[9];
     LinearAlgebra::transpose_matrix3(matrix_a);
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            std::cout << matrix_a[i * 3 + j] << " ";
-        }
-        std:: cout << '\n';
-    }
-    std::cout << "-------------------\n";
+    LinearAlgebra::print_mat3(matrix_a, 9);
+    std::cout << "--------Matrix A-3 Transpose-----------\n";
     LinearAlgebra::transpose_matrix3(matrix_a);
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            std::cout << matrix_a[i * 3 + j] << " ";
-        }
-        std:: cout << '\n';
-    }
+    LinearAlgebra::print_mat3(matrix_a, 9);
 }
 
 
-int main() {
-   
+void testMatrix4() {
     float matrix_a[16] = {
         15, 20, 13, 12,
         1, 23, 3, 4,
@@ -85,32 +61,30 @@ int main() {
     float vec_c[4] {
         2.0f, 3.0f, 100.0f, 80.0f
     };
-    std::cout << "-------------------\n";
+    std::cout << "---------Invert Matrix A----------\n";
     float result[16];
     LinearAlgebra::matrix4_inv(matrix_a, result);
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            std::cout << result[i * 4 + j] << " ";
-        }
-        std:: cout << '\n';
-    }
-    std::cout << "-------------------\n";
+    LinearAlgebra::print_mat4(result, 16);
+    std::cout << "--------Matrix A inverse x Identity-----------\n";
     float identity[16];
     LinearAlgebra::matrix4_multi(result, matrix_a, identity);
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            std::cout << round(identity[i * 4 + j]) << " ";
-        }
-        std:: cout << '\n';
-    }
-    std::cout << "-------------------\n";
+    LinearAlgebra::print_mat4(identity, 16);
+    std::cout << "---------Matrix B x Vector C----------\n";
     float result_vec4[4];
-    LinearAlgebra::matrix4_vec4_multi(matrix_b, vec_c, result_vec4);
-    for(int i = 0; i < 4; i++) {
-        std::cout << result_vec4[i] << " ";
-    }
+    LinearAlgebra::print_vector(result_vec4, 4);
     std::cout << '\n';
+}
 
+void testVectors() {
+    float vector_a[3] {4, 3, 1};
+    float vector_b[3] {6, 2, 1};
+
+    float vector_c[3] {4, 3, 1};
+    float vector_d[3] {6, 2, 1};
+
+}
+
+int main() {
+    testMatrix4();
     testMatrix3();
-
 }

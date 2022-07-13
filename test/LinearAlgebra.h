@@ -4,6 +4,8 @@
 #define EPISLON 0.000001
 #include <stdlib.h>
 #include <cmath>
+#include <iostream>
+#include <iomanip>
 
 void swap(float &a, float &b);
 bool float_equals(float a, float b);
@@ -100,10 +102,10 @@ namespace LinearAlgebra {
     // --- Vectors --- 
 
     // Normalizes vector a to length 1
-    void normalize_vector(float a[]);
+    void normalize_vector(float a[], int a_length);
 
     // Calculates the vector magnitude
-    float vector_magnitude(float a[], float a_length);
+    float vector_magnitude(float a[], int a_length);
     
     // Calculates the dot product between vectors a and b, returns angle in radians
     // - a and b must be both of same length
@@ -111,10 +113,12 @@ namespace LinearAlgebra {
 
     // Calculates the cross product between vectors a and b (supports vector 3s only)
     // - a and b must be both of same length
-    float cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]);
+    void cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]);
 
-
-
+    // --- Printers 
+    void print_mat4(float a[], int a_length);
+    void print_mat3(float a[], int a_length);
+    void print_vector(float a[], int a_length);
 }
 
 #endif 
