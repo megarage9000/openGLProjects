@@ -1,5 +1,5 @@
 #include "LinearTransformations.h"
 
-namespace LinearTransformation {
+namespace LinearTransformations {
     
 }
