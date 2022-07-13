@@ -297,7 +297,7 @@ namespace LinearAlgebra
         if(float_equals(determinant, 0.0) == false) {
             
             float inv_det = 1.0f / determinant;
-            
+
             bool isEven = true;
             for(int row = 0; row < 3; row++){
                 for(int col = 0; col < 3; col++){
@@ -353,7 +353,6 @@ namespace LinearAlgebra
     }
 
     // --- Vectors ---- 
-    
     void normalize_vector(float a[], int a_length) {
         if(a_length != 0){
             float magnitude = vector_magnitude(a, a_length);
@@ -379,11 +378,12 @@ namespace LinearAlgebra
             float a_b_product = 0;
 
             for(int i = 0; i < a_length; i++) {
-                a_b_product = a[i] * b[i];
+                a_b_product += a[i] * b[i];
             }
 
-            a_b_product = a_b_product / (a_mag * b_mag);
-            return acos(a_b_product);
+            // a_b_product = a_b_product / (a_mag * b_mag);
+            // return acos(a_b_product);
+            return a_b_product;
         }
         return 0;
     }
@@ -433,6 +433,7 @@ namespace LinearAlgebra
         for(int i = 0; i < a_length; i++) {
             std::cout << std::setw(8) << a[i];
         }
+        std::cout << '\n';
     }
 
 }
