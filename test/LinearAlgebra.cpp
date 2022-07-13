@@ -230,7 +230,7 @@ namespace LinearAlgebra
     void copy_from_vec3(float src[], float dest[], int src_len, int dest_len) {
         if(src_len == dest_len && src_len == 3) {
             for(int i = 0; i < 3; i++) {
-                src[i] = dest[i];
+                dest[i] = src[i];
             }
         }
     }
@@ -391,6 +391,7 @@ namespace LinearAlgebra
     void cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
         if(a_length != 3 || b_length != 3) {
             copy_from_vec3(MAG_1_VEC3, result, 3, 3);
+            return;
         }
         result[0] = (a[1] * b[2]) - (a[2] * b[1]);
         result[1] = (a[2] * b[0]) - (a[0] * b[2]);

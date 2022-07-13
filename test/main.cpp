@@ -76,25 +76,25 @@ void testMatrix4() {
 }
 
 void testVectors() {
-    float vector_a[3] {4, 3, 1};
-    float vector_b[3] {6, 2, 1};
+    float vector_a[4] {4, 3, 1, 11};
+    float vector_b[4] {6, 2, 1, 2};
 
     std::cout << "---------Normalize Vector A as result A----------\n";
-    LinearAlgebra::normalize_vector(vector_a, 3);
-    LinearAlgebra::print_vector(vector_a, 3);
+    LinearAlgebra::normalize_vector(vector_a, 4);
+    LinearAlgebra::print_vector(vector_a, 4);
 
     std::cout << "----------result A magnitude after normalization------------\n";
-    float len_a = LinearAlgebra::vector_magnitude(vector_a, 3);
+    float len_a = LinearAlgebra::vector_magnitude(vector_a, 4);
     std::cout << len_a << '\n';
 
     std::cout << "----------Vector A dot Vector B------------\n";
-    len_a = LinearAlgebra::dot_product(vector_a, vector_b, 3, 3);
+    len_a = LinearAlgebra::dot_product(vector_a, vector_b, 4, 4);
     std::cout << len_a << '\n';
     
 
     std::cout << "----------Vector A cross Vector B------------\n";
     float result_b[3];
-    LinearAlgebra::cross_product_vec3(vector_a, vector_b, 3, 3, result_b);
+    LinearAlgebra::cross_product_vec3(vector_a, vector_b, 4, 4, result_b);
     LinearAlgebra::print_vector(result_b, 3);
 }
 

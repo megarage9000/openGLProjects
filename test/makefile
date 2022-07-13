@@ -12,4 +12,4 @@ main.o: main.cpp
 	$(CPP) -c main.cpp
 
 clean:
-	rm main.o
+	rm main.o LinearAlgebra.o LinearTransformations.o
