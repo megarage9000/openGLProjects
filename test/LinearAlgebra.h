@@ -12,6 +12,31 @@ bool float_equals(float a, float b);
 
 namespace LinearAlgebra {
 
+    // Identity Matrix 4
+    float IDENTITY_4[16] = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    // Identity Matrix 3
+    float IDENTITY_3[9] = {
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    };
+
+    // Vector 4 of magnitude 1
+    float MAG_1_VEC4[4] = {
+        1.0f, 1.0f, 1.0f, 1.0f
+    };
+
+    // Vector 3 of magnitude 1
+    float MAG_1_VEC3[3] = {
+        1.0f, 1.0f, 1.0f
+    };
+
     // --- Matrix 4 --- //
 
     // Copies contents from one matrix 4 to another
@@ -100,6 +125,12 @@ namespace LinearAlgebra {
 
 
     // --- Vectors --- 
+    
+    // Add vectors
+    void add_vectors(float a[], float b[], float res[], int length);
+
+    // Subtract vectors
+    void subtract_vectors(float a[], float b[], float res[], int length);
 
     // Normalizes vector a to length 1
     void normalize_vector(float a[], int a_length);

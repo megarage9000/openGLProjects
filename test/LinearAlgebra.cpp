@@ -1,29 +1,5 @@
 #include "LinearAlgebra.h"
 
-// Identity Matrix 4
-float IDENTITY_4[16] = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
-};
-
-// Identity Matrix 3
-float IDENTITY_3[9] = {
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f
-};
-
-// Vector 4 of magnitude 1
-float MAG_1_VEC4[4] = {
-    1.0f, 1.0f, 1.0f, 1.0f
-};
-
-// Vector 3 of magnitude 1
-float MAG_1_VEC3[3] = {
-    1.0f, 1.0f, 1.0f
-};
 
 // Private helper function
 void swap(float &a, float &b) {
@@ -353,6 +329,19 @@ namespace LinearAlgebra
     }
 
     // --- Vectors ---- 
+    void add_vectors(float a[], float b[], float res[], int length) {
+        for(int i = 0; i < length; i++) {
+            res[i] = a[i] + b[i];
+        }
+    }
+
+   
+    void subtract_vectors(float a[], float b[], float res[], int length) {
+        for(int i = 0; i < length; i++) {
+            res[i] = a[i] - b[i];
+        }
+    }
+
     void normalize_vector(float a[], int a_length) {
         if(a_length != 0){
             float magnitude = vector_magnitude(a, a_length);
@@ -389,6 +378,7 @@ namespace LinearAlgebra
     }
 
     void cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
+
         if(a_length != 3 || b_length != 3) {
             copy_from_vec3(MAG_1_VEC3, result, 3, 3);
             return;
