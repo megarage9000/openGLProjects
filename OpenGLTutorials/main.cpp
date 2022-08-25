@@ -232,7 +232,6 @@ int main() {
 
 		float new_position = last_position + elapsed_seconds * speed;
 		float transform_matrix[16];
-		float result_matrix[16];
 		float translation_vector[3] = { new_position, 0.0f, 0.0f };
 		LinearTransformations::translate(transform_matrix, translation_vector);
 		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix);
