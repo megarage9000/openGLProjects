@@ -1,225 +1,434 @@
 #include "LinearAlgebra.h"
 
-// --- LINEAR ALGEBRA METHODS --- //
 
-// Square matrices only 
-void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int matrixSize) {
-	int index = 0;
-	int length = (int)sqrt((double)matrixSize);
-
-	for (int rowA = 0; rowA < length; rowA++) {
-		for (int colB = 0; colB < length; colB++) {
-			float result = 0;
-			for (int i = 0; i < length; i++) {
-				int columnResult = colB + (i * length);
-				int rowResult = (rowA * length) + i;
-				result += matrixA[rowResult] * matrixB[columnResult];
-			}
-			resultingMatrix[index] = result;
-			index++;
-		}
-	}
+// Private helper function
+void swap(float &a, float &b) {
+    float temp = a;
+    a = b;
+    b=  temp;
 }
 
-void matrixMultiplication(float matrixA[], float matrixB[], float resultingMatrix[], int matrixARowSize, int matrixBColSize) {
-
-	if (matrixARowSize == matrixBColSize) {
-		int index = 0;
-		int numSum = matrixARowSize;
-		for (int rowA = 0; rowA < matrixARowSize; rowA++) {
-			for (int colB = 0; colB < matrixBColSize; colB++) {
-				float result = 0;
-				for (int i = 0; i < numSum; i++) {
-					int colBIndex = colB + (matrixBColSize * i);
-					int rowAIndex = (rowA * matrixARowSize) + i;
-					result += matrixA[rowAIndex] * matrixB[colBIndex];
-				}
-				resultingMatrix[index] = result;
-				index++;
-			}
-		}
-	}
+bool float_equals(float a, float b){
+    return fabs(a - b) < EPISLON;
 }
 
+namespace LinearAlgebra 
+{
+    void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 16) {
+            for(int i = 0; i < 16; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
 
-void matrixVectorMultiplication(float matrixA[], float vectorB[], float resultingVector[], int matrixSize, int vectorSize) {
-	int numColumns = (int)sqrt((double)matrixSize);
-	if (numColumns == vectorSize) {
-		for (int col = 0; col < numColumns; col++) {
-			float result = 0;
-			for (int row = 0; row < vectorSize; row++) {
-				int matrixResult = (col * vectorSize) + row;
-				result += matrixA[matrixResult] * vectorB[row];
-			}
-			resultingVector[col] = result;
-		}
-	}
+    void copy_from_vec4(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 4) {
+            for(int i = 0; i < 4; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
+
+    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]) {
+        if(a_len == b_len  && b_len == result_len) {
+            matrix4_multi(a, b, result_arr, false);
+        }
+        else {
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
+        }
+    }
+    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec){
+        // Vector multiplication
+        if(is_b_vec) {
+            for(int i = 0; i < 4; i++) {
+                result_arr[i] = a[i * 4] * b[0] +
+                        a[i * 4 + 1] * b[1] +
+                        a[i * 4 + 2] * b[2] +
+                        a[i * 4 + 3] * b[3];
+            }
+        }
+        // Matrix multiplication
+        else {
+            for(int row = 0; row < 4; row++){
+                for(int col = 0; col < 4; col++) {
+                    int pos = (row * 4) + col;
+                    int start_a = row * 4;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 4] +
+                        a[start_a + 2] * b[start_b + 8] +
+                        a[start_a + 3] * b[start_b + 12];
+                }
+            }
+        }
+    }
+
+    // Overloaded functions
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[], int a_len, int b_len, int result_len) {
+        if(a_len == 16 && b_len == result_len && b_len == 4) {
+            matrix4_multi(a_mat4, b_vec4, result_arr, true);
+        }
+        else {
+            copy_from_vec4(MAG_1_VEC4, result_arr, 4, result_len);
+        }
+    }
+
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[]){
+        matrix4_multi(a_mat4, b_vec4, result_arr, true);
+    }
+
+    void matrix4_multi(float a[], float b[], float result_arr[]) {
+        matrix4_multi(a, b, result_arr, false);
+    }
+
+    void matrix4_inv(float a[], float result_arr[], int a_len, int result_len) {
+        if(a_len == result_len && a_len == 16){
+            matrix4_inv(a, result_arr);
+        }
+        else{
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
+        }
+    }
+    void matrix4_inv(float a[], float result_arr[]){
+
+        // Finding determinant using Laplace method
+        // - |M| = aM1 - bM2 + cM3 - dM4
+        // - Link: https://www.statlect.com/matrix-algebra/Laplace-expansion-minors-cofactors-adjoints
+        float det_a = a[0] * matrix4_minors_val(a, 0, 0);
+        float det_b = a[1] * matrix4_minors_val(a, 0, 1);
+        float det_c = a[2] * matrix4_minors_val(a, 0, 2);
+        float det_d = a[3] * matrix4_minors_val(a, 0, 3);
+        float det = det_a - det_b + det_c - det_d;
+
+        // Determines if the following method is a matrix via determinant
+        if(float_equals(det, 0.0) == false) {
+
+            // 3. Apply the 1 / determinant (see later in loop)
+            float inv_det = 1/det;
+
+            // Reuse the top row determinant values instead of including them
+            result_arr[0] = (det_a / a[0]) * inv_det;
+            result_arr[1] = -(det_b / a[1]) * inv_det;
+            result_arr[2] = (det_c / a[2]) * inv_det;
+            result_arr[3] = -(det_d / a[3]) * inv_det;
+
+            // For the cofactor step
+            bool isEven = false;
+            for(int row = 1; row < 4; row++) {
+                for(int col = 0; col < 4; col++){
+                    
+                    // 1. Get the Minors value per position
+                    int pos = row * 4 + col;
+                    result_arr[pos] = matrix4_minors_val(a, row, col) * inv_det;
+
+                    // 2. Apply Cofactor signage
+                    // - since we are using 0 index, add 1
+                    int logical_col = col + 1;
+                    if((logical_col % 2 == 0 && isEven) || (logical_col % 2 != 0 && !isEven)){
+                        result_arr[pos] = -result_arr[pos];
+                    }
+                }
+                // Alternate for C
+                isEven = !isEven;
+            }
+            // Get Adjugate(Transpose result)
+            transpose_matrix4(result_arr);
+        }
+        else {
+            copy_from_matrix4(IDENTITY_4, result_arr, 16, 16);
+        }   
+    }
+
+    /*
+        0  1  2  3 
+        4  5  6  7
+        8  9  10 11
+        12 13 14 15
+    */
+    void transpose_matrix4(float a[]) {
+        // positions 0, 5, 10, 15 are not needed to move
+        // swap 4 and 1
+        swap(a[4], a[1]);
+        // swap 8 and 2
+        swap(a[8], a[2]);
+        // swap 9 and 6
+        swap(a[9], a[6]);
+        // swap 12 and 3
+        swap(a[12], a[3]);   
+        // swap 13 and 7
+        swap(a[13], a[7]);
+        // swap 14 and 11
+        swap(a[14], a[11]);
+    }
+
+    float matrix4_minors_val(float a[], int row, int col) {
+        float minors[9];
+        int minors_ind = 0;
+        // Find ways to improve this!
+        for(int i = 0; i < 4; i++) {
+            if(i == row) {
+                continue;
+            }
+            for(int j = 0; j < 4; j++) {
+                if(j == col) {
+                    continue;
+                }
+                minors[minors_ind] = a[(i * 4) + j];
+                minors_ind++;
+            }
+        }
+        float result = determinant_matrix3(minors);
+
+        // Handles -0's, kinda of annoying
+        // if(result == 0){
+        //     return 0;
+        // }
+        return result;
+    }
+
+
+
+    // --- Matrix 3 --- //
+       /*
+        0 1 2
+        3 4 5
+        6 7 8
+    */
+
+    void copy_from_matrix3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 9) {
+            for(int i = 0; i < 9; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
+    void copy_from_vec3(float src[], float dest[], int src_len, int dest_len) {
+        if(src_len == dest_len && src_len == 3) {
+            for(int i = 0; i < 3; i++) {
+                dest[i] = src[i];
+            }
+        }
+    }
+    float determinant_matrix3(float a[]) {
+        return a[0] * (a[4] * a[8] - a[5] * a[7]) -
+            a[1] * (a[3] * a[8] - a[5] * a[6]) +
+            a[2] * (a[3] * a[7] - a[4] * a[6]);
+    }
+
+    void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]){
+        if(a_len == b_len && b_len == result_len) {
+            matrix3_multi(a, b, result_arr, false);
+        }
+        else {
+            copy_from_matrix3(IDENTITY_3, result_arr, 16, result_len);
+        }
+    }
+    void matrix3_multi(float a[], float b[], float result_arr[], bool is_b_vec) {
+        if(is_b_vec) {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = a[i * 3] * b[0] +
+                        a[i * 3 + 1] * b[1] +
+                        a[i * 3 + 2] * b[2];
+            }
+        }
+        else {
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++) {
+                    int pos = (row * 3) + col;
+                    int start_a = row * 3;
+                    int start_b = col;
+                    result_arr[pos] = a[start_a] * b[start_b] + 
+                        a[start_a + 1] * b[start_b + 3] +
+                        a[start_a + 2] * b[start_b + 6];
+                }
+            }
+        }
+    }
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[], int a_len, int b_len, int result_len){
+        if(a_len / 3 == b_len && b_len == result_len && result_len == 3) {
+            matrix3_multi(a_mat3, b_vec3, result_arr, true);
+        }
+        else {
+            for(int i = 0; i < 3; i++) {
+                result_arr[i] = MAG_1_VEC3[i];
+            }
+        }
+    }
+
+    void matrix3_vec3_multi(float a_mat3[], float b_vec3[], float result_arr[]){
+        matrix3_multi(a_mat3, b_vec3, result_arr, true);
+    }
+
+    void matrix3_multi(float a[], float b[], float result_arr[]) {
+        matrix3_multi(a, b, result_arr, false);
+    }
+
+    void matrix3_inv(float a[], float result_arr[]) {
+        // See matrix4_inv for detailed walkthrough
+
+        // Check determinant
+        float determinant = determinant_matrix3(a);
+        if(float_equals(determinant, 0.0) == false) {
+            
+            float inv_det = 1.0f / determinant;
+
+            bool isEven = true;
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++){
+                    
+                    int pos = row * 3 + col;
+                    result_arr[pos] = inv_det * matrix3_minors_val(a, row, col);
+
+                    int logical_col = col + 1;
+                    if((logical_col % 2 == 0 && isEven) || (logical_col % 2 != 0 && !isEven)){
+                        result_arr[pos] = -result_arr[pos];
+                    }
+                }
+                isEven = !isEven;
+            }
+
+            transpose_matrix3(result_arr);
+        }
+        else{
+            copy_from_matrix3(IDENTITY_3, result_arr, 9, 9);
+        }
+    }
+
+    float matrix3_minors_val(float a[], int row, int col) {
+        float minors_val[4];
+        int minors_ind = 0;
+
+        for(int i = 0; i < 3; i++){
+            if(i == row){
+                continue;
+            }
+
+            for(int j = 0; j < 3; j++) {
+                if(j == col){
+                    continue;
+                }
+                minors_val[minors_ind] = a[(i * 3) + j];
+                minors_ind++;
+            }
+        }
+        return (minors_val[0] * minors_val[3]) - (minors_val[1] * minors_val[2]); 
+    }
+
+    /*
+        0 1 2
+        3 4 5
+        6 7 8
+    */
+    void transpose_matrix3(float a[]) {
+        // Don't need to swap 0, 4, and 8
+        swap(a[1], a[3]);
+        swap(a[2], a[6]);
+        swap(a[7], a[5]);
+    }
+
+    // --- Vectors ---- 
+    void add_vectors(float a[], float b[], float res[], int length) {
+        for(int i = 0; i < length; i++) {
+            res[i] = a[i] + b[i];
+        }
+    }
+
+   
+    void subtract_vectors(float a[], float b[], float res[], int length) {
+        for(int i = 0; i < length; i++) {
+            res[i] = a[i] - b[i];
+        }
+    }
+
+    void normalize_vector(float a[], int a_length) {
+        if(a_length != 0){
+            float magnitude = vector_magnitude(a, a_length);
+            for(int i = 0; i < a_length; i++){
+                a[i] = a[i] / magnitude;
+            }
+        }       
+    }
+
+    float vector_magnitude(float a[], int a_length) {
+        float sumSquares = 0;
+        for(int i = 0; i < a_length; i++){
+            sumSquares += a[i] * a[i];
+        }
+        return sqrt(sumSquares);
+    }
+
+    float dot_product(float a[], float b[], int a_length, int b_length) {
+        if(a_length == b_length){
+            float a_mag = vector_magnitude(a, a_length);
+            float b_mag = vector_magnitude(b, b_length);
+
+            float a_b_product = 0;
+
+            for(int i = 0; i < a_length; i++) {
+                a_b_product += a[i] * b[i];
+            }
+
+            // a_b_product = a_b_product / (a_mag * b_mag);
+            // return acos(a_b_product);
+            return a_b_product;
+        }
+        return 0;
+    }
+
+    void cross_product_vec3(float a[], float b[], int a_length, int b_length, float result[]) {
+
+        if(a_length != 3 || b_length != 3) {
+            copy_from_vec3(MAG_1_VEC3, result, 3, 3);
+            return;
+        }
+        result[0] = (a[1] * b[2]) - (a[2] * b[1]);
+        result[1] = (a[2] * b[0]) - (a[0] * b[2]);
+        result[2] = (a[0] * b[1]) - (a[1] * b[0]);
+    }
+
+    void print_mat4(float a[], int a_length) {
+
+        if(a_length != 16) {
+            print_mat4(IDENTITY_4, 16);
+        }
+
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int y = 0; y < 4; y++) {
+            for(int x = 0; x < 4; x++) {
+                std::cout << std::setw(8) << a[y * 4 + x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
+
+    void print_mat3(float a[], int a_length) {
+        if(a_length != 9) {
+            print_mat3(IDENTITY_3, 9);
+        }
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int y = 0; y < 3; y++) {
+            for(int x = 0; x < 3; x++) {
+                std::cout << std::setw(8) << a[y * 3 + x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
+
+    void print_vector(float a[], int a_length) {
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for(int i = 0; i < a_length; i++) {
+            std::cout << std::setw(8) << a[i];
+        }
+        std::cout << '\n';
+    }
+
 }
-
-
-// --- LINEAR ALGEBRA METHODS --- //
-
-// --- MATRIX METHODS --- //
-// -- Matrix 4
-matrix4 createMatrix4() {
-	matrix4 resultMatrix = {
-		4,
-		{
-			0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f,
-		}
-	};
-	return resultMatrix;
-}
-
-matrix4 createMatrix4(float values[], int valuesSize) {
-	if (valuesSize == 16) {
-		matrix4 resultMatrix = {
-			4,
-			{
-				values[0], values[1], values[2], values[3],
-				values[4], values[5], values[6], values[7],
-				values[8], values[9], values[10], values[11],
-				values[12], values[13], values[14], values[15]
-			}
-		};
-		return resultMatrix;
-	}
-	else {
-		return createMatrix4();
-	}
-}
-
-void transposeMatrix4(matrix4* matrix) {
-	float * values = matrix->values;
-	float newValues[] = {
-		values[0], values[4], values[8],  values[12],
-		values[1], values[5], values[9],  values[13],
-		values[2], values[6], values[10], values[14],
-		values[3], values[7], values[11], values[15]
-	};
-
-	memcpy(values, newValues, 16 * sizeof(float));
-}
-
-
-// Look at this site: http://www.euclideanspace.com/maths/algebra/matrix/functions/determinant/fourD/index.htm 
-// To work on determinant
-float determinantMatrix4(matrix4 matrix) {
-	float* values = matrix.values;
-	
-	matrix3 M1 = createMatrix3(new float[] {
-		values[5], values[6], values[7],
-		values[9], values[10], values[11],
-		values[13], values[14], values[15]
-	}, 9);
-
-	matrix3 M2 = createMatrix3(new float[] {
-		values[4], values[6], values[7],
-			values[8], values[10], values[11],
-			values[12], values[14], values[15]
-		}, 9);
-
-	matrix3 M3 = createMatrix3(new float[] {
-		values[4], values[5], values[7],
-			values[8], values[9], values[11],
-			values[12], values[13], values[15]
-		}, 9);
-
-	matrix3 M4 = createMatrix3(new float[] {
-		values[4], values[5], values[6],
-			values[8], values[9], values[10],
-			values[12], values[13], values[14]
-		}, 9);
-
-	return values[0] * determinantMatrix3(M1) 
-		- values[1] * determinantMatrix3(M2)
-		+ values[2] * determinantMatrix3(M3)
-		- values[3] * determinantMatrix3(M4);
-}
-
-	
-
-matrix4 matrix4Multiplication(matrix4 matrixA, matrix4 matrixB) {
-	float resultingValues[16];
-	matrixMultiplication(matrixA.values, matrixB.values, resultingValues, matrixA.dimension, matrixB.dimension);
-	return createMatrix4(resultingValues, 16);
-}
-
-
-// Debugging matrix 4 operations
-void printMatrix4(matrix4 matrix) {
-	float * values = matrix.values;
-	printf("| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n| %f %f %f %f |\n",
-		values[0], values[1], values[2], values[3],
-		values[4], values[5], values[6], values[7],
-		values[8], values[9], values[10], values[11],
-		values[12], values[13], values[14], values[15]); 
-}
-
-
-bool areEqualMatrix4(matrix4 matrixA, matrix4 matrixB) {
-	float* valuesA = matrixA.values;
-	float* valuesB = matrixB.values;
-
-	for (int i = 0; i < 16; i += 4) {
-		float a1 = valuesA[i];
-		float a2 = valuesA[i + 1];
-		float a3 = valuesA[i + 2];
-		float a4 = valuesA[i + 3];
-
-		float b1 = valuesB[i];
-		float b2 = valuesB[i + 1];
-		float b3 = valuesB[i + 2];
-		float b4 = valuesB[i + 3];
-
-		if (!(a1 == b1 && a2 == b2 && a3 == b3 && a4 == b4)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-// -- Matrix3
-matrix3 createMatrix3() {
-	matrix3 resultMatrix = {
-		3,
-		{
-			0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f
-		}
-	};
-	return resultMatrix;
-}
-
-matrix3 createMatrix3(float values[], int valuesSize) {
-	if (valuesSize == 9) {
-		matrix3 matrix = {
-			3,
-			{
-				values[0], values[1], values[2],
-				values[3], values[4], values[5],
-				values[6], values[7], values[8]
-			}
-		};
-		return matrix;
-	}
-	return createMatrix3();
-
-}
-
-float determinantMatrix3(matrix3 matrix) {
-	float* values = matrix.values;
-	return (values[0] * values[4] * values[8])	// aei
-		+ (values[1] * values[5] * values[6])	// bfg
-		+ (values[2] * values[3] * values[7])	// cdh
-		- (values[2] * values[4] * values[6])	// ceg
-		- (values[1] * values[3] * values[8])	// bdi
-		- (values[0] * values[5] * values[7]);	// afh
-}
-
-// --- MATRIX METHODS --- //
-

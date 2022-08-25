@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
-#include "LinearAlgebra.h"
+#include "LinearTransformations.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -203,6 +203,9 @@ int main() {
 	// Setting up transformation speed
 	float speed = 1.0f;
 	float last_position = 0.0f;
+	float position_matrix[16];
+	LinearAlgebra::copy_from_matrix4(LinearAlgebra::IDENTITY_4, position_matrix, 16, 16);
+	
 	
 	while (!glfwWindowShouldClose(window)) {
 
@@ -227,11 +230,14 @@ int main() {
 			speed = -speed;
 		}
 
-		// updating the matrics for transformation
-		matrix[12] = elapsed_seconds * speed + last_position;
-		last_position = matrix[12];
-		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
-	
+		float new_position = last_position + elapsed_seconds * speed;
+		float transform_matrix[16];
+		float result_matrix[16];
+		float translation_vector[3] = { new_position, 0.0f, 0.0f };
+		LinearTransformations::translate(transform_matrix, translation_vector);
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix);
+		last_position = new_position;
+
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
 		glEnable(GL_CULL_FACE);
