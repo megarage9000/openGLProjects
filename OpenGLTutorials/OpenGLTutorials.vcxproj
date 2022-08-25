@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LinearAlgebra.cpp" />
+    <ClCompile Include="LinearTransformationCPlusPlus.cpp" />
     <ClCompile Include="LinearTransformations.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LinearAlgebra.h" />
+    <ClInclude Include="LinearTransformationCPlusPlus.h" />
     <ClInclude Include="LinearTransformations.h" />
     <ClInclude Include="Log.h" />
   </ItemGroup>
