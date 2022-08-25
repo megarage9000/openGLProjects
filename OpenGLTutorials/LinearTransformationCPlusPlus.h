@@ -25,7 +25,7 @@ namespace LinearTransformationCPlusPlus
 
 	vector<float> cross_product(vector<float> vector_a, vector<float> vector_b);
 
-	vector<float> view_matrix(vector<float> up_vector, vector<float> focus_position, float cam_world_position);
+	vector<float> view_matrix(vector<float> up_vector, vector<float> focus_position, vector<float> cam_world_position);
 
 	vector<float> projection_matrix(float near, float far, float fov, float range, float aspect);
 };
