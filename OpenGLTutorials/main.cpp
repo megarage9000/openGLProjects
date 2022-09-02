@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
-#include "LinearTransformations.h"
+#include "LinearTransformationCPlusPlus.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -163,7 +163,7 @@ int main() {
 		1.0f, 0.0f, 0.0f, 0.0f, // First Column
 		0.0f, 1.0f, 0.0f, 0.0f, // Second Column
 		0.0f, 0.0f, 0.0f, 1.0f, // Third Column
-		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
+		0.5f, 0.0f, 0.0f, 2.0f  // Fourth Column (We move object to right by .5!)
 	};
 
 
@@ -203,8 +203,7 @@ int main() {
 	// Setting up transformation speed
 	float speed = 1.0f;
 	float last_position = 0.0f;
-	float position_matrix[16];
-	LinearAlgebra::copy_from_matrix4(LinearAlgebra::IDENTITY_4, position_matrix, 16, 16);
+	std::vector<float> transform_matrix = LinearTransformationCPlusPlus::identity(16);
 	
 	
 	while (!glfwWindowShouldClose(window)) {
@@ -230,12 +229,12 @@ int main() {
 			speed = -speed;
 		}
 
-		float new_position = last_position + elapsed_seconds * speed;
-		float transform_matrix[16];
-		float translation_vector[3] = { new_position, 0.0f, 0.0f };
-		LinearTransformations::translate(transform_matrix, translation_vector);
-		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix);
-		last_position = new_position;
+		
+		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
+		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
+		LinearAlgebra::print_mat4(transform_matrix.data(), 16);
+		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix.data());
+		last_position = elapsed_seconds * speed + last_position;
 
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling

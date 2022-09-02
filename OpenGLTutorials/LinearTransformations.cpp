@@ -58,6 +58,7 @@ namespace LinearTransformations {
 
         float forward_vector[4];
         subtract_vectors(focus_position, cam_world_position, forward_vector, 4);
+        normalize_vector(forward_vector, 4);
 
         float new_up_vector[4];
         cross_product_vec4(up_vector, forward_vector, new_up_vector);

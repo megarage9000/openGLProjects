@@ -3,6 +3,24 @@
 namespace LinearTransformationCPlusPlus
 {
 	using namespace std;
+	vector<float> identity(int size) {
+		if (size == 9) {
+			return vector<float>(
+				begin(LinearAlgebra::IDENTITY_3),
+				end(LinearAlgebra::IDENTITY_3)
+				);
+		}
+		if (size == 16) {
+			return vector<float>(
+				begin(LinearAlgebra::IDENTITY_4),
+				end(LinearAlgebra::IDENTITY_4)
+				);
+		}
+		return vector<float>();
+	}
+	vector<float> mag_1(int size) {
+		return vector<float>(size, 1.0);
+	}
 
 	vector<float> matrix_multiplication(vector<float> matrix_a, vector<float> matrix_b) {
 		int length_a = matrix_a.size();
@@ -67,7 +85,7 @@ namespace LinearTransformationCPlusPlus
 		return vector<float>(begin(transform_matrix), end(transform_matrix));
 	}
 
-	vector<float> rotate_euler(float angle, bool is_x = false, bool is_y = false, bool is_z = false) {
+	vector<float> rotate_euler(float angle, bool is_x, bool is_y, bool is_z) {
 		float transform_matrix[16];
 
 		if (is_x) {
