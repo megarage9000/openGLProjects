@@ -14,10 +14,13 @@ int g_win_height = 480;
 int g_fb_width = 640;
 int g_fb_height = 480;
 
+// Using transformations library
+using namespace LinearTransformationCPlusPlus;
+using namespace std;
+
 // FPS tracking
 double previous_seconds;
 int frame_count;
-
 void _update_fps_counter(GLFWwindow* window);
 
 // Callbacks
@@ -38,6 +41,7 @@ void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
+bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float elapsed_seconds, float * yaw);
 
 int main() {
 
@@ -163,9 +167,14 @@ int main() {
 		1.0f, 0.0f, 0.0f, 0.0f, // First Column
 		0.0f, 1.0f, 0.0f, 0.0f, // Second Column
 		0.0f, 0.0f, 0.0f, 1.0f, // Third Column
-		0.5f, 0.0f, 0.0f, 2.0f  // Fourth Column (We move object to right by .5!)
+		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
+
+	// Camera positions
+	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
+	float cam_yaw = 0.0f;
+	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 
 	// store our points into memory
@@ -229,12 +238,43 @@ int main() {
 			speed = -speed;
 		}
 
+		// Camera move
+		bool can_move = moveCamera(window, camera_pos, speed, elapsed_seconds, &cam_yaw);
+		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
+		std::cout << "Translation matrix:\n";
+		LinearAlgebra::print_mat4(translation.data(), 16);
+		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
+		std::cout << "Rotation matrix:\n";
+		LinearAlgebra::print_mat4(rotation.data(), 16);
+		vector<float> view = matrix_multiplication(rotation, translation);
+
+		std::cout << "View matrix:\n";
+		LinearAlgebra::print_mat4(view.data(), 16);
+
+		float near = 0.1f;
+		float far = 100.0f;
+		float fov = 67.0f * DEG_TO_RAD;
+		float range = tan(fov * 0.5) * near;
+		float aspect = (float)g_win_width / (float)g_win_height;
+
+		std::cout << "Projection matrix:\n";
+		vector<float> perspective = projection_matrix(near, far, fov, range, aspect);
+		LinearAlgebra::print_mat4(perspective.data(), 16);
+
+		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+		int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
+
+		std::cout << view_mat_loc << '\n';
+		std::cout << proj_mat_loc << '\n';
+
+		glUniformMatrix4fv(view_mat_loc, 1, GL_FALSE, view.data());
+		glUniformMatrix4fv(proj_mat_loc, 1, GL_FALSE, perspective.data());
 		
-		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
-		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
-		LinearAlgebra::print_mat4(transform_matrix.data(), 16);
-		glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix.data());
-		last_position = elapsed_seconds * speed + last_position;
+		//std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
+		//transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
+		//LinearAlgebra::print_mat4(transform_matrix.data(), 16);
+		//glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix.data());
+		// last_position = elapsed_seconds * speed + last_position;
 
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
@@ -254,6 +294,50 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
+}
+
+bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float elapsed_seconds, float * yaw) {
+	bool cam_moved = false;
+
+	if (glfwGetKey(window, GLFW_KEY_A)) {
+		camera_pos[0] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D)) {
+		camera_pos[0] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP)) {
+		camera_pos[1] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN)) {
+		camera_pos[1] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W)) {
+		camera_pos[2] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S)) {
+		camera_pos[2] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+		*yaw += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+		*yaw += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	return cam_moved;
 }
 
 void _update_fps_counter(GLFWwindow* window)

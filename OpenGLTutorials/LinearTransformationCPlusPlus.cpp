@@ -93,10 +93,11 @@ namespace LinearTransformationCPlusPlus
 		}
 
 		if (is_y) {
+			std::cout << "doing y!";
 			LinearTransformations::rotateY(transform_matrix, angle);
 		}
 
-		if (is_y) {
+		if (is_z) {
 			LinearTransformations::rotateZ(transform_matrix, angle);
 		}
 

@@ -2,10 +2,10 @@
 #ifndef LINEAR_TRANSFORMATIONS
 #define LINEAR_TRANSFORMATIONS
 #include "LinearAlgebra.h"
+#define PI 3.14159265
 
 namespace LinearTransformations {
 
-    #define PI 3.14159265
 
     // Translations
     void translate(float transform_matrix[], float translation_vector[]);

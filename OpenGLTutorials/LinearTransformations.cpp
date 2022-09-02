@@ -86,12 +86,11 @@ namespace LinearTransformations {
 
     void projection_matrix(float result_matrix[], float near, float far, float fov, float range, float aspect){
         copy_from_matrix4(IDENTITY_4, result_matrix, 16, 16);
-        float temp = tan(fov/2);
-        result_matrix[0] = 1 / (aspect * temp);
-        result_matrix[5] = 1 / temp;
+        result_matrix[0] = (2.0f * near) / (range * aspect + range * aspect);
+        result_matrix[5] = near / range;
         result_matrix[10] = -(far + near) / (far - near);
-        result_matrix[11] = -(2 * far * near) / (far - near); 
-        result_matrix[14] = -1;
+        result_matrix[11] = -1;
+        result_matrix[14] = -(2.0f * far * near) / (far - near); 
         result_matrix[15] = 0;
     }
 
