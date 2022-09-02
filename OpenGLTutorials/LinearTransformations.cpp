@@ -89,8 +89,8 @@ namespace LinearTransformations {
         result_matrix[0] = (2.0f * near) / (range * aspect + range * aspect);
         result_matrix[5] = near / range;
         result_matrix[10] = -(far + near) / (far - near);
-        result_matrix[11] = -1;
-        result_matrix[14] = -(2.0f * far * near) / (far - near); 
+        result_matrix[11] = -(2.0 * far * near) / (far - near); 
+        result_matrix[14] = -1;
         result_matrix[15] = 0;
     }
 

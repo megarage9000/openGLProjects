@@ -267,14 +267,15 @@ int main() {
 		std::cout << view_mat_loc << '\n';
 		std::cout << proj_mat_loc << '\n';
 
-		glUniformMatrix4fv(view_mat_loc, 1, GL_FALSE, view.data());
-		glUniformMatrix4fv(proj_mat_loc, 1, GL_FALSE, perspective.data());
+		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
+		glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
+
 		
-		//std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
-		//transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
-		//LinearAlgebra::print_mat4(transform_matrix.data(), 16);
-		//glUniformMatrix4fv(matrix_location, 1, GL_FALSE, transform_matrix.data());
-		// last_position = elapsed_seconds * speed + last_position;
+		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
+		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
+		LinearAlgebra::print_mat4(transform_matrix.data(), 16);
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix.data());
+		last_position = elapsed_seconds * speed + last_position;
 
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
