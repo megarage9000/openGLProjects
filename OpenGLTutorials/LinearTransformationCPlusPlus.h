@@ -7,6 +7,8 @@
 /*
 	An extension to the LinearAlgebra, LinearTransformations
 	namespaces, with the help of vectors!!!!
+
+	- NOTE WILL NEED TO TRANSPOSE MATRICES UPON ENTRY
 */
 #include <vector>
 #include "LinearTransformations.h"

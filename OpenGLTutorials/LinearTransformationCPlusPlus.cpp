@@ -93,7 +93,6 @@ namespace LinearTransformationCPlusPlus
 		}
 
 		if (is_y) {
-			std::cout << "doing y!";
 			LinearTransformations::rotateY(transform_matrix, angle);
 		}
 
