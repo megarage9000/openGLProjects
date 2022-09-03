@@ -257,7 +257,6 @@ int main() {
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
 		glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
 
-		
 		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
 		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix.data());
