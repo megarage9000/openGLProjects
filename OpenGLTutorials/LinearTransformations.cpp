@@ -94,4 +94,63 @@ namespace LinearTransformations {
         result_matrix[15] = 0;
     }
 
+    // --- Quanternions --- //
+    void slerp(float versor_a[], float versor_b[], float result_versor[], float t) {
+        copy_from_vec4(versor_a, result_versor, 4, 4);
+        float dot = dot_product(versor_a, versor_b, 4, 4);
+
+        // Check if the dot is less than 0 to avoid flick. If so, negate a vector
+        if (dot < 0.0f) {
+            for (int i = 0; i < 4; i++) {
+                versor_a[i] *= -1.0f;
+            }
+        }
+        
+        // If dot product is ~= 1, return 1st versor
+        if (fabs(dot) >= 1.0f) {
+            return;
+        }
+
+        // If sin omega = 0, do linear interpolation (means versor angle is 180)
+        float sin_omega = sqrt(1.0f - dot * dot);
+        if (fabs(sin_omega) < 0.0001f) {
+            for (int i = 0; i < 4; i++) {
+                result_versor[i] = (1.0f - t) * versor_a[i] + t * versor_b[i];
+            }
+            return;
+        }
+        // Else, we do standard spherical interpolation
+        else {
+            float omega = acos(dot);
+            float a = sin((1.0f - t) * omega) / sin_omega;
+            float b = sin(t * omega) / sin_omega;
+            for (int i = 0; i < 4; i++) {
+                result_versor[i] = a * versor_a[i] + b * versor_b[i];
+            }
+            return;
+        }
+    }
+
+    void versor(float result_versor[], float angle, float x, float y, float z) {
+        copy_from_vec4(MAG_1_VEC4, result_versor, 4, 4);
+
+        float rads = (angle / 2) * DEG_TO_RAD;
+        float cos_comp = cos(rads);
+        float sin_comp = sin(rads);
+
+        result_versor[0] = cos_comp;
+        float w = result_versor[0];
+        result_versor[1] = sin_comp * x;
+        float x_v = result_versor[1];
+        result_versor[2] = sin_comp * y;
+        float y_v = result_versor[2];
+        result_versor[3] = sin_comp * z;
+        float z_v = result_versor[3];
+
+        // Normailzing if needed
+        float mag = sqrt(w * w + x_v * x_v + y_v * y_v + z_v * z_v);
+        if (mag >= 1) {
+            normalize_vector(result_versor, 4);
+        }
+    }
 }

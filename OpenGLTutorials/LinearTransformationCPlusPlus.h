@@ -2,7 +2,7 @@
 #ifndef LINEAR_TRANSFORMATIONS_CPLUSPLUS
 #define LINEAR_TRANSFORMATIONS_CPLUSPLUS
 
-# define DEG_TO_RAD (2.0 * PI) / 360
+
 
 /*
 	An extension to the LinearAlgebra, LinearTransformations
