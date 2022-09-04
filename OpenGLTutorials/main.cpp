@@ -174,6 +174,18 @@ int main() {
 	// Camera positions
 	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
 	float cam_yaw = 0.0f;
+
+	// Perspective Projection
+	glUseProgram(shaderProgram);
+	float near = 0.1f;
+	float far = 100.0f;
+	float fov = 67.0f * DEG_TO_RAD;
+	float range = tan(fov * 0.5) * near;
+	float aspect = (float)g_win_width / (float)g_win_height;
+	vector<float> perspective = projection_matrix(near, far, fov, range, aspect);
+
+	int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
+	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
 	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 
@@ -239,23 +251,14 @@ int main() {
 		}
 
 		// Camera move
-		bool can_move = moveCamera(window, camera_pos, 1, 10, elapsed_seconds, &cam_yaw);
+		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
 		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
 		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
 		vector<float> view = matrix_multiplication(rotation, translation);
 
-		float near = 0.1f;
-		float far = 100.0f;
-		float fov = 67.0f * DEG_TO_RAD;
-		float range = tan(fov * 0.5) * near;
-		float aspect = (float)g_win_width / (float)g_win_height;
-		vector<float> perspective = projection_matrix(near, far, fov, range, aspect);
-
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
-		int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
 
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
-		glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
 
 		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
 		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
