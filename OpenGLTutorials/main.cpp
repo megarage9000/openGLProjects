@@ -255,9 +255,7 @@ int main() {
 		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
 		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
 		vector<float> view = matrix_multiplication(rotation, translation);
-
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
-
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
 
 		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);

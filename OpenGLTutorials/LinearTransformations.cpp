@@ -153,4 +153,56 @@ namespace LinearTransformations {
             normalize_vector(result_versor, 4);
         }
     }
+
+    void versor_multiplication(float a[], float b[], float result_versor[]) {
+        copy_from_vec4(MAG_1_VEC4, result_versor, 4, 4);
+        /*
+            t = q x r
+            t = 
+            [
+                r0q0 - r1q1 - r2q2 - r3q3
+                r0q1 + r1q0 - r2q3 + r3q2
+                r0q2 + r1q3 + r2q0 - r3q1
+                r0q3 - r1q2 + r2q1 + r3q0
+            ]
+        */
+        result_versor[0] = a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3];
+        result_versor[1] = a[0] * b[1] + a[1] * b[0] - a[2] * b[3] + a[3] * b[2];
+        result_versor[2] = a[0] * b[2] + a[1] * b[3] + a[2] * b[0] - a[3] * b[1];
+        result_versor[3] = a[0] * b[3] - a[1] * b[2] + a[2] * b[1] + a[3] * b[0];
+    }
+
+    void to_quanternion(float versor[], float result_quaternion[]) {
+        /*
+            q = [w, (x, y, z)]
+
+            m = [
+                1 - 2y^2 - 2z^2, 2xy - 2wz,     2xz + 2wy,       0
+                2xy + 2wz,       1 - 2x^2 - 2z, 2yz - 2wx,       0
+                2xz - 2wy,       2yz + 2wx      1 - 2x^2 - 2y^2, 0
+                0                0              0                1
+            ]
+        */
+        copy_from_matrix4(IDENTITY_4, result_quaternion, 16, 16);
+
+        float w = versor[0];
+        float x = versor[1];
+        float y = versor[2];
+        float z = versor[3];
+
+        // 1st row
+        result_quaternion[0] = 1 - 2 * y * y - 2 * z * z;
+        result_quaternion[1] = 2 * x * y - 2 * w * z;
+        result_quaternion[2] = 2 * x * y + 2 * w * y;
+
+        // 2nd row
+        result_quaternion[4] = 2 * x * y + 2 * w * z;
+        result_quaternion[5] = 1 - 2 * x * x - 2 * z * z;
+        result_quaternion[6] = 2 * y * z - 2 * w * x;
+
+        // 3rd row
+        result_quaternion[8] = 2 * x * z - 2 * w * y;
+        result_quaternion[9] = 2 * y * z + 2 * w * x;
+        result_quaternion[10] = 1 - 2 * x * x - 2 * y * y;
+    }
 }

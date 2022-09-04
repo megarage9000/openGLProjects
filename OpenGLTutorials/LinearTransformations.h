@@ -32,6 +32,8 @@ namespace LinearTransformations {
     // Assumes angle in degrees
     void versor(float result_versor[], float angle, float x, float y, float z);
 
+    void versor_multiplication(float a[], float b[], float result_versor[]);
+
     void to_quanternion(float versor[], float result_quaternion[]);
 };
 
