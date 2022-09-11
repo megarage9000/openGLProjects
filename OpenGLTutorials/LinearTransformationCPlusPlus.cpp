@@ -134,4 +134,29 @@ namespace LinearTransformationCPlusPlus
 		LinearTransformations::projection_matrix(result, near, far, fov, range, aspect);
 		return vector<float>(begin(result), end(result));
 	}
+
+
+	vector<float> slerp(vector<float> versor_a, vector<float> versor_b, float t) {
+		float result[4];
+		LinearTransformations::slerp(versor_a.data(), versor_b.data(), result, t);
+		return vector<float>(begin(result), end(result));
+	}
+
+	vector<float> versor(float angle, float x, float y, float z) {
+		float result[4];
+		LinearTransformations::versor(result, angle, x, y, z);
+		return vector<float>(begin(result), end(result));
+	}
+
+	vector<float> versor_multiplication(vector<float> versor_a, vector<float> versor_b) {
+		float result[4];
+		LinearTransformations::versor_multiplication(versor_a.data(), versor_b.data(), result);
+		return vector<float>(begin(result), end(result));
+	}
+
+	vector<float> to_quanternion(vector<float> versor) {
+		float result[16];
+		LinearTransformations::to_quanternion(versor.data(), result);
+		return vector<float>(begin(result), end(result));
+	}
 };

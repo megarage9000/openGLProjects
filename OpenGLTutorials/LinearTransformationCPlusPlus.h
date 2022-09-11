@@ -36,6 +36,15 @@ namespace LinearTransformationCPlusPlus
 	vector<float> view_matrix(vector<float> up_vector, vector<float> focus_position, vector<float> cam_world_position);
 
 	vector<float> projection_matrix(float near, float far, float fov, float range, float aspect);
+
+	// Quanternion functions
+	vector<float> slerp(vector<float> versor_a, vector<float> versor_b, float t);
+
+	vector<float> versor(float angle, float x, float y, float z);
+
+	vector<float> versor_multiplication(vector<float> versor_a, vector<float> versor_b);
+
+	vector<float> to_quanternion(vector<float> versor);
 };
 
 #endif // ! LINEAR_TRANSFORMATIONS_CPLUSPLUS
