@@ -27,6 +27,7 @@ namespace LinearTransformationCPlusPlus
 	vector<float> matrix_multiplication(vector<float> matrix_a, vector<float> matrix_b);
 	vector<float> matrix_inverse(vector<float> matrix);
 	vector<float> matrix_transpose(vector<float> matrix);
+	vector<float> matrix4_vector4_multi(vector<float> matrix_a, vector<float>vector_b);
 	
 
 	vector<float> translate(float dx, float dy, float dz);

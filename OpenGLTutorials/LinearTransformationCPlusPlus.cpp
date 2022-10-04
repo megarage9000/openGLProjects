@@ -78,6 +78,20 @@ namespace LinearTransformationCPlusPlus
 		throw runtime_error("Matrix not valid for transpose");
 	}
 
+	vector<float> matrix4_vector4_multi(vector<float> matrix_a, vector<float>vector_b) {
+		int matrixLength = matrix_a.size();
+		int vectorLength = vector_b.size();
+
+		if (matrixLength == 16 && vectorLength == 4) {
+			float result[4];
+			LinearAlgebra::matrix4_vec4_multi(matrix_a.data(), vector_b.data(), result);
+			return vector<float>(begin(result), end(result));
+		}
+		else {
+			throw runtime_error("Invalid lengths for matrix and vector");
+		}
+	}
+
 	vector<float> translate(float dx, float dy, float dz) {
 		float transform_matrix[16];
 		float translation_vector[3] = { dx, dy, dz };

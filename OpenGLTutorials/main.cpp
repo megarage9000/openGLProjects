@@ -31,12 +31,12 @@ float cam_roll = 0.0f;
 
 // Rotation
 vector<float> quaternion = versor(0.0f, 0.0f, 1.0f, 0.0f);
-vector<float> rotation_quat = identity(16);
+vector<float> rotation_quat = to_quanternion(quaternion);
 
 // Transformation movement axes (keep track of)!
-vector<float> forward_axis = identity(16);
-vector<float> right_axis = identity(16);
-vector<float> up_axis = identity(16);
+vector<float> forward_axis = { 0.0f, 0.0f, -1.0f, 0.0f };
+vector<float> right_axis = { 1.0f, 0.0f, 0.0f, 0.0f };
+vector<float> up_axis = { 0.0f, 1.0f, 0.0f, 0.0f };
 
 // Callbacks
 void glfw_error_callback(int error, const char* description);
@@ -55,6 +55,12 @@ void printProgramInfo(GLuint programIndex);
 void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
+
+void reajustAxes() {
+	forward_axis = matrix4_vector4_multi(rotation_quat, vector<float>{ 0.0f, 0.0f, -1.0f, 0.0f });
+	right_axis = matrix4_vector4_multi(rotation_quat, vector<float>{ 1.0f, 0.0f, 0.0f, 0.0f });
+	up_axis = matrix4_vector4_multi(rotation_quat, vector<float>{ 0.0f, 1.0f, 0.0f, 0.0f });
+}
 
 bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed, float elapsed_seconds) {
 	bool cam_moved = false;
@@ -97,9 +103,7 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 
 	}
 
@@ -112,9 +116,7 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_UP)) {
@@ -126,9 +128,7 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_DOWN)) {
@@ -140,9 +140,7 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_Z)) {
@@ -154,9 +152,7 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_C)) {
@@ -168,22 +164,13 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 		rotation_quat = to_quanternion(quaternion);
 
 		// Retransform transformation axes
-		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
-		up_axis = matrix_multiplication(rotation_quat, up_axis);
-		right_axis = matrix_multiplication(rotation_quat, right_axis);
+		reajustAxes();
 	}
 
 	return cam_moved;
 }
 
 int main() {
-
-	// Setup axes
-	// forward = {0, 0, -1, 0} (top row)
-	forward_axis[0] = 0.0f; forward_axis[2] = -1.0f;
-	// up = {0, 1, 0, 0} (top row)
-	up_axis[0] = 0.0f; up_axis[1] = 1.0f;
-	// right = {1, 0, 0, 0} (top row)
 
 	// Starting log
 	if (!restart_gl_log()) {
