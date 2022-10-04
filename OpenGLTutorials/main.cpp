@@ -23,6 +23,21 @@ double previous_seconds;
 int frame_count;
 void _update_fps_counter(GLFWwindow* window);
 
+// Camera positions
+float camera_pos[] = { 0.0f, 0.0f, 2.0f };
+float cam_yaw = 0.0f;
+float cam_pitch = 0.0f;
+float cam_roll = 0.0f;
+
+// Rotation
+vector<float> quaternion = versor(0.0f, 0.0f, 1.0f, 0.0f);
+vector<float> rotation_quat = identity(16);
+
+// Transformation movement axes (keep track of)!
+vector<float> forward_axis = identity(16);
+vector<float> right_axis = identity(16);
+vector<float> up_axis = identity(16);
+
 // Callbacks
 void glfw_error_callback(int error, const char* description);
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
@@ -41,9 +56,134 @@ void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
-bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed,float elapsed_seconds, float * yaw);
+bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed, float elapsed_seconds) {
+	bool cam_moved = false;
+
+	if (glfwGetKey(window, GLFW_KEY_A)) {
+		camera_pos[0] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D)) {
+		camera_pos[0] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP)) {
+		camera_pos[1] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN)) {
+		camera_pos[1] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W)) {
+		camera_pos[2] -= speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S)) {
+		camera_pos[2] += speed * elapsed_seconds;
+		cam_moved = true;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+
+		cam_yaw -= camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_yaw = versor(cam_yaw, up_axis[0], up_axis[1], up_axis[2]);
+		quaternion = versor_multiplication(quat_yaw, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
+		cam_yaw += camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_yaw = versor(cam_yaw, up_axis[0], up_axis[1], up_axis[2]);
+		quaternion = versor_multiplication(quat_yaw, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_UP)) {
+		cam_pitch += camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_pitch = versor(cam_pitch, right_axis[0], right_axis[1], right_axis[2]);
+		quaternion = versor_multiplication(quat_pitch, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN)) {
+		cam_pitch -= camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_pitch = versor(cam_pitch, right_axis[0], right_axis[1], right_axis[2]);
+		quaternion = versor_multiplication(quat_pitch, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_Z)) {
+		cam_roll -= camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_roll = versor(cam_roll, forward_axis[0], forward_axis[1], forward_axis[2]);
+		quaternion = versor_multiplication(quat_roll, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_C)) {
+		cam_roll += camRotSpeed * elapsed_seconds;
+		cam_moved = true;
+
+		vector<float> quat_roll = versor(cam_roll, forward_axis[0], forward_axis[1], forward_axis[2]);
+		quaternion = versor_multiplication(quat_roll, quaternion);
+		rotation_quat = to_quanternion(quaternion);
+
+		// Retransform transformation axes
+		forward_axis = matrix_multiplication(rotation_quat, forward_axis);
+		up_axis = matrix_multiplication(rotation_quat, up_axis);
+		right_axis = matrix_multiplication(rotation_quat, right_axis);
+	}
+
+	return cam_moved;
+}
 
 int main() {
+
+	// Setup axes
+	// forward = {0, 0, -1, 0} (top row)
+	forward_axis[0] = 0.0f; forward_axis[2] = -1.0f;
+	// up = {0, 1, 0, 0} (top row)
+	up_axis[0] = 0.0f; up_axis[1] = 1.0f;
+	// right = {1, 0, 0, 0} (top row)
 
 	// Starting log
 	if (!restart_gl_log()) {
@@ -171,9 +311,7 @@ int main() {
 	};
 
 
-	// Camera positions
-	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
-	float cam_yaw = 0.0f;
+
 
 	// Perspective Projection
 	glUseProgram(shaderProgram);
@@ -251,9 +389,9 @@ int main() {
 		}
 
 		// Camera move
-		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
+		bool can_move = moveCamera(window, camera_pos, 5, 5, elapsed_seconds);
 		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
-		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
+		vector<float> rotation = rotation_quat;
 		vector<float> view = matrix_multiplication(rotation, translation);
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
@@ -281,50 +419,6 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
-}
-
-bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed, float elapsed_seconds, float * yaw) {
-	bool cam_moved = false;
-
-	if (glfwGetKey(window, GLFW_KEY_A)) {
-		camera_pos[0] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_D)) {
-		camera_pos[0] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_PAGE_UP)) {
-		camera_pos[1] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN)) {
-		camera_pos[1] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_W)) {
-		camera_pos[2] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S)) {
-		camera_pos[2] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-		*yaw -= camRotSpeed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
-		*yaw += camRotSpeed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	return cam_moved;
 }
 
 void _update_fps_counter(GLFWwindow* window)

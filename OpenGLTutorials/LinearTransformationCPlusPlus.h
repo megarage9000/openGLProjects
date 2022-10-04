@@ -3,6 +3,8 @@
 #define LINEAR_TRANSFORMATIONS_CPLUSPLUS
 
 
+// Attempt Quaternion Stuff here!!!
+// https://github.com/capnramses/antons_opengl_tutorials_book/blob/master/06_vcam_with_quaternion/main.cpp
 
 /*
 	An extension to the LinearAlgebra, LinearTransformations
