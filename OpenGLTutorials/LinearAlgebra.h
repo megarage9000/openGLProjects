@@ -13,6 +13,61 @@ bool float_equals(float a, float b);
 
 namespace LinearAlgebra {
 
+    class LinStruct {
+        LinStruct();
+    public:
+        virtual ~LinStruct() = 0;
+        virtual float* values();
+    protected:
+        int const dimension;
+        int const size;
+        LinStruct(int dim, int sz) : dimension(dim), size(sz) {};
+    };
+
+    class Mat4 : public LinStruct{
+        float values[];
+    public:
+        Mat4() : LinStruct(4, 16) {}
+        Mat4(float[], int);
+        float operator[] (int);
+        Mat4& operator = (const Mat4&);
+        Mat4 operator * (const Mat4&);
+        Mat4 operator + (const Mat4&);
+    };
+
+    class Mat3 : LinStruct {
+        float values[];
+    public:
+        Mat3() : LinStruct(3, 9) {}
+        Mat3(float[], int);
+        float operator[] (int);
+        Mat3& operator = (const Mat3&);
+        Mat3 operator * (const Mat3&);
+        Mat3 operator + (const Mat3&);
+    };
+
+    class Vec4 : LinStruct{
+        float values[];
+    public:
+        Vec4() : LinStruct(4, 4) {}
+        Vec4(float[], int);
+        float operator[] (int);
+        Vec4& operator = (const Vec4&);
+        Vec4 operator * (const Vec4&);
+        Vec4 operator + (const Vec4&);
+    };
+
+    class Vec3 : LinStruct{
+        float values[];
+    public:
+        Vec3() : LinStruct(3, 3) {}
+        Vec3(float[], int);
+        float operator[] (int);
+        Vec3& operator = (const Vec3&);
+        Vec3 operator * (const Vec3&);
+        Vec3 operator + (const Vec3&);
+    };
+
     // Identity Matrix 4
     static float IDENTITY_4[16] = {
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -39,7 +94,6 @@ namespace LinearAlgebra {
     };
 
     // --- Matrix 4 --- //
-
     // Copies contents from one matrix 4 to another
     void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len);
 
@@ -82,7 +136,6 @@ namespace LinearAlgebra {
     void transpose_matrix4(float a[]);
 
     // --- Matrix 3 --- //
-
     // Copies contents from matrix 3 to another
     void copy_from_matrix3(float src[], float dest[], int src_len, int dest_len);
 
@@ -126,7 +179,6 @@ namespace LinearAlgebra {
 
 
     // --- Vectors --- 
-    
     // Add vectors
     void add_vectors(float a[], float b[], float res[], int length);
 
