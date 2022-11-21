@@ -7,6 +7,8 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <array>
+#include <assert.h>
 
 void swap(float &a, float &b);
 bool float_equals(float a, float b);
@@ -24,22 +26,42 @@ namespace LinearAlgebra {
         LinStruct(int dim, int sz) : dimension(dim), size(sz) {};
     };
 
-    class Mat4 : public LinStruct{
-        float values[];
+    class DoubleDimension{
+        int row;
+        float* arr;
+        DoubleDimension();
     public:
-        Mat4() : LinStruct(4, 16) {}
-        Mat4(float[], int);
+        DoubleDimension(int _row, float _arr[]) : row(_row), arr(_arr) {};
         float operator[] (int);
+    };
+
+    class Matrix : public LinStruct {
+    public:
+        Matrix(int dim, int size) : LinStruct(dim, size) {}
+        virtual ~Matrix() = 0;
+    };
+
+    class Mat4 : public Matrix{
+        std::array<float, 16> values;
+    public:
+        Mat4();
+        Mat4(float[], int);
+        Mat4(std::array<float, 16>);
+        DoubleDimension operator[] (int);
         Mat4& operator = (const Mat4&);
         Mat4 operator * (const Mat4&);
         Mat4 operator + (const Mat4&);
+        std::array<float, 16> data() const { return values; }
     };
 
+    
+
     class Mat3 : LinStruct {
-        float values[];
+        std::array<float, 9> values;
     public:
         Mat3() : LinStruct(3, 9) {}
         Mat3(float[], int);
+        Mat3(std::array<float, 9>);
         float operator[] (int);
         Mat3& operator = (const Mat3&);
         Mat3 operator * (const Mat3&);
@@ -47,26 +69,33 @@ namespace LinearAlgebra {
     };
 
     class Vec4 : LinStruct{
-        float values[];
+        std::array<float, 4> values;
     public:
         Vec4() : LinStruct(4, 4) {}
         Vec4(float[], int);
+        Vec4(std::array<float, 4>);
         float operator[] (int);
         Vec4& operator = (const Vec4&);
         Vec4 operator * (const Vec4&);
         Vec4 operator + (const Vec4&);
+        std::array<float, 4> data() const { return values; }
     };
 
     class Vec3 : LinStruct{
-        float values[];
+        std::array<float, 3> values;
     public:
         Vec3() : LinStruct(3, 3) {}
         Vec3(float[], int);
+        Vec3(std::array<float, 3>);
         float operator[] (int);
         Vec3& operator = (const Vec3&);
         Vec3 operator * (const Vec3&);
         Vec3 operator + (const Vec3&);
     };
+
+    // Vector - Matrix Multiplications
+    Vec4 operator * (const Mat4& left_matrix, const Vec4& col_vector);
+    Vec4 operator * (const Vec4& row_vector, const Mat4& right_matrix);
 
     // Identity Matrix 4
     static float IDENTITY_4[16] = {
@@ -107,6 +136,7 @@ namespace LinearAlgebra {
     // Assumes array lengths are correct
     // Performs matrix 4 x matrix 4 / matrix 4 x vector 4 calculations
     // - For matrix 4 x vector 4, set a = matrix, b = vector and pass in is_b_vec to true
+    // TODO: investigate test-cases for row and column vectors, see if they yield differences
     void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec);
 
     // --- Overloaded functions Matrix 4 --- //

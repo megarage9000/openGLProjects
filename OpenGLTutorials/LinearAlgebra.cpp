@@ -14,6 +14,74 @@ bool float_equals(float a, float b){
 
 namespace LinearAlgebra 
 {
+    /*
+        Classes
+    */
+
+    // Double Dimension
+    float DoubleDimension::operator[] (int col) {
+        return arr[col];
+    }
+
+    // Matrix 4
+    Mat4::Mat4() : Matrix(4, 16) { 
+        copy_from_matrix4(IDENTITY_4, values.data(), 16, 16);
+    }
+
+    Mat4::Mat4(float _values[], int size) : Matrix(4, 16) {
+        assert(size == 16);
+        std::copy(_values, _values + 16, values);
+    }
+
+    Mat4::Mat4(std::array<float, 16> _values) : Matrix(4, 16) {
+        values = _values;
+    }
+
+    DoubleDimension Mat4::operator[] (int row) {
+        assert(row >= 0 && row < dimension);
+        return DoubleDimension(row, values.data());
+    }
+
+    Mat4& Mat4::operator = (const Mat4& other_matrix) {
+        if (this != &other_matrix) {
+            values = other_matrix.values;
+        }
+        return *this;
+    }
+
+    Mat4 Mat4::operator * (const Mat4& other_matrix) {
+        std::array<float, 16> new_arr;
+        std::array<float, 16> other_arr = other_matrix.data();
+        matrix4_multi(values.data(), other_arr.data(), new_arr.data(), false);
+        return Mat4(new_arr);
+    }
+
+    // Vector / Matrix 4 multis
+    Vec4 operator * (const Mat4& left_matrix, const Vec4& row_vector) {
+        std::array<float, 4> new_arr;
+        std::array<float, 16> left_arr = left_matrix.data();
+        std::array<float, 4> right_arr = row_vector.data();
+        matrix4_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec4(new_arr);
+    }
+
+    Vec4 operator * (const Vec4& row_vector, const Mat4& right_matrix) {
+        std::array<float, 4> new_arr;
+        std::array<float, 16> left_arr = right_matrix.data();
+        std::array<float, 4> right_arr = row_vector.data();
+        matrix4_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec4(new_arr);
+    }
+    
+
+    Mat4 Mat4::operator + (const Mat4& other_matrix) {
+        std::array<float, 16> new_arr;
+        for (int i = 0; i < 16; i++) {
+            new_arr[i] = values[i] + other_matrix.values[i];
+        }
+        return Mat4(new_arr);
+    }
+
     void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
         if(src_len == dest_len && src_len == 16) {
             for(int i = 0; i < 16; i++) {
@@ -38,7 +106,7 @@ namespace LinearAlgebra
             copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
-    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec){
+    void matrix4_multi(const float a[], const float b[], float result_arr[], bool is_b_vec = false){
         // Vector multiplication
         if(is_b_vec) {
             for(int i = 0; i < 4; i++) {
@@ -48,6 +116,7 @@ namespace LinearAlgebra
                         a[i * 4 + 3] * b[3];
             }
         }
+       
         // Matrix multiplication
         else {
             for(int row = 0; row < 4; row++){
