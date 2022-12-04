@@ -27,9 +27,9 @@ namespace LinearAlgebra
         copy_from_matrix4(IDENTITY_4, values.data(), 16, 16);
     }
 
-    Mat4::Mat4(float _values[], int size) : LinStruct(4, 16) {
-        assert(size == 16);
-        std::copy(_values, _values + 16, values);
+    Mat4::Mat4(float _values[], int _size) : LinStruct(4, 16) {
+        assert(_size == 16);
+        std::copy(_values, _values + 16, values.data());
     }
 
     Mat4::Mat4(std::array<float, 16> _values) : LinStruct(4, 16) {
@@ -88,9 +88,9 @@ namespace LinearAlgebra
         copy_from_matrix3(IDENTITY_3, values.data(), 9, values.size());
     }
 
-    Mat3::Mat3(float _values[], int size) : LinStruct(3, 9) {
-        assert(size == 9);
-        std::copy(_values, _values + 9, values);
+    Mat3::Mat3(float _values[], int _size) : LinStruct(3, 9) {
+        assert(_size == 9);
+        std::copy(_values, _values + 9, values.data());
     }
     
     Mat3::Mat3(std::array<float, 9> _values) : LinStruct(3, 9) {
@@ -140,8 +140,45 @@ namespace LinearAlgebra
         return Mat3(new_arr);
     }
 
+    // ---- Vector 4 ----
+    
+    Vec4::Vec4() : LinStruct(4, 4) {
+        copy_from_vec4(MAG_1_VEC4, values.data(), 4, 4);
+    }
 
+    Vec4::Vec4(float _values[], int _size) : LinStruct(4, 4) {
+        assert(_size == 4);
+        std::copy(_values, _values + 4, values.data());
+    }
+
+    Vec4::Vec4(std::array<float, 4> _values) : LinStruct(4, 4) {
+        values = _values;
+    }
+
+    float Vec4::operator[] (int index) {
+        return values[index];
+    }
+
+    Vec4& Vec4::operator = (const Vec4& other_vector) {
+        if (this != &other_vector) {
+            values = other_vector.data();
+        }
+        return *this;
+    }
    
+    Mat4 Vec4::operator * (const Vec4& other_vector) {
+        std::array<float, 16> new_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        multiply_vectors(values.data(), other_arr.data(), new_arr.data(), size, 16);
+        return Mat4(new_arr);
+    }
+
+    Vec4 Vec4::operator + (const Vec4& other_vector) {
+        std::array<float, 4> new_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        add_vectors(values.data(), other_arr.data(), new_arr.data(), 4);
+        return Vec4(new_arr);
+    }
 
     void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
         if(src_len == dest_len && src_len == 16) {
@@ -459,6 +496,21 @@ namespace LinearAlgebra
     }
 
     // --- Vectors ---- 
+    void multiply_vectors(float row_vector[], float col_vector[], float res[], int length, int result_length) {
+        if (length * length != result_length) {
+            for (int i = 0; i < result_length; i++) {
+                res[i] = 0.0f;
+            }
+        }
+        else {
+            for (int y = 0; y < length; y++) {
+                for (int x = 0; x < length; x++) {
+                    res[y * length] = row_vector[y] * col_vector[x];
+                }
+            }
+        }
+    }
+
     void add_vectors(float a[], float b[], float res[], int length) {
         for(int i = 0; i < length; i++) {
             res[i] = a[i] + b[i];

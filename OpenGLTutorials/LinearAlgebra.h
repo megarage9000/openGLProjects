@@ -35,6 +35,13 @@ namespace LinearAlgebra {
         float operator[] (int);
     };
 
+    // TODO
+    // 1. Implement Vec3
+    // 2. Implement inverse(), transpose() for Mat3, Mat4
+    // 3. Implement normalize(), subtract() operator, magnitude, cross(), dot() for Vec3, Vec4
+    // 4. Implement ostreams for all LinStructs
+    // 5. Test
+
     class Mat4 : public LinStruct{
         std::array<float, 16> values;
     public:
@@ -64,12 +71,12 @@ namespace LinearAlgebra {
     class Vec4 : LinStruct{
         std::array<float, 4> values;
     public:
-        Vec4() : LinStruct(4, 4) {}
+        Vec4();
         Vec4(float[], int);
         Vec4(std::array<float, 4>);
         float operator[] (int);
         Vec4& operator = (const Vec4&);
-        Vec4 operator * (const Vec4&);
+        Mat4 operator * (const Vec4&);
         Vec4 operator + (const Vec4&);
         std::array<float, 4> data() const { return values; }
     };
@@ -77,12 +84,12 @@ namespace LinearAlgebra {
     class Vec3 : LinStruct{
         std::array<float, 3> values;
     public:
-        Vec3() : LinStruct(3, 3) {}
+        Vec3();
         Vec3(float[], int);
         Vec3(std::array<float, 3>);
         float operator[] (int);
         Vec3& operator = (const Vec3&);
-        Vec3 operator * (const Vec3&);
+        Mat3 operator * (const Vec3&);
         Vec3 operator + (const Vec3&);
         std::array<float, 3> data() const { return values; }
     };
@@ -203,6 +210,10 @@ namespace LinearAlgebra {
 
 
     // --- Vectors --- 
+    
+    // Multiple row and column vector
+    void multiply_vectors(float row_vector[], float col_vector[], float res[], int length, int result_length);
+    
     // Add vectors
     void add_vectors(float a[], float b[], float res[], int length);
 
