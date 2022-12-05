@@ -38,7 +38,7 @@ namespace LinearAlgebra
 
     DoubleDimension Mat4::operator[] (int row) {
         assert(row >= 0 && row < dimension);
-        return DoubleDimension(row, values.data());
+        return DoubleDimension(row * dimension, values.data());
     }
 
     // Matrix 4 multis
@@ -82,6 +82,19 @@ namespace LinearAlgebra
         return Mat4(new_arr);
     }
 
+    void Mat4::print() {
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for (int y = 0; y < dimension; y++) {
+            for (int x = 0; x < dimension; x++) {
+                std::cout << std::setw(8) << (*this)[y][x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
+
     // ---- Matrix 3 -----
 
     Mat3::Mat3() : LinStruct(3, 9) {
@@ -98,8 +111,8 @@ namespace LinearAlgebra
     }
 
     DoubleDimension Mat3::operator[](int row) {
-        assert(row >= 0 && row < 3);
-        return DoubleDimension(row, values.data());
+        assert(row >= 0 && row < dimension);
+        return DoubleDimension(row * dimension, values.data());
     }
 
     Mat3& Mat3::operator = (const Mat3& other_matrix) {
@@ -140,6 +153,18 @@ namespace LinearAlgebra
         return Mat3(new_arr);
     }
 
+    void Mat3::print() {
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for (int y = 0; y < dimension; y++) {
+            for (int x = 0; x < dimension; x++) {
+                std::cout << std::setw(8) << (*this)[y][x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
     // ---- Vector 4 ----
     
     Vec4::Vec4() : LinStruct(4, 4) {
@@ -179,6 +204,63 @@ namespace LinearAlgebra
         add_vectors(values.data(), other_arr.data(), new_arr.data(), 4);
         return Vec4(new_arr);
     }
+
+    void Vec4::print() {
+        std::cout << "--------------------------------\n";
+        for (int i = 0; i < dimension; i++) {
+            std::cout << std::setw(8) << (*this)[i];
+        }
+        std::cout << "--------------------------------\n";
+    }
+
+    // ---- Vec3 ----
+
+    Vec3::Vec3() : LinStruct(3, 3) {
+        copy_from_vec3(MAG_1_VEC3, values.data(), 3, 3);
+    }
+
+    Vec3::Vec3(float _values[], int _size) : LinStruct(3, 3) {
+        assert(_size == 3);
+        std::copy(_values, _values + 3, values.data());
+    }
+
+    Vec3::Vec3(std::array<float, 3> _values) : LinStruct(3, 3) {
+        values = _values;
+    }
+
+    float Vec3::operator [] (int index) {
+        return values[index];
+    }
+
+    Vec3& Vec3::operator = (const Vec3& other_vector) {
+        if (this != &other_vector) {
+            values = other_vector.values;
+        }
+        return *this;
+    }
+
+    Mat3 Vec3::operator * (const Vec3& other_vector) {
+        std::array<float, 9> new_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        multiply_vectors(values.data(), other_arr.data(), new_arr.data(), 3, 9);
+        return Mat3(new_arr);
+    }
+
+    Vec3 Vec3::operator + (const Vec3& other_vector) {
+        std::array<float, 3> new_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        add_vectors(values.data(), other_arr.data(), new_arr.data(), 3);
+    }
+
+    void Vec3::print() {
+        std::cout << "--------------------------------\n";
+        for (int i = 0; i < dimension; i++) {
+            std::cout << std::setw(8) << (*this)[i];
+        }
+        std::cout << "--------------------------------\n";
+    }
+
+    // ---- Functions -----
 
     void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
         if(src_len == dest_len && src_len == 16) {

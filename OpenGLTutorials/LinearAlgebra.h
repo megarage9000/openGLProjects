@@ -20,6 +20,7 @@ namespace LinearAlgebra {
     public:
         virtual ~LinStruct() = 0;
         virtual float* values();
+        virtual void print();
         int const dimension;
         int const size;
     protected:
@@ -32,6 +33,7 @@ namespace LinearAlgebra {
         DoubleDimension();
     public:
         DoubleDimension(int _row, float _arr[]) : row(_row), arr(_arr) {};
+        void print();
         float operator[] (int);
     };
 
@@ -53,6 +55,7 @@ namespace LinearAlgebra {
         Mat4 operator * (const Mat4&);
         Mat4 operator + (const Mat4&);
         std::array<float, 16> data() const { return values; }
+        void print();
     };
 
     class Mat3 : LinStruct {
@@ -66,6 +69,7 @@ namespace LinearAlgebra {
         Mat3 operator * (const Mat3&);
         Mat3 operator + (const Mat3&);
         std::array<float, 9> data() const { return values; }
+        void print();
     };
 
     class Vec4 : LinStruct{
@@ -79,6 +83,7 @@ namespace LinearAlgebra {
         Mat4 operator * (const Vec4&);
         Vec4 operator + (const Vec4&);
         std::array<float, 4> data() const { return values; }
+        void print();
     };
 
     class Vec3 : LinStruct{
@@ -92,6 +97,7 @@ namespace LinearAlgebra {
         Mat3 operator * (const Vec3&);
         Vec3 operator + (const Vec3&);
         std::array<float, 3> data() const { return values; }
+        void print();
     };
 
     // Vector - Matrix Multiplications
