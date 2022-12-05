@@ -253,6 +253,11 @@ int main() {
 		vec4.print();
 		vec3.print();
 
+		(vec3 * matrix3).print();
+		(vec4 * matrix4).print();
+		(vec4 * vec4).print();
+
+
 		_update_fps_counter(window);
 
 		// Clear drawing surface color

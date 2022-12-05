@@ -593,7 +593,7 @@ namespace LinearAlgebra
         else {
             for (int y = 0; y < length; y++) {
                 for (int x = 0; x < length; x++) {
-                    res[y * length] = row_vector[y] * col_vector[x];
+                    res[y * length + x] = row_vector[y] * col_vector[x];
                 }
             }
         }
