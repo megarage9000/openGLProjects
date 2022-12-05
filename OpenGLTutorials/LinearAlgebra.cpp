@@ -19,7 +19,7 @@ namespace LinearAlgebra
     */
     // Double Dimension
     float DoubleDimension::operator[] (int col) {
-        return arr[col];
+        return arr[row + col];
     }
 
     // ---- Matrix 4 -----
@@ -29,7 +29,9 @@ namespace LinearAlgebra
 
     Mat4::Mat4(float _values[], int _size) : LinStruct(4, 16) {
         assert(_size == 16);
-        std::copy(_values, _values + 16, values.data());
+        for (int i = 0; i < size; i++) {
+            values[i] = _values[i];
+        }
     }
 
     Mat4::Mat4(std::array<float, 16> _values) : LinStruct(4, 16) {
@@ -103,9 +105,12 @@ namespace LinearAlgebra
 
     Mat3::Mat3(float _values[], int _size) : LinStruct(3, 9) {
         assert(_size == 9);
-        std::copy(_values, _values + 9, values.data());
+        for (int i = 0; i < size; i++) {
+            values[i] = _values[i];
+        }
     }
-    
+   
+
     Mat3::Mat3(std::array<float, 9> _values) : LinStruct(3, 9) {
         values = _values;
     }
@@ -206,11 +211,11 @@ namespace LinearAlgebra
     }
 
     void Vec4::print() {
-        std::cout << "--------------------------------\n";
+        std::cout << "\n--------------------------------\n";
         for (int i = 0; i < dimension; i++) {
             std::cout << std::setw(8) << (*this)[i];
         }
-        std::cout << "--------------------------------\n";
+        std::cout << "\n--------------------------------\n";
     }
 
     // ---- Vec3 ----
@@ -250,14 +255,15 @@ namespace LinearAlgebra
         std::array<float, 3> new_arr;
         std::array<float, 3> other_arr = other_vector.data();
         add_vectors(values.data(), other_arr.data(), new_arr.data(), 3);
+        return Vec3(new_arr);
     }
 
     void Vec3::print() {
-        std::cout << "--------------------------------\n";
+        std::cout << "\n--------------------------------\n";
         for (int i = 0; i < dimension; i++) {
             std::cout << std::setw(8) << (*this)[i];
         }
-        std::cout << "--------------------------------\n";
+        std::cout << "\n--------------------------------\n";
     }
 
     // ---- Functions -----
@@ -286,7 +292,7 @@ namespace LinearAlgebra
             copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
-    void matrix4_multi(const float a[], const float b[], float result_arr[], bool is_b_vec = false){
+    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec = false){
         // Vector multiplication
         if(is_b_vec) {
             for(int i = 0; i < 4; i++) {

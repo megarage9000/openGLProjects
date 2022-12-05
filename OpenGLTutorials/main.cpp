@@ -43,6 +43,8 @@ bool is_valid(GLuint programIndex);
 
 bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed,float elapsed_seconds, float * yaw);
 
+using namespace LinearAlgebra;
+
 int main() {
 
 	// Starting log
@@ -170,6 +172,11 @@ int main() {
 		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
+	float matrix3Test[] = {
+		0.0, 2.0, 3.0,
+		1.0, 4.0, 5.0,
+		10.0, 11.0, 9.0
+	};
 
 	// Camera positions
 	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
@@ -228,6 +235,23 @@ int main() {
 	
 	
 	while (!glfwWindowShouldClose(window)) {
+
+		Mat4 matrix4 = Mat4(matrix, 16);
+
+		matrix4.print();
+
+		Mat3 matrix3 = Mat3(matrix3Test, 9);
+
+		matrix3.print();
+
+		std::array<float, 4> vec4Vals{ 1.0, 2.0, 3.0, 4.0 };
+		std::array<float, 3> vec3Vals{ 1.0, 2.0, 3.0 };
+
+		Vec4 vec4 = Vec4(vec4Vals);
+		Vec3 vec3 = Vec3(vec3Vals);
+
+		vec4.print();
+		vec3.print();
 
 		_update_fps_counter(window);
 

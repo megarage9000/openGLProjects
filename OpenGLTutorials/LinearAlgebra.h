@@ -15,94 +15,6 @@ bool float_equals(float a, float b);
 
 namespace LinearAlgebra {
 
-    class LinStruct {
-        LinStruct();
-    public:
-        virtual ~LinStruct() = 0;
-        virtual float* values();
-        virtual void print();
-        int const dimension;
-        int const size;
-    protected:
-        LinStruct(int dim, int sz) : dimension(dim), size(sz) {};
-    };
-
-    class DoubleDimension{
-        int row;
-        float* arr;
-        DoubleDimension();
-    public:
-        DoubleDimension(int _row, float _arr[]) : row(_row), arr(_arr) {};
-        void print();
-        float operator[] (int);
-    };
-
-    // TODO
-    // 1. Implement Vec3
-    // 2. Implement inverse(), transpose() for Mat3, Mat4
-    // 3. Implement normalize(), subtract() operator, magnitude, cross(), dot() for Vec3, Vec4
-    // 4. Implement ostreams for all LinStructs
-    // 5. Test
-
-    class Mat4 : public LinStruct{
-        std::array<float, 16> values;
-    public:
-        Mat4();
-        Mat4(float[], int);
-        Mat4(std::array<float, 16>);
-        DoubleDimension operator[] (int);
-        Mat4& operator = (const Mat4&);
-        Mat4 operator * (const Mat4&);
-        Mat4 operator + (const Mat4&);
-        std::array<float, 16> data() const { return values; }
-        void print();
-    };
-
-    class Mat3 : LinStruct {
-        std::array<float, 9> values;
-    public:
-        Mat3();
-        Mat3(float[], int);
-        Mat3(std::array<float, 9>);
-        DoubleDimension operator[] (int);
-        Mat3& operator = (const Mat3&);
-        Mat3 operator * (const Mat3&);
-        Mat3 operator + (const Mat3&);
-        std::array<float, 9> data() const { return values; }
-        void print();
-    };
-
-    class Vec4 : LinStruct{
-        std::array<float, 4> values;
-    public:
-        Vec4();
-        Vec4(float[], int);
-        Vec4(std::array<float, 4>);
-        float operator[] (int);
-        Vec4& operator = (const Vec4&);
-        Mat4 operator * (const Vec4&);
-        Vec4 operator + (const Vec4&);
-        std::array<float, 4> data() const { return values; }
-        void print();
-    };
-
-    class Vec3 : LinStruct{
-        std::array<float, 3> values;
-    public:
-        Vec3();
-        Vec3(float[], int);
-        Vec3(std::array<float, 3>);
-        float operator[] (int);
-        Vec3& operator = (const Vec3&);
-        Mat3 operator * (const Vec3&);
-        Vec3 operator + (const Vec3&);
-        std::array<float, 3> data() const { return values; }
-        void print();
-    };
-
-    // Vector - Matrix Multiplications
-    Vec4 operator * (const Mat4& left_matrix, const Vec4& col_vector);
-    Vec4 operator * (const Vec4& row_vector, const Mat4& right_matrix);
 
     // Identity Matrix 4
     static float IDENTITY_4[16] = {
@@ -244,6 +156,101 @@ namespace LinearAlgebra {
     void print_mat4(float a[], int a_length);
     void print_mat3(float a[], int a_length);
     void print_vector(float a[], int a_length);
+
+
+
+    class LinStruct {
+        LinStruct();
+    public:
+        // virtual ~LinStruct() = 0;
+        virtual void print() = 0;
+        int const dimension;
+        int const size;
+    protected:
+        LinStruct(int dim, int sz) : dimension(dim), size(sz) {};
+    };
+
+    class DoubleDimension {
+        int row;
+        float* arr;
+        DoubleDimension();
+    public:
+        DoubleDimension(int _row, float _arr[]) : row(_row), arr(_arr) {};
+        float operator[] (int);
+    };
+
+    // TODO
+    // 1. Implement Vec3
+    // 2. Implement inverse(), transpose() for Mat3, Mat4
+    // 3. Implement normalize(), subtract() operator, magnitude, cross(), dot() for Vec3, Vec4
+    // 4. Implement ostreams for all LinStructs
+    // 5. Test
+
+    class Mat4 : public LinStruct {
+        std::array<float, 16> values;
+    public:
+        Mat4();
+        Mat4(float[], int);
+        Mat4(std::array<float, 16>);
+        DoubleDimension operator[] (int);
+        Mat4& operator = (const Mat4&);
+        Mat4 operator * (const Mat4&);
+        Mat4 operator + (const Mat4&);
+        std::array<float, 16> data() const { return values; }
+        void print();
+    };
+
+    class Mat3 : public LinStruct {
+        std::array<float, 9> values;
+    public:
+        Mat3();
+        Mat3(float[], int);
+        Mat3(std::array<float, 9>);
+        DoubleDimension operator[] (int);
+        Mat3& operator = (const Mat3&);
+        Mat3 operator * (const Mat3&);
+        Mat3 operator + (const Mat3&);
+        std::array<float, 9> data() const { return values; }
+        void print();
+    };
+
+
+
+    class Vec4 : public LinStruct {
+        std::array<float, 4> values;
+    public:
+        Vec4();
+        Vec4(float[], int);
+        Vec4(std::array<float, 4>);
+        float operator[] (int);
+        Vec4& operator = (const Vec4&);
+        Mat4 operator * (const Vec4&);
+        Vec4 operator + (const Vec4&);
+        std::array<float, 4> data() const { return values; }
+        void print();
+    };
+
+    class Vec3 : public LinStruct {
+        std::array<float, 3> values;
+    public:
+        Vec3();
+        Vec3(float[], int);
+        Vec3(std::array<float, 3>);
+        float operator[] (int);
+        Vec3& operator = (const Vec3&);
+        Mat3 operator * (const Vec3&);
+        Vec3 operator + (const Vec3&);
+        std::array<float, 3> data() const { return values; }
+        void print();
+    };
+
+    // Vector - Matrix Multiplications
+    Vec4 operator * (const Mat4& left_matrix, const Vec4& col_vector);
+    Vec4 operator * (const Vec4& row_vector, const Mat4& right_matrix);
+
+    Vec3 operator * (const Mat3& left_matrix, const Vec3& right_vector);
+    Vec3 operator * (const Vec3& left_vector, const Mat3& right_matrix);
+
 };
 
 #endif 
