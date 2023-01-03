@@ -129,7 +129,7 @@ namespace LinearAlgebra
 
     Mat3 Mat3::inverse() {
         std::array<float, 9> result_arr;
-        matrix4_inv(values.data(), result_arr.data());
+        matrix3_inv(values.data(), result_arr.data());
         return Mat3(result_arr);
     }
 
@@ -209,6 +209,20 @@ namespace LinearAlgebra
         values = _values;
     }
 
+    Vec4 Vec4::normalize() {
+        std::array<float, 4> result_arr = values;
+        normalize_vector(result_arr.data(), 4);
+        return Vec4(result_arr);
+    }
+
+    float Vec4::dot(const Vec4& other) {
+        return dot_product(values.data(), other.data().data(), 4, 4);
+    }
+
+    float Vec4::magnitude() {
+        return vector_magnitude(values.data(), 4);
+    }
+
     float Vec4::operator[] (int index) {
         return values[index];
     }
@@ -232,6 +246,13 @@ namespace LinearAlgebra
         std::array<float, 4> other_arr = other_vector.data();
         add_vectors(values.data(), other_arr.data(), new_arr.data(), 4);
         return Vec4(new_arr);
+    }
+    
+    Vec4 Vec4::operator - (const Vec4& other_vector) {
+        std::array<float, 4> result_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 4);
+        return Vec4(result_arr);
     }
 
     void Vec4::print() {
@@ -257,6 +278,27 @@ namespace LinearAlgebra
         values = _values;
     }
 
+    Vec3 Vec3::normalize() {
+        std::array<float, 3> result_arr = values;
+        normalize_vector(result_arr.data(), 3);
+        return Vec3(result_arr);
+    }
+
+    Vec3 Vec3::cross(const Vec3& other) {
+        std::array<float, 3> result_arr;
+        cross_product_vec3(values.data(), other.data().data(), 3, 3, result_arr.data());
+        return Vec3(result_arr);
+    }
+
+    float Vec3::dot(const Vec3& other) {
+        return dot_product(values.data(), other.data().data(), 3, 3);
+    }
+
+    float Vec3::magnitude() {
+        return vector_magnitude(values.data(), 3);
+    }
+
+
     float Vec3::operator [] (int index) {
         return values[index];
     }
@@ -280,6 +322,13 @@ namespace LinearAlgebra
         std::array<float, 3> other_arr = other_vector.data();
         add_vectors(values.data(), other_arr.data(), new_arr.data(), 3);
         return Vec3(new_arr);
+    }
+
+    Vec3 Vec3::operator - (const Vec3& other_vector) {
+        std::array<float, 3> result_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 3);
+        return Vec3(result_arr);
     }
 
     void Vec3::print() {

@@ -180,8 +180,6 @@ namespace LinearAlgebra {
     };
 
     // TODO
-    // 1. Implement Vec3
-    // 2. Implement inverse(), transpose() for Mat3, Mat4
     // 3. Implement normalize(), subtract() operator, magnitude, cross(), dot() for Vec3, Vec4
     // 4. Implement ostreams for all LinStructs
     // 5. Test
@@ -226,10 +224,14 @@ namespace LinearAlgebra {
         Vec4();
         Vec4(float[], int);
         Vec4(std::array<float, 4>);
+        Vec4 normalize();
+        float dot(const Vec4&);
+        float magnitude();
         float operator[] (int);
         Vec4& operator = (const Vec4&);
         Mat4 operator * (const Vec4&);
         Vec4 operator + (const Vec4&);
+        Vec4 operator - (const Vec4&);
         std::array<float, 4> data() const { return values; }
         void print();
     };
@@ -240,10 +242,15 @@ namespace LinearAlgebra {
         Vec3();
         Vec3(float[], int);
         Vec3(std::array<float, 3>);
+        Vec3 normalize();
+        Vec3 cross(const Vec3&);
+        float dot(const Vec3&);
+        float magnitude();
         float operator[] (int);
         Vec3& operator = (const Vec3&);
         Mat3 operator * (const Vec3&);
         Vec3 operator + (const Vec3&);
+        Vec3 operator - (const Vec3&);
         std::array<float, 3> data() const { return values; }
         void print();
     };
