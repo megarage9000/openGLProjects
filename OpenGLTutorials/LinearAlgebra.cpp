@@ -38,6 +38,18 @@ namespace LinearAlgebra
         values = _values;
     }
 
+    Mat4 Mat4::inverse() {
+        std::array<float, 16> result_arr;
+        matrix4_inv(values.data(), result_arr.data());
+        return Mat4(result_arr);
+    }
+
+    Mat4 Mat4::transpose() {
+        std::array<float, 16> result_arr = values;
+        transpose_matrix4(result_arr.data());
+        return Mat4(result_arr);
+    }
+
     DoubleDimension Mat4::operator[] (int row) {
         assert(row >= 0 && row < dimension);
         return DoubleDimension(row * dimension, values.data());
@@ -113,6 +125,18 @@ namespace LinearAlgebra
 
     Mat3::Mat3(std::array<float, 9> _values) : LinStruct(3, 9) {
         values = _values;
+    }
+
+    Mat3 Mat3::inverse() {
+        std::array<float, 9> result_arr;
+        matrix4_inv(values.data(), result_arr.data());
+        return Mat3(result_arr);
+    }
+
+    Mat3 Mat3::transpose() {
+        std::array<float, 9> result_arr = values;
+        transpose_matrix3(values.data());
+        return Mat3(result_arr);
     }
 
     DoubleDimension Mat3::operator[](int row) {

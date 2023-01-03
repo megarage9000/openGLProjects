@@ -192,6 +192,8 @@ namespace LinearAlgebra {
         Mat4();
         Mat4(float[], int);
         Mat4(std::array<float, 16>);
+        Mat4 inverse();
+        Mat4 transpose();
         DoubleDimension operator[] (int);
         Mat4& operator = (const Mat4&);
         Mat4 operator * (const Mat4&);
@@ -206,6 +208,8 @@ namespace LinearAlgebra {
         Mat3();
         Mat3(float[], int);
         Mat3(std::array<float, 9>);
+        Mat3 inverse();
+        Mat3 transpose();
         DoubleDimension operator[] (int);
         Mat3& operator = (const Mat3&);
         Mat3 operator * (const Mat3&);
