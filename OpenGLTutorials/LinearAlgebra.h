@@ -176,7 +176,7 @@ namespace LinearAlgebra {
         DoubleDimension();
     public:
         DoubleDimension(int _row, float _arr[]) : row(_row), arr(_arr) {};
-        float operator[] (int);
+        float& operator[] (int);
     };
 
     // TODO
@@ -196,6 +196,7 @@ namespace LinearAlgebra {
         Mat4& operator = (const Mat4&);
         Mat4 operator * (const Mat4&);
         Mat4 operator + (const Mat4&);
+        bool operator == (const Mat4&);
         std::array<float, 16> data() const { return values; }
         void print();
     };
@@ -212,27 +213,8 @@ namespace LinearAlgebra {
         Mat3& operator = (const Mat3&);
         Mat3 operator * (const Mat3&);
         Mat3 operator + (const Mat3&);
+        bool operator == (const Mat3&);
         std::array<float, 9> data() const { return values; }
-        void print();
-    };
-
-
-
-    class Vec4 : public LinStruct {
-        std::array<float, 4> values;
-    public:
-        Vec4();
-        Vec4(float[], int);
-        Vec4(std::array<float, 4>);
-        Vec4 normalize();
-        float dot(const Vec4&);
-        float magnitude();
-        float operator[] (int);
-        Vec4& operator = (const Vec4&);
-        Mat4 operator * (const Vec4&);
-        Vec4 operator + (const Vec4&);
-        Vec4 operator - (const Vec4&);
-        std::array<float, 4> data() const { return values; }
         void print();
     };
 
@@ -246,12 +228,32 @@ namespace LinearAlgebra {
         Vec3 cross(const Vec3&);
         float dot(const Vec3&);
         float magnitude();
-        float operator[] (int);
+        float& operator[] (int);
         Vec3& operator = (const Vec3&);
         Mat3 operator * (const Vec3&);
         Vec3 operator + (const Vec3&);
         Vec3 operator - (const Vec3&);
+        bool operator == (const Vec3&);
         std::array<float, 3> data() const { return values; }
+        void print();
+    };
+
+    class Vec4 : public LinStruct {
+        std::array<float, 4> values;
+    public:
+        Vec4();
+        Vec4(float[], int);
+        Vec4(std::array<float, 4>);
+        Vec4 normalize();
+        float dot(const Vec4&);
+        float magnitude();
+        float& operator[] (int);
+        Vec4& operator = (const Vec4&);
+        Mat4 operator * (const Vec4&);
+        Vec4 operator + (const Vec4&);
+        Vec4 operator - (const Vec4&);
+        bool operator == (const Vec4&);
+        std::array<float, 4> data() const { return values; }
         void print();
     };
 
@@ -261,7 +263,6 @@ namespace LinearAlgebra {
 
     Vec3 operator * (const Mat3& left_matrix, const Vec3& right_vector);
     Vec3 operator * (const Vec3& left_vector, const Mat3& right_matrix);
-
 };
 
 #endif 

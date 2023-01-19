@@ -18,7 +18,7 @@ namespace LinearAlgebra
         Classes
     */
     // Double Dimension
-    float DoubleDimension::operator[] (int col) {
+    float& DoubleDimension::operator[] (int col) {
         return arr[row + col];
     }
 
@@ -94,6 +94,10 @@ namespace LinearAlgebra
             new_arr[i] = values[i] + other_matrix.values[i];
         }
         return Mat4(new_arr);
+    }
+
+    bool Mat4::operator == (const Mat4& other_matrix) {
+        return values == other_matrix.data();
     }
 
     void Mat4::print() {
@@ -182,6 +186,10 @@ namespace LinearAlgebra
         return Mat3(new_arr);
     }
 
+    bool Mat3::operator == (const Mat3& other_matrix) {
+        return values == other_matrix.data();
+    }
+
     void Mat3::print() {
         std::cout << "--------------------------------\n";
         std::cout << std::left;
@@ -253,6 +261,10 @@ namespace LinearAlgebra
         std::array<float, 4> other_arr = other_vector.data();
         subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 4);
         return Vec4(result_arr);
+    }
+
+    bool Vec4::operator == (const Vec4& other_vector) {
+        return values == other_vector.data();
     }
 
     void Vec4::print() {
@@ -329,6 +341,10 @@ namespace LinearAlgebra
         std::array<float, 3> other_arr = other_vector.data();
         subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 3);
         return Vec3(result_arr);
+    }
+
+    bool Vec3::operator == (const Vec3& other_vector) {
+        return values == other_vector.data();
     }
 
     void Vec3::print() {
