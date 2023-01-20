@@ -234,6 +234,8 @@ namespace LinearAlgebra {
         Vec3 operator + (const Vec3&);
         Vec3 operator - (const Vec3&);
         bool operator == (const Vec3&);
+        // Returns a vector 4 version, defaults z to 1.0f
+        operator Vec4();
         std::array<float, 3> data() const { return values; }
         void print();
     };
@@ -253,6 +255,7 @@ namespace LinearAlgebra {
         Vec4 operator + (const Vec4&);
         Vec4 operator - (const Vec4&);
         bool operator == (const Vec4&);
+        operator Vec3();
         std::array<float, 4> data() const { return values; }
         void print();
     };

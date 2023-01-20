@@ -231,7 +231,7 @@ namespace LinearAlgebra
         return vector_magnitude(values.data(), 4);
     }
 
-    float Vec4::operator[] (int index) {
+    float& Vec4::operator[] (int index) {
         return values[index];
     }
 
@@ -265,6 +265,14 @@ namespace LinearAlgebra
 
     bool Vec4::operator == (const Vec4& other_vector) {
         return values == other_vector.data();
+    }
+
+    Vec4::operator Vec3() {
+        Vec3 vector = Vec3();
+        vector[0] = values[0];
+        vector[1] = values[1];
+        vector[2] = values[2];
+        return vector;
     }
 
     void Vec4::print() {
@@ -311,7 +319,7 @@ namespace LinearAlgebra
     }
 
 
-    float Vec3::operator [] (int index) {
+    float& Vec3::operator [] (int index) {
         return values[index];
     }
 
@@ -347,6 +355,16 @@ namespace LinearAlgebra
         return values == other_vector.data();
     }
 
+    Vec3::operator Vec4() {
+        Vec4 vector = Vec4();
+        vector[0] = values[0];
+        vector[1] = values[1];
+        vector[2] = values[2];
+        // By default will be 1
+        vector[3] = 1.0f;
+        return vector;
+    }
+    
     void Vec3::print() {
         std::cout << "\n--------------------------------\n";
         for (int i = 0; i < dimension; i++) {

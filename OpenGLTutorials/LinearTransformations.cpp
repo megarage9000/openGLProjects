@@ -97,31 +97,47 @@
 //}
 
 namespace LinearAlgebra {
-    Mat4 translate(Mat4 transform_matrix, Vec4 translation_vector) {
+    Mat4 translate(Vec4 translation_vector) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][3] = translation_vector[0];
         transform_matrix[1][3] = translation_vector[1];
         transform_matrix[2][3] = translation_vector[2];
         return transform_matrix;
     }
-    Mat4 scale(Mat4 transform_matrix, Vec4 translation_vector) {
+    Mat4 scale(Vec4 translation_vector) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][0] = translation_vector[0];
         transform_matrix[1][1] = translation_vector[1];
         transform_matrix[2][2] = translation_vector[2];
         return transform_matrix;
     }
-    Mat4 rotateX(Mat4 transform_matrix, float rotationX) {
+    Mat4 rotateX(float rotationX) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+        transform_matrix[1][1] = cos(rotationX);
+        transform_matrix[1][2] = -sin(rotationX);
+        transform_matrix[2][1] = sin(rotationX);
+        transform_matrix[2][2] = cos(rotationX);
+    }
+    Mat4 rotateY(float rotationY) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+        transform_matrix[0][0] = cos(rotationY);
+        transform_matrix[0][2] = sin(rotationY);
+        transform_matrix[2][0] = -sin(rotationY);
+        transform_matrix[2][2] = cos(rotationY);
+        return transform_matrix;
+    }
+    Mat4 rotateZ(float rotationZ) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+        transform_matrix[0][0] = cos(rotationZ);
+        transform_matrix[0][1] = -sin(rotationZ);
+        transform_matrix[1][0] = sin(rotationZ);
+        transform_matrix[1][1] = cos(rotationZ);
+        return transform_matrix;
+    }
+    Mat4 view_matrix(Vec4 up_vector, Vec4 focus_position, Vec4 cam_world_position) {
 
     }
-    Mat4 rotateY(Mat4 transform_matrix, float rotationY) {
-
-    }
-    Mat4 rotateZ(Mat4 transform_matrix, float rotationZ) {
-
-    }
-    Mat4 view_matrix(Mat4 transform_matrix, Vec4 up_vector, Vec4 focus_position, Vec4 cam_world_position) {
-
-    }
-    Mat4 projection_matrix(Mat4 projection_matrix, float near, float far, float fov, float range, float aspect) {
+    Mat4 projection_matrix(float near, float far, float fov, float range, float aspect) {
 
     }
 };
