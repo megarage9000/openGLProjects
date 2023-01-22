@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
-#include "LinearTransformationCPlusPlus.h"
+#include "LinearTransformations.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -15,7 +15,7 @@ int g_fb_width = 640;
 int g_fb_height = 480;
 
 // Using transformations library
-using namespace LinearTransformationCPlusPlus;
+using namespace LinearAlgebra;
 using namespace std;
 
 // FPS tracking
@@ -187,12 +187,11 @@ int main() {
 	float near = 0.1f;
 	float far = 100.0f;
 	float fov = 67.0f * DEG_TO_RAD;
-	float range = tan(fov * 0.5) * near;
 	float aspect = (float)g_win_width / (float)g_win_height;
-	vector<float> perspective = projection_matrix(near, far, fov, range, aspect);
+	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 
 	int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
-	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
+	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data().data());
 	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 

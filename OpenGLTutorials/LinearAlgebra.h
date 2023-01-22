@@ -158,7 +158,7 @@ namespace LinearAlgebra {
     void print_vector(float a[], int a_length);
 
 
-
+    // TODO: Create a function to return raw pointer data, instead of std::array
     class LinStruct {
         LinStruct();
     public:
