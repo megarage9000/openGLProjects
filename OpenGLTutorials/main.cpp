@@ -179,8 +179,7 @@ int main() {
 	};
 
 	// Camera positions
-	float camera_values[] = { 0.0f, 0.0f, 2.0f, 1.0f};
-	Vec4 camera_pos = Vec4(camera_values, 4);
+	Vec4 camera_pos { 0.0f, 0.0f, 2.0f, 1.0f };
 	float cam_yaw = 0.0f;
 
 	// Perspective Projection

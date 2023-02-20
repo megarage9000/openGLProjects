@@ -226,6 +226,7 @@ namespace LinearAlgebra {
         Vec3();
         Vec3(float[], int);
         Vec3(std::array<float, 3>);
+        Vec3(float x, float y, float z);
         Vec3 normalize();
         Vec3 cross(const Vec3&);
         float dot(const Vec3&);
@@ -248,6 +249,7 @@ namespace LinearAlgebra {
         Vec4();
         Vec4(float[], int);
         Vec4(std::array<float, 4>);
+        Vec4(float x, float y, float z, float q = 1);
         Vec4 normalize();
         Vec4 cross_vec4(const Vec4&);
         float dot(const Vec4&);

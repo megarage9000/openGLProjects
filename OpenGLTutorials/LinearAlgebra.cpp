@@ -217,6 +217,13 @@ namespace LinearAlgebra
         values = _values;
     }
 
+    Vec4::Vec4(float x, float y, float z, float q) : LinStruct(4, 4) {
+        values[0] = x;
+        values[1] = y;
+        values[2] = z;
+        values[3] = q;
+    }
+
     Vec4 Vec4::normalize() {
         std::array<float, 4> result_arr = values;
         normalize_vector(result_arr.data(), 4);
@@ -308,6 +315,12 @@ namespace LinearAlgebra
 
     Vec3::Vec3(std::array<float, 3> _values) : LinStruct(3, 3) {
         values = _values;
+    }
+
+    Vec3::Vec3(float x, float y, float z) : LinStruct(3, 3) {
+        values[0] = x;
+        values[1] = y;
+        values[2] = z;
     }
 
     Vec3 Vec3::normalize() {
