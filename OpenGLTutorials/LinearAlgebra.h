@@ -197,7 +197,8 @@ namespace LinearAlgebra {
         Mat4 operator * (const Mat4&);
         Mat4 operator + (const Mat4&);
         bool operator == (const Mat4&);
-        std::array<float, 16> data() const { return values; }
+        operator float * const () { return values.data(); }
+        std::array<float, 16> data() const { return values; };
         void print();
     };
 
@@ -214,6 +215,7 @@ namespace LinearAlgebra {
         Mat3 operator * (const Mat3&);
         Mat3 operator + (const Mat3&);
         bool operator == (const Mat3&);
+        operator float* const () { return values.data(); }
         std::array<float, 9> data() const { return values; }
         void print();
     };
@@ -235,7 +237,7 @@ namespace LinearAlgebra {
         Vec3 operator - (const Vec3&);
         bool operator == (const Vec3&);
         // Returns a vector 4 version, defaults z to 1.0f
-        operator Vec4();
+        operator float* const () { return values.data(); }
         std::array<float, 3> data() const { return values; }
         void print();
     };
@@ -247,6 +249,7 @@ namespace LinearAlgebra {
         Vec4(float[], int);
         Vec4(std::array<float, 4>);
         Vec4 normalize();
+        Vec4 cross_vec4(const Vec4&);
         float dot(const Vec4&);
         float magnitude();
         float& operator[] (int);
@@ -255,7 +258,7 @@ namespace LinearAlgebra {
         Vec4 operator + (const Vec4&);
         Vec4 operator - (const Vec4&);
         bool operator == (const Vec4&);
-        operator Vec3();
+        operator float* const () { return values.data(); }
         std::array<float, 4> data() const { return values; }
         void print();
     };

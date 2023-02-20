@@ -6,7 +6,9 @@
 # define DEG_TO_RAD (2.0 * PI) / 360
 
 namespace LinearAlgebra {
+    Mat4 translate(float x, float y, float z);
     Mat4 translate(Vec4 translation_vector);
+    Mat4 scale(float x, float y, float z);
     Mat4 scale(Vec4 translation_vector);
     Mat4 rotateX(float rotationX);
     Mat4 rotateY(float rotationY);

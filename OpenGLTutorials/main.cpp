@@ -179,7 +179,8 @@ int main() {
 	};
 
 	// Camera positions
-	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
+	float camera_values[] = { 0.0f, 0.0f, 2.0f, 1.0f};
+	Vec4 camera_pos = Vec4(camera_values, 4);
 	float cam_yaw = 0.0f;
 
 	// Perspective Projection
@@ -230,7 +231,7 @@ int main() {
 	// Setting up transformation speed
 	float speed = 1.0f;
 	float last_position = 0.0f;
-	std::vector<float> transform_matrix = LinearTransformationCPlusPlus::identity(16);
+	Mat4 transform_matrix = Mat4();
 	
 	
 	while (!glfwWindowShouldClose(window)) {
@@ -286,17 +287,17 @@ int main() {
 
 		// Camera move
 		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
-		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
-		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
-		vector<float> view = matrix_multiplication(rotation, translation);
+		Mat4 translation = translate(-camera_pos[0], -camera_pos[1],-camera_pos[2]);
+		Mat4 rotation = rotateY(-cam_yaw);
+		Mat4 view = rotation * translation;
 
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 
-		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
+		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
-		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
-		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
-		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix.data());
+		Mat4 translation_shape = translate(0.0f, elapsed_seconds * speed, 0.0f);
+		transform_matrix = transform_matrix * translation_shape;
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
 
 		// Enable back face culling

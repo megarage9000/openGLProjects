@@ -223,6 +223,26 @@ namespace LinearAlgebra
         return Vec4(result_arr);
     }
 
+    Vec4 Vec4::cross_vec4(const Vec4& other) {
+        Vec3 this_vec = Vec3();
+        this_vec[0] = values[0];
+        this_vec[1] = values[1];
+        this_vec[2] = values[2];
+
+        Vec3 other_vec = Vec3();
+        other_vec[0] = other.data()[0];
+        other_vec[1] = other.data()[1];
+        other_vec[2] = other.data()[2];
+
+        Vec3 cross_vec3 = this_vec.cross(other_vec);
+        Vec4 cross_result = Vec4();
+        cross_result[0] = cross_vec3[0];
+        cross_result[1] = cross_vec3[1];
+        cross_result[2] = cross_vec3[2];
+
+        return cross_result;
+    }
+
     float Vec4::dot(const Vec4& other) {
         return dot_product(values.data(), other.data().data(), 4, 4);
     }
@@ -265,14 +285,6 @@ namespace LinearAlgebra
 
     bool Vec4::operator == (const Vec4& other_vector) {
         return values == other_vector.data();
-    }
-
-    Vec4::operator Vec3() {
-        Vec3 vector = Vec3();
-        vector[0] = values[0];
-        vector[1] = values[1];
-        vector[2] = values[2];
-        return vector;
     }
 
     void Vec4::print() {
@@ -353,16 +365,6 @@ namespace LinearAlgebra
 
     bool Vec3::operator == (const Vec3& other_vector) {
         return values == other_vector.data();
-    }
-
-    Vec3::operator Vec4() {
-        Vec4 vector = Vec4();
-        vector[0] = values[0];
-        vector[1] = values[1];
-        vector[2] = values[2];
-        // By default will be 1
-        vector[3] = 1.0f;
-        return vector;
     }
     
     void Vec3::print() {

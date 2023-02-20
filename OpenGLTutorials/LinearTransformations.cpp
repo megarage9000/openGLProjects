@@ -97,6 +97,13 @@
 //}
 
 namespace LinearAlgebra {
+    Mat4 translate(float x, float y, float z) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+        transform_matrix[0][3] = x;
+        transform_matrix[1][3] = y;
+        transform_matrix[2][3] = z;
+        return transform_matrix;
+    }
     Mat4 translate(Vec4 translation_vector) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][3] = translation_vector[0];
@@ -104,6 +111,15 @@ namespace LinearAlgebra {
         transform_matrix[2][3] = translation_vector[2];
         return transform_matrix;
     }
+
+    Mat4 scale(float x, float y, float z) {
+        Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+        transform_matrix[0][0] = x;
+        transform_matrix[1][1] = y;
+        transform_matrix[2][2] = z;
+        return transform_matrix;
+    }
+
     Mat4 scale(Vec4 translation_vector) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][0] = translation_vector[0];
@@ -117,6 +133,7 @@ namespace LinearAlgebra {
         transform_matrix[1][2] = -sin(rotationX);
         transform_matrix[2][1] = sin(rotationX);
         transform_matrix[2][2] = cos(rotationX);
+        return transform_matrix;
     }
     Mat4 rotateY(float rotationY) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
@@ -138,8 +155,8 @@ namespace LinearAlgebra {
         Mat4 view_matrix = Mat4(IDENTITY_4, 16);
 
         Vec4 forward_vector = (focus_position - cam_world_position).normalize();
-        Vec4 new_up_vector = (Vec3(up_vector).cross(Vec3(forward_vector))).normalize();
-        Vec4 new_right_vector = (Vec3(new_up_vector).cross(Vec3(forward_vector))).normalize();
+        Vec4 new_up_vector = (up_vector.cross_vec4(forward_vector)).normalize();
+        Vec4 new_right_vector = (new_up_vector.cross_vec4(forward_vector)).normalize();
 
         view_matrix[0][0] = new_right_vector[0];
         view_matrix[0][1] = new_right_vector[1];
