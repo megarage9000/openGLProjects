@@ -95,6 +95,15 @@
 //    }
 //
 //}
+//    void projection_matrix(float result_matrix[], float near, float far, float fov, float range, float aspect){
+//        copy_from_matrix4(IDENTITY_4, result_matrix, 16, 16);
+//        result_matrix[0] = (2.0f * near) / (range * aspect + range * aspect);
+//        result_matrix[5] = near / range;
+//        result_matrix[10] = -(far + near) / (far - near);
+//        result_matrix[11] = -(2.0 * far * near) / (far - near); 
+//        result_matrix[14] = -1;
+//        result_matrix[15] = 0;
+//    }
 
 namespace LinearAlgebra {
     Mat4 translate(float x, float y, float z) {
@@ -129,26 +138,26 @@ namespace LinearAlgebra {
     }
     Mat4 rotateX(float rotationX) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
-        transform_matrix[1][1] = cos(rotationX);
-        transform_matrix[1][2] = -sin(rotationX);
-        transform_matrix[2][1] = sin(rotationX);
-        transform_matrix[2][2] = cos(rotationX);
+        transform_matrix[1][1] = cos(rotationX * DEG_TO_RAD);
+        transform_matrix[1][2] = -sin(rotationX * DEG_TO_RAD);
+        transform_matrix[2][1] = -transform_matrix[1][2];
+        transform_matrix[2][2] = transform_matrix[1][1];
         return transform_matrix;
     }
     Mat4 rotateY(float rotationY) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
-        transform_matrix[0][0] = cos(rotationY);
-        transform_matrix[0][2] = sin(rotationY);
-        transform_matrix[2][0] = -sin(rotationY);
-        transform_matrix[2][2] = cos(rotationY);
+        transform_matrix[0][0] = cos(rotationY * DEG_TO_RAD);
+        transform_matrix[0][2] = sin(rotationY * DEG_TO_RAD);
+        transform_matrix[2][0] = -transform_matrix[0][2];
+        transform_matrix[2][2] = transform_matrix[0][0];
         return transform_matrix;
     }
     Mat4 rotateZ(float rotationZ) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
-        transform_matrix[0][0] = cos(rotationZ);
-        transform_matrix[0][1] = -sin(rotationZ);
-        transform_matrix[1][0] = sin(rotationZ);
-        transform_matrix[1][1] = cos(rotationZ);
+        transform_matrix[0][0] = cos(rotationZ * DEG_TO_RAD);
+        transform_matrix[0][1] = -sin(rotationZ * DEG_TO_RAD);
+        transform_matrix[1][0] = -transform_matrix[0][1];
+        transform_matrix[1][1] = transform_matrix[0][0];
         return transform_matrix;
     }
     Mat4 view_matrix(Vec4 up_vector, Vec4 focus_position, Vec4 cam_world_position) {
@@ -177,12 +186,15 @@ namespace LinearAlgebra {
     }
     Mat4 projection_matrix(float near, float far, float fov, float aspect) {
         Mat4 projection_matrix = Mat4(IDENTITY_4, 16);
-        float range = -tan(fov / 2) * near;
+        float range = tan(fov / 2) * near;
         projection_matrix[0][0] = (2 * near) / (range * aspect + range * aspect);
         projection_matrix[1][1] = near / range;
         projection_matrix[2][2] = -(far + near) / (far - near);
         projection_matrix[2][3] = -(2 * far * near) / (far - near);
         projection_matrix[3][2] = -1;
+        projection_matrix[3][3] = 0;
         return projection_matrix;
     }
 };
+
+

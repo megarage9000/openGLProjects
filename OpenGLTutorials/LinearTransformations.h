@@ -3,7 +3,7 @@
 #define LINEAR_TRANSFORMATIONS
 #include "LinearAlgebra.h"
 #define PI 3.14159265
-# define DEG_TO_RAD (2.0 * PI) / 360
+# define DEG_TO_RAD PI / 180
 
 namespace LinearAlgebra {
     Mat4 translate(float x, float y, float z);

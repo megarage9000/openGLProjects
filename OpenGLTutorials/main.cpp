@@ -192,7 +192,7 @@ int main() {
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 
 	int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
-	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data().data());
+	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
 	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 
@@ -231,38 +231,10 @@ int main() {
 	// Setting up transformation speed
 	float speed = 1.0f;
 	float last_position = 0.0f;
-	Mat4 transform_matrix = Mat4();
+	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 	
 	
 	while (!glfwWindowShouldClose(window)) {
-
-		Mat4 matrix4 = Mat4(matrix, 16);
-
-		//matrix4.print();
-
-		Mat3 matrix3 = Mat3(matrix3Test, 9);
-
-		//matrix3.print();
-
-		std::array<float, 4> vec4Vals{ 1.0, 2.0, 3.0, 4.0 };
-		std::array<float, 3> vec3Vals{ 1.0, 2.0, 3.0 };
-
-		Vec4 vec4 = Vec4(vec4Vals);
-		Vec3 vec3 = Vec3(vec3Vals);
-
-		//vec4.print();
-		//vec3.print();
-
-		//(vec3 * matrix3).print();
-		//(vec4 * matrix4).print();
-		//(vec4 * vec4).print();
-		matrix4.transpose().print();
-		matrix3.inverse().print();
-		(vec3 - vec3).print();
-		(vec3.cross(vec3)).print();
-		std::cout << vec4.dot(vec4);
-		vec3.normalize().print();
-		std::cout << vec4.magnitude();
 
 		_update_fps_counter(window);
 
@@ -287,7 +259,9 @@ int main() {
 
 		// Camera move
 		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
-		Mat4 translation = translate(-camera_pos[0], -camera_pos[1],-camera_pos[2]);
+		Mat4 translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
+		std::cout << "translation matrix:\n";
+		translation.print();
 		Mat4 rotation = rotateY(-cam_yaw);
 		Mat4 view = rotation * translation;
 
