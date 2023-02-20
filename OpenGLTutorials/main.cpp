@@ -260,8 +260,6 @@ int main() {
 		// Camera move
 		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
 		Mat4 translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
-		std::cout << "translation matrix:\n";
-		translation.print();
 		Mat4 rotation = rotateY(-cam_yaw);
 		Mat4 view = rotation * translation;
 
@@ -326,12 +324,12 @@ bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRo
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-		*yaw -= camRotSpeed * elapsed_seconds;
+		*yaw += camRotSpeed * elapsed_seconds;
 		cam_moved = true;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
-		*yaw += camRotSpeed * elapsed_seconds;
+		*yaw -= camRotSpeed * elapsed_seconds;
 		cam_moved = true;
 	}
 
