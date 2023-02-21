@@ -242,6 +242,7 @@ namespace LinearAlgebra {
 
     Mat4 Versor::to_matrix() {
         Mat4 matrix = Mat4();
+        *this = normalize();
         float w = values[0];
         float x = values[1];
         float y = values[2];
@@ -267,12 +268,50 @@ namespace LinearAlgebra {
             new_values[1] * new_values[1] +
             new_values[2] * new_values[2] +
             new_values[3] * new_values[3]);
-        new_values[0] = new_values[0] / mag;
-        new_values[1] = new_values[1] / mag;
-        new_values[2] = new_values[2] / mag;
-        new_values[3] = new_values[3] / mag;
+        if (float_equals(mag, 1.0f) == false) {
+            new_values[0] = new_values[0] / mag;
+            new_values[1] = new_values[1] / mag;
+            new_values[2] = new_values[2] / mag;
+            new_values[3] = new_values[3] / mag;
+        }
         return Versor(new_values);
     }
+
+    float Versor::dot(Versor& other_versor) {
+        return
+            values[0] * other_versor[0] +
+            values[1] * other_versor[1] +
+            values[2] * other_versor[2] +
+            values[3] * other_versor[3];
+    }
+
+    Versor Versor::slerp(Versor& other_versor, float t) {
+        float dp = dot(other_versor);
+        if (float_equals(dp, 1.0)) {
+            return Versor(values);
+        }
+
+        float sin_omega = sqrt(1.0f - dp * dp);
+        std::array<float, 4> versor_values;
+
+        if (fabs(sin_omega) < 0.001f) {
+            for (int i = 0; i < 4; i++) {
+                versor_values[i] = (1.0f - t) * values[i] + t * other_versor[i];
+            }
+            return Versor(versor_values);
+        }
+
+        float omega = acos(dp);
+        float a = sin((1.0f - t) * omega) / sin_omega;
+        float b = sin(t * omega) / omega;
+
+        for (int i = 0; i < 4; i++) {
+            versor_values[i] = values[i] * a + other_versor[i] * b;
+        }
+
+        return Versor(versor_values);
+    }
+
 };
 
 

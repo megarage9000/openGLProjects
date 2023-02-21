@@ -16,6 +16,10 @@ namespace LinearAlgebra {
     Mat4 view_matrix(Vec4 up_vector, Vec4 focus_position, Vec4 cam_world_position);
     Mat4 projection_matrix(float near, float far, float fov, float aspect);
 
+    // To check implementation, need to see 
+    // https://github.com/capnramses/antons_opengl_tutorials_book/blob/master/06_vcam_with_quaternion/main.cpp
+
+
     class Versor {
             std::array<float, 4> values;
             void intialize_values(float x, float y, float z, float angle);
@@ -25,8 +29,11 @@ namespace LinearAlgebra {
             Versor(float* orientation, int size, float angle);
             Versor(std::array<float, 3> orientation, float angle);
             float& operator [] (int index);
+            Versor operator * (Versor& other_versor);
             Mat4 to_matrix();
             Versor normalize();
+            float dot(Versor& other_versor);
+            Versor slerp(Versor& other_versor, float t);
     };
 };
 
