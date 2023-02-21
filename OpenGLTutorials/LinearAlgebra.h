@@ -271,6 +271,7 @@ namespace LinearAlgebra {
 
     Vec3 operator * (const Mat3& left_matrix, const Vec3& right_vector);
     Vec3 operator * (const Vec3& left_vector, const Mat3& right_matrix);
+
 };
 
 #endif 

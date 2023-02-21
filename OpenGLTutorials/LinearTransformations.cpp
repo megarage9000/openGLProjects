@@ -195,6 +195,84 @@ namespace LinearAlgebra {
         projection_matrix[3][3] = 0;
         return projection_matrix;
     }
+
+    void Versor::intialize_values(float x, float y, float z, float angle) {
+        values[0] = cos(angle * DEG_TO_RAD / 2);
+        values[1] = sin(angle * DEG_TO_RAD / 2) * x;
+        values[2] = sin(angle * DEG_TO_RAD / 2) * y;
+        values[3] = sin(angle * DEG_TO_RAD / 2) * z;
+
+
+    }
+
+    Versor::Versor(std::array<float, 4> values_from_versor) : values(values_from_versor) {}
+
+    Versor::Versor(float x, float y, float z, float angle) {
+        intialize_values(x, y, z, angle);
+    }
+
+    Versor::Versor(float* orientation, int size, float angle) {
+        if (size == 4) {
+            intialize_values(orientation[0], orientation[1], orientation[2], angle);
+        }
+    }
+    Versor::Versor(std::array<float, 3> orientation, float angle) {
+        intialize_values(orientation[0], orientation[1], orientation[2], angle);
+    }
+
+    float& Versor::operator[] (int index) {
+        return values[index];
+    }
+
+    Versor Versor::operator * (Versor& other_versor) {
+        std::array<float, 4> new_values;
+        
+        new_values[0] =
+            values[0] * other_versor[0] - values[1] * other_versor[1] - values[2] * other_versor[2] - values[3] * other_versor[3];
+        new_values[1] =
+            values[1] * other_versor[0] + values[0] * other_versor[1] - values[3] * other_versor[2] + values[2] * other_versor[3];
+        new_values[2] =
+            values[2] * other_versor[0] + values[3] * other_versor[1] + values[0] * other_versor[2] - values[1] * other_versor[3];
+        new_values[0] =
+            values[3] * other_versor[0] - values[2] * other_versor[1] - values[1] * other_versor[2] - values[0] * other_versor[3];
+
+        return Versor(new_values);
+
+    }
+
+    Mat4 Versor::to_matrix() {
+        Mat4 matrix = Mat4();
+        float w = values[0];
+        float x = values[1];
+        float y = values[2];
+        float z = values[3];
+
+        matrix[0][0] = 1 - 2 * (y * y) - 2 * (z * z);
+        matrix[0][1] = 2 * (x * y) - 2 * (w * z);
+        matrix[0][3] = 2 * (x * z) + 2 * (w * y);
+        matrix[1][0] = 2 * (x * y) + 2 * (w * z);
+        matrix[1][1] = 1 - 2 * (x * x) - 2 * (z * z);
+        matrix[1][2] = 2 * (y * z) - 2 * (w * x);
+        matrix[2][0] = 2 * (x * z) - 2 * (w * y);
+        matrix[2][1] = 2 * (y * z) + 2 * (w * x);
+        matrix[2][2] = 1 - 2 * (x * x) - 2 * (y * y);
+        
+        return matrix;
+    }
+
+    Versor Versor::normalize() {
+        std::array<float, 4> new_values = values;
+        float mag = sqrt(
+            new_values[0] * new_values[0] +
+            new_values[1] * new_values[1] +
+            new_values[2] * new_values[2] +
+            new_values[3] * new_values[3]);
+        new_values[0] = new_values[0] / mag;
+        new_values[1] = new_values[1] / mag;
+        new_values[2] = new_values[2] / mag;
+        new_values[3] = new_values[3] / mag;
+        return Versor(new_values);
+    }
 };
 
 
