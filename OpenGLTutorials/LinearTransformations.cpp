@@ -212,7 +212,7 @@ namespace LinearAlgebra {
     }
 
     Versor::Versor(float* orientation, int size, float angle) {
-        if (size == 4) {
+        if (size == 3) {
             intialize_values(orientation[0], orientation[1], orientation[2], angle);
         }
     }
