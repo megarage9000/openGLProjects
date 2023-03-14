@@ -205,8 +205,6 @@ namespace LinearAlgebra {
 
     }
 
-    Versor::Versor(std::array<float, 4> values_from_versor) : values(values_from_versor) {}
-
     Versor::Versor(float x, float y, float z, float angle) {
         intialize_values(x, y, z, angle);
     }
@@ -216,6 +214,9 @@ namespace LinearAlgebra {
             intialize_values(orientation[0], orientation[1], orientation[2], angle);
         }
     }
+
+
+
     Versor::Versor(std::array<float, 3> orientation, float angle) {
         intialize_values(orientation[0], orientation[1], orientation[2], angle);
     }

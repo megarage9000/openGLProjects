@@ -23,7 +23,7 @@ namespace LinearAlgebra {
     class Versor {
             std::array<float, 4> values;
             void intialize_values(float x, float y, float z, float angle);
-            Versor(std::array<float, 4> new_values) : values(new_values) {};
+            Versor(std::array<float, 4> new_values) : values(new_values) {}
         public: 
             Versor(float x, float y, float z, float angle);
             Versor(float* orientation, int size, float angle);
