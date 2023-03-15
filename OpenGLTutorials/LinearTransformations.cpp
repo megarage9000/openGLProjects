@@ -243,7 +243,6 @@ namespace LinearAlgebra {
 
     Mat4 Versor::to_matrix() {
         Mat4 matrix = Mat4();
-        *this = normalize();
         float w = values[0];
         float x = values[1];
         float y = values[2];
@@ -264,12 +263,13 @@ namespace LinearAlgebra {
 
     Versor Versor::normalize() {
         std::array<float, 4> new_values = values;
-        float mag = sqrt(
-            new_values[0] * new_values[0] +
+        float sum = new_values[0] * new_values[0] +
             new_values[1] * new_values[1] +
             new_values[2] * new_values[2] +
-            new_values[3] * new_values[3]);
-        if (float_equals(mag, 1.0f) == false) {
+            new_values[3] * new_values[3];
+
+        if (float_equals(sum, 1.0f) == false) {
+            float mag = sqrt(sum);
             new_values[0] = new_values[0] / mag;
             new_values[1] = new_values[1] / mag;
             new_values[2] = new_values[2] / mag;
@@ -309,10 +309,8 @@ namespace LinearAlgebra {
         for (int i = 0; i < 4; i++) {
             versor_values[i] = values[i] * a + other_versor[i] * b;
         }
-
         return Versor(versor_values);
     }
-
 };
 
 

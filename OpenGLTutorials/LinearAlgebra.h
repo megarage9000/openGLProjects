@@ -234,6 +234,7 @@ namespace LinearAlgebra {
         float& operator[] (int);
         Vec3& operator = (const Vec3&);
         Mat3 operator * (const Vec3&);
+        Vec3 operator * (const float&);
         Vec3 operator + (const Vec3&);
         Vec3 operator - (const Vec3&);
         bool operator == (const Vec3&);
@@ -257,6 +258,7 @@ namespace LinearAlgebra {
         float& operator[] (int);
         Vec4& operator = (const Vec4&);
         Mat4 operator * (const Vec4&);
+        Vec4 operator * (const float&);
         Vec4 operator + (const Vec4&);
         Vec4 operator - (const Vec4&);
         bool operator == (const Vec4&);
@@ -271,7 +273,6 @@ namespace LinearAlgebra {
 
     Vec3 operator * (const Mat3& left_matrix, const Vec3& right_vector);
     Vec3 operator * (const Vec3& left_vector, const Mat3& right_matrix);
-
 };
 
 #endif 

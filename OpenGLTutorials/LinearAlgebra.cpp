@@ -276,6 +276,14 @@ namespace LinearAlgebra
         return Mat4(new_arr);
     }
 
+    Vec4 Vec4::operator * (const float& scalar) {
+        std::array<float, 4> new_arr;
+        for (int i = 0; i < 4; i++) {
+            new_arr[i] = values[i] * scalar;
+        }
+        return Vec4(new_arr);
+    }
+
     Vec4 Vec4::operator + (const Vec4& other_vector) {
         std::array<float, 4> new_arr;
         std::array<float, 4> other_arr = other_vector.data();
@@ -360,6 +368,14 @@ namespace LinearAlgebra
         std::array<float, 3> other_arr = other_vector.data();
         multiply_vectors(values.data(), other_arr.data(), new_arr.data(), 3, 9);
         return Mat3(new_arr);
+    }
+
+    Vec3 Vec3::operator * (const float& scalar) {
+        std::array<float, 3> new_arr;
+        for (int i = 0; i < 3; i++) {
+            new_arr[i] = values[i] * scalar;
+        }
+        return Vec3(new_arr);
     }
 
     Vec3 Vec3::operator + (const Vec3& other_vector) {
