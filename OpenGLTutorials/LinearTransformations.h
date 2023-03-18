@@ -34,6 +34,7 @@ namespace LinearAlgebra {
             Versor normalize();
             float dot(Versor& other_versor);
             Versor slerp(Versor& other_versor, float t);
+            void print();
     };
 };
 

@@ -106,7 +106,7 @@ namespace LinearAlgebra
         std::cout << std::setprecision(2);
         for (int y = 0; y < dimension; y++) {
             for (int x = 0; x < dimension; x++) {
-                std::cout << std::setw(8) << (*this)[y][x];
+                std::cout << std::setw(16) << std::setprecision(5) << (*this)[y][x];
             }
             std::cout << '\n';
         }

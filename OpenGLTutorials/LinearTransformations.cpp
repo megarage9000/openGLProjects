@@ -225,17 +225,13 @@ namespace LinearAlgebra {
         return values[index];
     }
 
-    Versor Versor::operator * (Versor& other_versor) {
+    Versor Versor::operator * (Versor& r) {
         std::array<float, 4> new_values;
         
-        new_values[0] =
-            values[0] * other_versor[0] - values[1] * other_versor[1] - values[2] * other_versor[2] - values[3] * other_versor[3];
-        new_values[1] =
-            values[1] * other_versor[0] + values[0] * other_versor[1] - values[3] * other_versor[2] + values[2] * other_versor[3];
-        new_values[2] =
-            values[2] * other_versor[0] + values[3] * other_versor[1] + values[0] * other_versor[2] - values[1] * other_versor[3];
-        new_values[0] =
-            values[3] * other_versor[0] - values[2] * other_versor[1] - values[1] * other_versor[2] - values[0] * other_versor[3];
+        new_values[0] = r[0] * values[0] - r[1] * values[1] - r[2] * values[2] - r[3] * values[3];
+        new_values[1] = r[0] * values[1] + r[1] * values[0] - r[2] * values[3] + r[3] * values[2];
+        new_values[2] = r[0] * values[2] + r[1] * values[3] + r[2] * values[0] - r[3] * values[1];
+        new_values[3] = r[0] * values[3] - r[1] * values[2] + r[2] * values[1] + r[3] * values[0];
 
         return Versor(new_values);
 
@@ -310,6 +306,14 @@ namespace LinearAlgebra {
             versor_values[i] = values[i] * a + other_versor[i] * b;
         }
         return Versor(versor_values);
+    }
+
+    void Versor::print() {
+        std::cout << "\n--------------------------------\n";
+        for (int i = 0; i < 4; i++) {
+            std::cout << std::setw(16) << std::setprecision(5) << (*this)[i];
+        }
+        std::cout << "\n--------------------------------\n";
     }
 };
 
