@@ -183,7 +183,7 @@ int main() {
 
 	float cam_heading_speed = 20.0f;
 	float cam_heading = 0.0f;
-	float cam_speed = 5.0f;
+	float cam_speed = 20.0f;
 
 	// directions
 	Versor quaternion{ 0.0f, 1.0f, 0.0f, -cam_heading };
@@ -192,6 +192,10 @@ int main() {
 	Vec4 forward{ 0.0f, 0.0f, -1.0f, 0.0f };
 	Vec4 right{ 1.0f, 0.0f, 0.0f, 0.0f };
 	Vec4 up{ 0.0f, 1.0f, 0.0f, 0.0f };
+
+	Vec4 local_forward = forward;
+	Vec4 local_right = right;
+	Vec4 local_up = up;
 
 	// Perspective Projection
 	glUseProgram(shaderProgram);
@@ -272,30 +276,30 @@ int main() {
 		float cam_yaw = 0.0f;
 		Vec4 cam_move{ 0.0f, 0.0f, 0.0f, 0.0f };
 		if (glfwGetKey(window, GLFW_KEY_A)) {
-			cam_move[0] -= speed * elapsed_seconds;
+			cam_move[0] -= cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D)) {
-			cam_move[0] += speed * elapsed_seconds;
+			cam_move[0] += cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_Q)) {
-			cam_move[1] += speed * elapsed_seconds;
+			cam_move[1] += cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_E)) {
-			cam_move[1] -= speed * elapsed_seconds;
+			cam_move[1] -= cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_W)) {
-			cam_move[2] -= speed * elapsed_seconds;
+			cam_move[2] -= cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_S)) {
-			cam_move[2] += speed * elapsed_seconds;
+			cam_move[2] += cam_speed * elapsed_seconds;
 			cam_moved = true;
 		}
 
@@ -307,9 +311,9 @@ int main() {
 			quaternion = (quaternion * yaw).normalize();
 
 			quat_matrix = quaternion.to_matrix();
-			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
-			right = quat_matrix * Vec4{ 1.0f, 0.0f,  0.0f, 0.0f };
-			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+			forward = quat_matrix * local_forward;
+			right = quat_matrix * local_right;
+			up = quat_matrix * local_up;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
@@ -317,18 +321,18 @@ int main() {
 			cam_moved = true;
 
 			Versor yaw{ up[0], up[1], up[2], cam_yaw };
-			std::cout << "yaw = ";
-			yaw.print();
-			quaternion = (quaternion * yaw).normalize();
-			std::cout << "quaternion * yaw = ";
-			quaternion.print();
+			//std::cout << "yaw = ";
+			//yaw.print();
+			//quaternion = (quaternion * yaw).normalize();
+			//std::cout << "quaternion * yaw = ";
+			//quaternion.print();
 
 			quat_matrix = quaternion.to_matrix();
-			std::cout << "quaternion to matrix = \n";
-			quat_matrix.print();
-			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
-			right = quat_matrix * Vec4{ 1.0f, 0.0f,  0.0f, 0.0f };
-			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+			//std::cout << "quaternion to matrix = \n";
+			//quat_matrix.print();
+			forward = quat_matrix * local_forward;
+			right = quat_matrix * local_right;
+			up = quat_matrix * local_up;
 		}
 
 		if (cam_moved) {
@@ -338,6 +342,9 @@ int main() {
 			camera_pos = camera_pos + forward * -cam_move[2];
 			camera_pos = camera_pos + up * cam_move[1];
 			camera_pos = camera_pos + right * cam_move[0];
+
+			std::cout << "camera pos = \n";
+			camera_pos.print();
 
 			Mat4 translation = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
 			Mat4 rotation = quat_matrix;

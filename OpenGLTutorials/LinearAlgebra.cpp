@@ -304,6 +304,7 @@ namespace LinearAlgebra
 
     void Vec4::print() {
         std::cout << "\n--------------------------------\n";
+        std::cout << "dimension = " << dimension << '\n';
         for (int i = 0; i < dimension; i++) {
             std::cout << std::setw(8) << (*this)[i];
         }
