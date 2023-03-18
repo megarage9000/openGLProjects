@@ -181,7 +181,7 @@ int main() {
 	// Camera properties
 	Vec4 camera_pos { 0.0f, 0.0f, -5.0f, 1.0f };
 
-	float cam_heading_speed = 20.0f;
+	float cam_heading_speed = 40.0f;
 	float cam_heading = 0.0f;
 	float cam_speed = 20.0f;
 
@@ -207,6 +207,13 @@ int main() {
 
 	int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
 	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
+
+	// Initialize initial position
+	Mat4 initial_transform = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
+	Mat4 initial_rotation = quaternion.to_matrix();
+	Mat4 view = initial_transform * initial_transform;
+	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 
@@ -321,15 +328,9 @@ int main() {
 			cam_moved = true;
 
 			Versor yaw{ up[0], up[1], up[2], cam_yaw };
-			//std::cout << "yaw = ";
-			//yaw.print();
-			//quaternion = (quaternion * yaw).normalize();
-			//std::cout << "quaternion * yaw = ";
-			//quaternion.print();
+			quaternion = (quaternion * yaw).normalize();
 
 			quat_matrix = quaternion.to_matrix();
-			//std::cout << "quaternion to matrix = \n";
-			//quat_matrix.print();
 			forward = quat_matrix * local_forward;
 			right = quat_matrix * local_right;
 			up = quat_matrix * local_up;
@@ -339,7 +340,7 @@ int main() {
 
 			quat_matrix = quaternion.to_matrix();
 
-			camera_pos = camera_pos + forward * -cam_move[2];
+			camera_pos = camera_pos + forward * cam_move[2];
 			camera_pos = camera_pos + up * cam_move[1];
 			camera_pos = camera_pos + right * cam_move[0];
 
