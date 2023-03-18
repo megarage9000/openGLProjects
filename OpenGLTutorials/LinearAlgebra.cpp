@@ -14,6 +14,399 @@ bool float_equals(float a, float b){
 
 namespace LinearAlgebra 
 {
+    /*
+        Classes
+    */
+    // Double Dimension
+    float& DoubleDimension::operator[] (int col) {
+        return arr[row + col];
+    }
+
+    // ---- Matrix 4 -----
+    Mat4::Mat4() : LinStruct(4, 16) { 
+        copy_from_matrix4(IDENTITY_4, values.data(), 16, 16);
+    }
+
+    Mat4::Mat4(float _values[], int _size) : LinStruct(4, 16) {
+        assert(_size == 16);
+        for (int i = 0; i < size; i++) {
+            values[i] = _values[i];
+        }
+    }
+
+    Mat4::Mat4(std::array<float, 16> _values) : LinStruct(4, 16) {
+        values = _values;
+    }
+
+    Mat4 Mat4::inverse() {
+        std::array<float, 16> result_arr;
+        matrix4_inv(values.data(), result_arr.data());
+        return Mat4(result_arr);
+    }
+
+    Mat4 Mat4::transpose() {
+        std::array<float, 16> result_arr = values;
+        transpose_matrix4(result_arr.data());
+        return Mat4(result_arr);
+    }
+
+    DoubleDimension Mat4::operator[] (int row) {
+        assert(row >= 0 && row < dimension);
+        return DoubleDimension(row * dimension, values.data());
+    }
+
+    // Matrix 4 multis
+    Mat4& Mat4::operator = (const Mat4& other_matrix) {
+        if (this != &other_matrix) {
+            values = other_matrix.values;
+        }
+        return *this;
+    }
+
+    Mat4 Mat4::operator * (const Mat4& other_matrix) {
+        std::array<float, 16> new_arr;
+        std::array<float, 16> other_arr = other_matrix.data();
+        matrix4_multi(values.data(), other_arr.data(), new_arr.data(), false);
+        return Mat4(new_arr);
+    }
+
+    // Vector / Matrix 4 multis
+    Vec4 operator * (const Mat4& left_matrix, const Vec4& row_vector) {
+        std::array<float, 4> new_arr;
+        std::array<float, 16> left_arr = left_matrix.data();
+        std::array<float, 4> right_arr = row_vector.data();
+        matrix4_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec4(new_arr);
+    }
+
+    Vec4 operator * (const Vec4& row_vector, const Mat4& right_matrix) {
+        std::array<float, 4> new_arr;
+        std::array<float, 16> left_arr = right_matrix.data();
+        std::array<float, 4> right_arr = row_vector.data();
+        matrix4_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec4(new_arr);
+    }
+    
+
+    Mat4 Mat4::operator + (const Mat4& other_matrix) {
+        std::array<float, 16> new_arr;
+        for (int i = 0; i < size; i++) {
+            new_arr[i] = values[i] + other_matrix.values[i];
+        }
+        return Mat4(new_arr);
+    }
+
+    bool Mat4::operator == (const Mat4& other_matrix) {
+        return values == other_matrix.data();
+    }
+
+    void Mat4::print() {
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for (int y = 0; y < dimension; y++) {
+            for (int x = 0; x < dimension; x++) {
+                std::cout << std::setw(16) << std::setprecision(5) << (*this)[y][x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
+
+    // ---- Matrix 3 -----
+
+    Mat3::Mat3() : LinStruct(3, 9) {
+        copy_from_matrix3(IDENTITY_3, values.data(), 9, values.size());
+    }
+
+    Mat3::Mat3(float _values[], int _size) : LinStruct(3, 9) {
+        assert(_size == 9);
+        for (int i = 0; i < size; i++) {
+            values[i] = _values[i];
+        }
+    }
+   
+
+    Mat3::Mat3(std::array<float, 9> _values) : LinStruct(3, 9) {
+        values = _values;
+    }
+
+    Mat3 Mat3::inverse() {
+        std::array<float, 9> result_arr;
+        matrix3_inv(values.data(), result_arr.data());
+        return Mat3(result_arr);
+    }
+
+    Mat3 Mat3::transpose() {
+        std::array<float, 9> result_arr = values;
+        transpose_matrix3(values.data());
+        return Mat3(result_arr);
+    }
+
+    DoubleDimension Mat3::operator[](int row) {
+        assert(row >= 0 && row < dimension);
+        return DoubleDimension(row * dimension, values.data());
+    }
+
+    Mat3& Mat3::operator = (const Mat3& other_matrix) {
+        if (this != &other_matrix) {
+            values = other_matrix.data();
+        }
+        return *this;
+    }
+
+    Mat3 Mat3::operator * (const Mat3& other_matrix) {
+        std::array<float, 9> new_arr;
+        std::array<float, 9> other_arr = other_matrix.data();
+        matrix3_multi(values.data(), other_arr.data(), new_arr.data());
+        return Mat3(new_arr);
+    }
+
+    Vec3 operator * (const Mat3& left_matrix, const Vec3& right_vector) {
+        std::array<float, 3> new_arr;
+        std::array<float, 9> left_arr = left_matrix.data();
+        std::array<float, 3> right_arr = right_vector.data();
+        matrix3_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec3(new_arr);
+    }
+
+    Vec3 operator * (const Vec3& left_vector, const Mat3& right_matrix) {
+        std::array<float, 3> new_arr;
+        std::array<float, 9> left_arr = right_matrix.data();
+        std::array<float, 3> right_arr = left_vector.data();
+        matrix3_multi(left_arr.data(), right_arr.data(), new_arr.data(), true);
+        return Vec3(new_arr);
+    }
+
+    Mat3 Mat3::operator + (const Mat3& other_matrix) {
+        std::array<float, 9> new_arr;
+        for (int i = 0; i < size; i++) {
+            new_arr[i] = values[i] + other_matrix.values[i];
+        }
+        return Mat3(new_arr);
+    }
+
+    bool Mat3::operator == (const Mat3& other_matrix) {
+        return values == other_matrix.data();
+    }
+
+    void Mat3::print() {
+        std::cout << "--------------------------------\n";
+        std::cout << std::left;
+        std::cout << std::setprecision(2);
+        for (int y = 0; y < dimension; y++) {
+            for (int x = 0; x < dimension; x++) {
+                std::cout << std::setw(8) << (*this)[y][x];
+            }
+            std::cout << '\n';
+        }
+        std::cout << "--------------------------------\n";
+    }
+    // ---- Vector 4 ----
+    
+    Vec4::Vec4() : LinStruct(4, 4) {
+        copy_from_vec4(MAG_1_VEC4, values.data(), 4, 4);
+    }
+
+    Vec4::Vec4(float _values[], int _size) : LinStruct(4, 4) {
+        assert(_size == 4);
+        std::copy(_values, _values + 4, values.data());
+    }
+
+    Vec4::Vec4(std::array<float, 4> _values) : LinStruct(4, 4) {
+        values = _values;
+    }
+
+    Vec4::Vec4(float x, float y, float z, float q) : LinStruct(4, 4) {
+        values[0] = x;
+        values[1] = y;
+        values[2] = z;
+        values[3] = q;
+    }
+
+    Vec4 Vec4::normalize() {
+        std::array<float, 4> result_arr = values;
+        normalize_vector(result_arr.data(), 4);
+        return Vec4(result_arr);
+    }
+
+    Vec4 Vec4::cross_vec4(const Vec4& other) {
+        Vec3 this_vec = Vec3();
+        this_vec[0] = values[0];
+        this_vec[1] = values[1];
+        this_vec[2] = values[2];
+
+        Vec3 other_vec = Vec3();
+        other_vec[0] = other.data()[0];
+        other_vec[1] = other.data()[1];
+        other_vec[2] = other.data()[2];
+
+        Vec3 cross_vec3 = this_vec.cross(other_vec);
+        Vec4 cross_result = Vec4();
+        cross_result[0] = cross_vec3[0];
+        cross_result[1] = cross_vec3[1];
+        cross_result[2] = cross_vec3[2];
+
+        return cross_result;
+    }
+
+    float Vec4::dot(const Vec4& other) {
+        return dot_product(values.data(), other.data().data(), 4, 4);
+    }
+
+    float Vec4::magnitude() {
+        return vector_magnitude(values.data(), 4);
+    }
+
+    float& Vec4::operator[] (int index) {
+        return values[index];
+    }
+
+    Vec4& Vec4::operator = (const Vec4& other_vector) {
+        if (this != &other_vector) {
+            values = other_vector.data();
+        }
+        return *this;
+    }
+   
+    Mat4 Vec4::operator * (const Vec4& other_vector) {
+        std::array<float, 16> new_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        multiply_vectors(values.data(), other_arr.data(), new_arr.data(), size, 16);
+        return Mat4(new_arr);
+    }
+
+    Vec4 Vec4::operator * (const float& scalar) {
+        std::array<float, 4> new_arr;
+        for (int i = 0; i < 4; i++) {
+            new_arr[i] = values[i] * scalar;
+        }
+        return Vec4(new_arr);
+    }
+
+    Vec4 Vec4::operator + (const Vec4& other_vector) {
+        std::array<float, 4> new_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        add_vectors(values.data(), other_arr.data(), new_arr.data(), 4);
+        return Vec4(new_arr);
+    }
+    
+    Vec4 Vec4::operator - (const Vec4& other_vector) {
+        std::array<float, 4> result_arr;
+        std::array<float, 4> other_arr = other_vector.data();
+        subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 4);
+        return Vec4(result_arr);
+    }
+
+    bool Vec4::operator == (const Vec4& other_vector) {
+        return values == other_vector.data();
+    }
+
+    void Vec4::print() {
+        std::cout << "\n--------------------------------\n";
+        std::cout << "dimension = " << dimension << '\n';
+        for (int i = 0; i < dimension; i++) {
+            std::cout << std::setw(8) << (*this)[i];
+        }
+        std::cout << "\n--------------------------------\n";
+    }
+
+    // ---- Vec3 ----
+
+    Vec3::Vec3() : LinStruct(3, 3) {
+        copy_from_vec3(MAG_1_VEC3, values.data(), 3, 3);
+    }
+
+    Vec3::Vec3(float _values[], int _size) : LinStruct(3, 3) {
+        assert(_size == 3);
+        std::copy(_values, _values + 3, values.data());
+    }
+
+    Vec3::Vec3(std::array<float, 3> _values) : LinStruct(3, 3) {
+        values = _values;
+    }
+
+    Vec3::Vec3(float x, float y, float z) : LinStruct(3, 3) {
+        values[0] = x;
+        values[1] = y;
+        values[2] = z;
+    }
+
+    Vec3 Vec3::normalize() {
+        std::array<float, 3> result_arr = values;
+        normalize_vector(result_arr.data(), 3);
+        return Vec3(result_arr);
+    }
+
+    Vec3 Vec3::cross(const Vec3& other) {
+        std::array<float, 3> result_arr;
+        cross_product_vec3(values.data(), other.data().data(), 3, 3, result_arr.data());
+        return Vec3(result_arr);
+    }
+
+    float Vec3::dot(const Vec3& other) {
+        return dot_product(values.data(), other.data().data(), 3, 3);
+    }
+
+    float Vec3::magnitude() {
+        return vector_magnitude(values.data(), 3);
+    }
+
+
+    float& Vec3::operator [] (int index) {
+        return values[index];
+    }
+
+    Vec3& Vec3::operator = (const Vec3& other_vector) {
+        if (this != &other_vector) {
+            values = other_vector.values;
+        }
+        return *this;
+    }
+
+    Mat3 Vec3::operator * (const Vec3& other_vector) {
+        std::array<float, 9> new_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        multiply_vectors(values.data(), other_arr.data(), new_arr.data(), 3, 9);
+        return Mat3(new_arr);
+    }
+
+    Vec3 Vec3::operator * (const float& scalar) {
+        std::array<float, 3> new_arr;
+        for (int i = 0; i < 3; i++) {
+            new_arr[i] = values[i] * scalar;
+        }
+        return Vec3(new_arr);
+    }
+
+    Vec3 Vec3::operator + (const Vec3& other_vector) {
+        std::array<float, 3> new_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        add_vectors(values.data(), other_arr.data(), new_arr.data(), 3);
+        return Vec3(new_arr);
+    }
+
+    Vec3 Vec3::operator - (const Vec3& other_vector) {
+        std::array<float, 3> result_arr;
+        std::array<float, 3> other_arr = other_vector.data();
+        subtract_vectors(values.data(), other_arr.data(), result_arr.data(), 3);
+        return Vec3(result_arr);
+    }
+
+    bool Vec3::operator == (const Vec3& other_vector) {
+        return values == other_vector.data();
+    }
+    
+    void Vec3::print() {
+        std::cout << "\n--------------------------------\n";
+        for (int i = 0; i < dimension; i++) {
+            std::cout << std::setw(8) << (*this)[i];
+        }
+        std::cout << "\n--------------------------------\n";
+    }
+
+    // ---- Functions -----
+
     void copy_from_matrix4(float src[], float dest[], int src_len, int dest_len) {
         if(src_len == dest_len && src_len == 16) {
             for(int i = 0; i < 16; i++) {
@@ -38,7 +431,7 @@ namespace LinearAlgebra
             copy_from_matrix4(IDENTITY_4, result_arr, 16, result_len);
         }
     }
-    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec){
+    void matrix4_multi(float a[], float b[], float result_arr[], bool is_b_vec = false){
         // Vector multiplication
         if(is_b_vec) {
             for(int i = 0; i < 4; i++) {
@@ -48,6 +441,7 @@ namespace LinearAlgebra
                         a[i * 4 + 3] * b[3];
             }
         }
+       
         // Matrix multiplication
         else {
             for(int row = 0; row < 4; row++){
@@ -329,6 +723,21 @@ namespace LinearAlgebra
     }
 
     // --- Vectors ---- 
+    void multiply_vectors(float row_vector[], float col_vector[], float res[], int length, int result_length) {
+        if (length * length != result_length) {
+            for (int i = 0; i < result_length; i++) {
+                res[i] = 0.0f;
+            }
+        }
+        else {
+            for (int y = 0; y < length; y++) {
+                for (int x = 0; x < length; x++) {
+                    res[y * length + x] = row_vector[y] * col_vector[x];
+                }
+            }
+        }
+    }
+
     void add_vectors(float a[], float b[], float res[], int length) {
         for(int i = 0; i < length; i++) {
             res[i] = a[i] + b[i];

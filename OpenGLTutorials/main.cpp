@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
-#include "LinearTransformationCPlusPlus.h"
+#include "LinearTransformations.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -15,7 +15,7 @@ int g_fb_width = 640;
 int g_fb_height = 480;
 
 // Using transformations library
-using namespace LinearTransformationCPlusPlus;
+using namespace LinearAlgebra;
 using namespace std;
 
 // FPS tracking
@@ -42,6 +42,8 @@ const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
 bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed,float elapsed_seconds, float * yaw);
+
+using namespace LinearAlgebra;
 
 int main() {
 
@@ -170,22 +172,48 @@ int main() {
 		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
+	float matrix3Test[] = {
+		0.0, 2.0, 3.0,
+		1.0, 4.0, 5.0,
+		10.0, 11.0, 9.0
+	};
 
-	// Camera positions
-	float camera_pos[] = { 0.0f, 0.0f, 2.0f };
-	float cam_yaw = 0.0f;
+	// Camera properties
+	Vec4 camera_pos { 0.0f, 0.0f, -5.0f, 1.0f };
+
+	float cam_heading_speed = 40.0f;
+	float cam_heading = 0.0f;
+	float cam_speed = 20.0f;
+
+	// directions
+	Versor quaternion{ 0.0f, 1.0f, 0.0f, -cam_heading };
+	Mat4 quat_matrix = quaternion.to_matrix();
+
+	Vec4 forward{ 0.0f, 0.0f, -1.0f, 0.0f };
+	Vec4 right{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Vec4 up{ 0.0f, 1.0f, 0.0f, 0.0f };
+
+	Vec4 local_forward = forward;
+	Vec4 local_right = right;
+	Vec4 local_up = up;
 
 	// Perspective Projection
 	glUseProgram(shaderProgram);
 	float near = 0.1f;
 	float far = 100.0f;
 	float fov = 67.0f * DEG_TO_RAD;
-	float range = tan(fov * 0.5) * near;
 	float aspect = (float)g_win_width / (float)g_win_height;
-	vector<float> perspective = projection_matrix(near, far, fov, range, aspect);
+	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 
 	int proj_mat_loc = glGetUniformLocation(shaderProgram, "projection");
-	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective.data());
+	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
+
+	// Initialize initial position
+	Mat4 initial_transform = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
+	Mat4 initial_rotation = quaternion.to_matrix();
+	Mat4 view = initial_transform * initial_transform;
+	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 	
 
 	// Generating a Vertex Buffer Object for our Triangle, to 
@@ -222,9 +250,9 @@ int main() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	// Setting up transformation speed
-	float speed = 1.0f;
+	float speed = 5.0f;
 	float last_position = 0.0f;
-	std::vector<float> transform_matrix = LinearTransformationCPlusPlus::identity(16);
+	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 	
 	
 	while (!glfwWindowShouldClose(window)) {
@@ -251,18 +279,87 @@ int main() {
 		}
 
 		// Camera move
-		bool can_move = moveCamera(window, camera_pos, 5, 20, elapsed_seconds, &cam_yaw);
-		vector<float> translation = translate(-camera_pos[0], -camera_pos[1], -camera_pos[2]);
-		vector<float> rotation = rotate_euler(-cam_yaw, false, true, false);
-		vector<float> view = matrix_multiplication(rotation, translation);
+		bool cam_moved = false;
+		float cam_yaw = 0.0f;
+		Vec4 cam_move{ 0.0f, 0.0f, 0.0f, 0.0f };
+		if (glfwGetKey(window, GLFW_KEY_A)) {
+			cam_move[0] -= cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D)) {
+			cam_move[0] += cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Q)) {
+			cam_move[1] += cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
 
-		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+		if (glfwGetKey(window, GLFW_KEY_E)) {
+			cam_move[1] -= cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
 
-		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view.data());
+		if (glfwGetKey(window, GLFW_KEY_W)) {
+			cam_move[2] -= cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
 
-		std::vector<float> tranlsation_vector = LinearTransformationCPlusPlus::translate(0.0f, elapsed_seconds * speed, 0.0f);
-		transform_matrix = LinearTransformationCPlusPlus::matrix_multiplication(transform_matrix, tranlsation_vector);
-		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix.data());
+		if (glfwGetKey(window, GLFW_KEY_S)) {
+			cam_move[2] += cam_speed * elapsed_seconds;
+			cam_moved = true;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+			cam_yaw += cam_heading_speed * elapsed_seconds;
+			cam_moved = true;
+
+			Versor yaw{up[0], up[1], up[2], cam_yaw};
+			quaternion = (quaternion * yaw).normalize();
+
+			quat_matrix = quaternion.to_matrix();
+			forward = quat_matrix * local_forward;
+			right = quat_matrix * local_right;
+			up = quat_matrix * local_up;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
+			cam_yaw -= cam_heading_speed * elapsed_seconds;
+			cam_moved = true;
+
+			Versor yaw{ up[0], up[1], up[2], cam_yaw };
+			quaternion = (quaternion * yaw).normalize();
+
+			quat_matrix = quaternion.to_matrix();
+			forward = quat_matrix * local_forward;
+			right = quat_matrix * local_right;
+			up = quat_matrix * local_up;
+		}
+
+		if (cam_moved) {
+
+			quat_matrix = quaternion.to_matrix();
+
+			camera_pos = camera_pos + forward * cam_move[2];
+			camera_pos = camera_pos + up * cam_move[1];
+			camera_pos = camera_pos + right * cam_move[0];
+
+			std::cout << "camera pos = \n";
+			camera_pos.print();
+
+			Mat4 translation = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
+			Mat4 rotation = quat_matrix;
+			Mat4 view = rotation * translation;
+
+			int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+
+			glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+		}
+
+
+		Mat4 translation_shape = translate(0.0f, elapsed_seconds * speed, 0.0f);
+		transform_matrix = transform_matrix * translation_shape;
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
 
 		// Enable back face culling
@@ -283,50 +380,6 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
-}
-
-bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed, float elapsed_seconds, float * yaw) {
-	bool cam_moved = false;
-
-	if (glfwGetKey(window, GLFW_KEY_A)) {
-		camera_pos[0] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_D)) {
-		camera_pos[0] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_PAGE_UP)) {
-		camera_pos[1] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN)) {
-		camera_pos[1] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_W)) {
-		camera_pos[2] -= speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S)) {
-		camera_pos[2] += speed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-		*yaw -= camRotSpeed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_RIGHT)) {
-		*yaw += camRotSpeed * elapsed_seconds;
-		cam_moved = true;
-	}
-
-	return cam_moved;
 }
 
 void _update_fps_counter(GLFWwindow* window)
