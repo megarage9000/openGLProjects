@@ -181,12 +181,12 @@ int main() {
 	// Camera properties
 	Vec4 camera_pos { 0.0f, 0.0f, -5.0f, 1.0f };
 
-	float cam_heading_speed = 40.0f;
+	float cam_heading_speed = 10.0f;
 	float cam_heading = 0.0f;
-	float cam_speed = 20.0f;
+	float cam_speed = 10.0f;
 
 	// directions
-	Versor quaternion{ 0.0f, 1.0f, 0.0f, -cam_heading };
+	Versor quaternion{ 0.0f, 1.0f, 0.0f, 0.0f };
 	Mat4 quat_matrix = quaternion.to_matrix();
 
 	Vec4 forward{ 0.0f, 0.0f, -1.0f, 0.0f };
@@ -210,7 +210,7 @@ int main() {
 
 	// Initialize initial position
 	Mat4 initial_transform = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
-	Mat4 initial_rotation = quaternion.to_matrix();
+	Mat4 initial_rotation = quat_matrix;
 	Mat4 view = initial_transform * initial_transform;
 	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
@@ -280,6 +280,7 @@ int main() {
 
 		// Camera move
 		bool cam_moved = false;
+		bool is_rotated = false;
 		float cam_yaw = 0.0f;
 		Vec4 cam_move{ 0.0f, 0.0f, 0.0f, 0.0f };
 		if (glfwGetKey(window, GLFW_KEY_A)) {
@@ -313,49 +314,71 @@ int main() {
 		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
 			cam_yaw += cam_heading_speed * elapsed_seconds;
 			cam_moved = true;
+			is_rotated = true;
 
+			system("CLS");
 			Versor yaw{up[0], up[1], up[2], cam_yaw};
 			quaternion = (quaternion * yaw).normalize();
-
 			quat_matrix = quaternion.to_matrix();
-			forward = quat_matrix * local_forward;
-			right = quat_matrix * local_right;
-			up = quat_matrix * local_up;
+			std::cout << "Forward, Right, and Up Directions\n";
+			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
+			forward.print();
+			right = quat_matrix * Vec4{ 1.0f, 0.0f, 0.0f, 0.0f };
+			right.print();
+			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+			up.print();
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
 			cam_yaw -= cam_heading_speed * elapsed_seconds;
 			cam_moved = true;
+			is_rotated = true;
 
+			system("CLS");
 			Versor yaw{ up[0], up[1], up[2], cam_yaw };
 			quaternion = (quaternion * yaw).normalize();
-
 			quat_matrix = quaternion.to_matrix();
-			forward = quat_matrix * local_forward;
-			right = quat_matrix * local_right;
-			up = quat_matrix * local_up;
+			std::cout << "Forward, Right, and Up Directions\n";
+			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
+			forward.print();
+			right = quat_matrix * Vec4{ 1.0f, 0.0f, 0.0f, 0.0f };
+			right.print();
+			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+			up.print();
 		}
 
 		if (cam_moved) {
 
 			quaternion = quaternion.normalize();
 			quat_matrix = quaternion.to_matrix();
-
-			std::cout << "Forward, Up, and Right moves\n";
-			Vec4 forward_move = forward * -cam_move[2];
-			forward_move.print();
-			Vec4 up_move = up * cam_move[1];
-			up_move.print();
+			
+			Vec4 forward_move = forward * cam_move[2];
 			Vec4 right_move = right * cam_move[0];
-			right_move.print();
+			Vec4 up_move = up * cam_move[1];
 
 			camera_pos = camera_pos + forward_move;
 			camera_pos = camera_pos + up_move;
 			camera_pos = camera_pos + right_move;
+			
+			if (is_rotated == false) {
+				system("CLS");
+				std::cout << "Forward, Right, and Up Directions\n";
+				forward.print();
+				right.print();
+				up.print();
+				std::cout << "Forward, Right, and Up Moves\n";
+				forward_move.print();
+				right_move.print();
+				up_move.print();
+				std::cout << "Camera position\n";
+				camera_pos.print();
+			}
 
-			Mat4 translation = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
+
+			Mat4 translation = translate(camera_pos[0] , camera_pos[1], camera_pos[2]);
 			Mat4 rotation = quat_matrix;
 			Mat4 view = rotation * translation;
+			view.print();
 
 			int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 

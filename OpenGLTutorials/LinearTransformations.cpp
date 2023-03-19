@@ -93,12 +93,11 @@ namespace LinearAlgebra {
     }
 
     void Versor::intialize_values(float x, float y, float z, float angle) {
-        values[0] = cos(angle * DEG_TO_RAD / 2);
-        values[1] = sin(angle * DEG_TO_RAD / 2) * x;
-        values[2] = sin(angle * DEG_TO_RAD / 2) * y;
-        values[3] = sin(angle * DEG_TO_RAD / 2) * z;
-
-
+        float radians = angle * DEG_TO_RAD;
+        values[0] = cosf( radians / 2.0f);
+        values[1] = sinf( radians / 2.0f) * x;
+        values[2] = sinf( radians / 2.0f) * y;
+        values[3] = sinf( radians / 2.0f) * z;
     }
 
     Versor::Versor(float x, float y, float z, float angle) {
@@ -141,22 +140,22 @@ namespace LinearAlgebra {
         float y = values[2];
         float z = values[3];
 
-        matrix[0][0] = 1 - 2 * (y * y) - 2 * (z * z);
-        matrix[0][1] = 2 * (x * y) - 2 * (w * z);
-        matrix[0][2] = 2 * (x * z) + 2 * (w * y);
-        matrix[0][3] = 0;
-        matrix[1][0] = 2 * (x * y) + 2 * (w * z);
-        matrix[1][1] = 1 - 2 * (x * x) - 2 * (z * z);
-        matrix[1][2] = 2 * (y * z) - 2 * (w * x);
-        matrix[1][3] = 0;
-        matrix[2][0] = 2 * (x * z) - 2 * (w * y);
-        matrix[2][1] = 2 * (y * z) + 2 * (w * x);
-        matrix[2][2] = 1 - 2 * (x * x) - 2 * (y * y);
-        matrix[2][3] = 0;
-        matrix[3][0] = 0;
-        matrix[3][1] = 0;
-        matrix[3][2] = 0;
-        matrix[3][3] = 1;
+        matrix[0][0] = 1.0f - 2.0f * (y * y) - 2.0f * (z * z);
+        matrix[0][1] = 2.0f * (x * y) - 2.0f * (w * z);
+        matrix[0][2] = 2.0f * (x * z) + 2.0f * (w * y);
+        matrix[0][3] = 0.0f;
+        matrix[1][0] = 2.0f * (x * y) + 2.0f * (w * z);
+        matrix[1][1] = 1.0f - 2.0f * (x * x) - 2.0f * (z * z);
+        matrix[1][2] = 2.0f * (y * z) - 2.0f * (w * x);
+        matrix[1][3] = 0.0;
+        matrix[2][0] = 2.0f * (x * z) - 2.0f * (w * y);
+        matrix[2][1] = 2.0f * (y * z) + 2.0f * (w * x);
+        matrix[2][2] = 1.0f - 2.0f * (x * x) - 2.0f * (y * y);
+        matrix[2][3] = 0.0f;
+        matrix[3][0] = 0.0f;
+        matrix[3][1] = 0.0f;
+        matrix[3][2] = 0.0f;
+        matrix[3][3] = 1.0f;
         return matrix;
     }
 
