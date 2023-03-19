@@ -224,9 +224,16 @@ namespace LinearAlgebra
         values[3] = q;
     }
 
-    Vec4 Vec4::normalize() {
+    Vec4 Vec4::normalize(bool true_normalize) {
         std::array<float, 4> result_arr = values;
-        normalize_vector(result_arr.data(), 4);
+        if (true_normalize) {
+            // Normalize all components
+            normalize_vector(result_arr.data(), 4);
+        }
+        else {
+            // For linear algebra, keep the 1 at the end normal
+            normalize_vector(result_arr.data(), 3);
+        }
         return Vec4(result_arr);
     }
 
@@ -304,9 +311,8 @@ namespace LinearAlgebra
 
     void Vec4::print() {
         std::cout << "\n--------------------------------\n";
-        std::cout << "dimension = " << dimension << '\n';
         for (int i = 0; i < dimension; i++) {
-            std::cout << std::setw(8) << (*this)[i];
+            std::cout << std::setw(16) << std::setprecision(5) << (*this)[i];
         }
         std::cout << "\n--------------------------------\n";
     }

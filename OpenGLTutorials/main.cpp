@@ -338,14 +338,20 @@ int main() {
 
 		if (cam_moved) {
 
+			quaternion = quaternion.normalize();
 			quat_matrix = quaternion.to_matrix();
 
-			camera_pos = camera_pos + forward * cam_move[2];
-			camera_pos = camera_pos + up * cam_move[1];
-			camera_pos = camera_pos + right * cam_move[0];
+			std::cout << "Forward, Up, and Right moves\n";
+			Vec4 forward_move = forward * -cam_move[2];
+			forward_move.print();
+			Vec4 up_move = up * cam_move[1];
+			up_move.print();
+			Vec4 right_move = right * cam_move[0];
+			right_move.print();
 
-			std::cout << "camera pos = \n";
-			camera_pos.print();
+			camera_pos = camera_pos + forward_move;
+			camera_pos = camera_pos + up_move;
+			camera_pos = camera_pos + right_move;
 
 			Mat4 translation = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
 			Mat4 rotation = quat_matrix;

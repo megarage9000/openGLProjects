@@ -251,7 +251,7 @@ namespace LinearAlgebra {
         Vec4(float[], int);
         Vec4(std::array<float, 4>);
         Vec4(float x, float y, float z, float q = 1);
-        Vec4 normalize();
+        Vec4 normalize(bool true_normalize = false);
         Vec4 cross_vec4(const Vec4&);
         float dot(const Vec4&);
         float magnitude();
