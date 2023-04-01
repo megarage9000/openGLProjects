@@ -41,8 +41,6 @@ void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
-bool moveCamera(GLFWwindow* window, float camera_pos[], float speed, float camRotSpeed,float elapsed_seconds, float * yaw);
-
 using namespace LinearAlgebra;
 
 int main() {
@@ -165,6 +163,12 @@ int main() {
 		0.0f, 0.0f, 1.0f  // Blue
 	};
 
+	GLfloat normals[] = {
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
 	float matrix[] = {
 		1.0f, 0.0f, 0.0f, 0.0f, // First Column
 		0.0f, 1.0f, 0.0f, 0.0f, // Second Column
@@ -224,10 +228,10 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
 	// Generating colour points vbo
-	GLuint colours_vbo = 0;
-	glGenBuffers(1, &colours_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colours), colours, GL_STATIC_DRAW);
+	GLuint normals_vbo = 0;
+	glGenBuffers(1, &normals_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
 	
 	
 	// --- (VAO) --- Generating a Vertex Array Object for our Triangle, to prevent having to
@@ -246,7 +250,7 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	// 2. Adding the colors vbo
-	glBindBuffer(GL_ARRAY_BUFFER, colours_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
 	// Setting up transformation speed

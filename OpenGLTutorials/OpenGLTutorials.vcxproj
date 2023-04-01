@@ -164,6 +164,9 @@
     <ClInclude Include="LinearTransformations.h" />
     <ClInclude Include="Log.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Project Ideas.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
