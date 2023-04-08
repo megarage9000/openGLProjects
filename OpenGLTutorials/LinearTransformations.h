@@ -32,6 +32,7 @@ namespace LinearAlgebra {
             Versor operator * (Versor& other_versor);
             Mat4 to_matrix();
             Versor normalize();
+            Versor conjugate();
             float dot(Versor& other_versor);
             Versor slerp(Versor& other_versor, float t);
             void print();

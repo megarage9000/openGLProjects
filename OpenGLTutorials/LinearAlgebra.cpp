@@ -224,6 +224,13 @@ namespace LinearAlgebra
         values[3] = q;
     }
 
+    Vec4::Vec4(Vec3 vec3, float q) : LinStruct(4, 4) {
+        values[0] = vec3[0];
+        values[1] = vec3[1];
+        values[2] = vec3[2];
+        values[3] = q;
+    }
+
     Vec4 Vec4::normalize(bool true_normalize) {
         std::array<float, 4> result_arr = values;
         if (true_normalize) {

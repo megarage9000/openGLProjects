@@ -176,6 +176,15 @@ namespace LinearAlgebra {
         return Versor(new_values);
     }
 
+    Versor Versor::conjugate() {
+        std::array<float, 4> new_values;
+        new_values[0] = values[0];
+        new_values[1] = -values[1];
+        new_values[2] = -values[2];        
+        new_values[3] = -values[3];
+        return Versor(new_values);
+    }
+
     float Versor::dot(Versor& other_versor) {
         return
             values[0] * other_versor[0] +

@@ -40,6 +40,10 @@ void printProgramInfo(GLuint programIndex);
 void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
+Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector);
+
+// GLFW callbacks
+static void cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos);
 
 using namespace LinearAlgebra;
 
@@ -183,7 +187,7 @@ int main() {
 	};
 
 	// Camera properties
-	Vec4 camera_pos { 0.0f, 0.0f, -5.0f, 1.0f };
+	Vec3 camera_pos { 0.0f, 0.0f, -5.0f};
 
 	float cam_heading_speed = 10.0f;
 	float cam_heading = 0.0f;
@@ -193,13 +197,13 @@ int main() {
 	Versor quaternion{ 0.0f, 1.0f, 0.0f, 0.0f };
 	Mat4 quat_matrix = quaternion.to_matrix();
 
-	Vec4 forward{ 0.0f, 0.0f, -1.0f, 0.0f };
-	Vec4 right{ 1.0f, 0.0f, 0.0f, 0.0f };
-	Vec4 up{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Vec3 forward{ 0.0f, 0.0f, -1.0f };
+	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
+	Vec3 up = forward.cross(right).normalize();
 
-	Vec4 local_forward = forward;
-	Vec4 local_right = right;
-	Vec4 local_up = up;
+	Vec3 local_forward = forward;
+	Vec3 local_right = right;
+	Vec3 local_up = up;
 
 	// Perspective Projection
 	glUseProgram(shaderProgram);
@@ -316,29 +320,33 @@ int main() {
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-			cam_yaw -= cam_heading_speed * elapsed_seconds;
+			cam_yaw += cam_heading_speed * elapsed_seconds;
 			cam_moved = true;
 			is_rotated = true;
 
 			Versor yaw{up[0], up[1], up[2], cam_yaw};
 			quaternion = (quaternion * yaw).normalize();
 			quat_matrix = quaternion.to_matrix();
-			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
-			right = quat_matrix * Vec4{ 1.0f, 0.0f, 0.0f, 0.0f };
-			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+
+			forward = rotate_vector3(quat_matrix, forward);
+			forward = forward.normalize();
+			Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
+			Vec3 up = forward.cross(right).normalize();
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
-			cam_yaw += cam_heading_speed * elapsed_seconds;
+			cam_yaw -= cam_heading_speed * elapsed_seconds;
 			cam_moved = true;
 			is_rotated = true;
 
 			Versor yaw{ up[0], up[1], up[2], cam_yaw };
 			quaternion = (quaternion * yaw).normalize();
 			quat_matrix = quaternion.to_matrix();
-			forward = quat_matrix * Vec4{ 0.0f, 0.0f, -1.0f, 0.0f };
-			right = quat_matrix * Vec4{ 1.0f, 0.0f, 0.0f, 0.0f };
-			up = quat_matrix * Vec4{ 0.0f, 1.0f, 0.0f, 0.0f };
+			
+			forward = rotate_vector3(quat_matrix, forward);
+			forward = forward.normalize();
+			Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
+			Vec3 up = forward.cross(right).normalize();
 		}
 
 		if (cam_moved) {
@@ -346,9 +354,9 @@ int main() {
 			quaternion = quaternion.normalize();
 			quat_matrix = quaternion.to_matrix();
 
-			Vec4 forward_move = forward * cam_move[2];
-			Vec4 right_move = right * cam_move[0];
-			Vec4 up_move = up * cam_move[1];
+			Vec3 forward_move = forward * cam_move[2];
+			Vec3 right_move = right * cam_move[0];
+			Vec3 up_move = up * cam_move[1];
 
 			camera_pos = camera_pos + forward_move;
 			camera_pos = camera_pos + up_move;
@@ -387,6 +395,16 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
+}
+
+Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector) {
+	Vec4 homogenous_vector = rotation_matrix * Vec4(vector);
+	Vec3 rotated_vector{
+		homogenous_vector[0] / homogenous_vector[3],
+		homogenous_vector[1] / homogenous_vector[3],
+		homogenous_vector[2] / homogenous_vector[3]
+	};
+	return rotated_vector;
 }
 
 void _update_fps_counter(GLFWwindow* window)
