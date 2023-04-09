@@ -80,6 +80,41 @@ namespace LinearAlgebra {
 
         return view_matrix;
     }
+
+    Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3 up_vector) {
+        Vec3 forward_vector;
+        Vec3 right_vector;
+        return view_matrix(focus_position, cam_world_position, up_vector, forward_vector, right_vector);
+    }
+
+    Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3& up_vector, Vec3& forward_vector, Vec3& right_vector) {
+        Mat4 view_matrix = Mat4(IDENTITY_4, 16);
+
+        forward_vector = Vec3((focus_position - cam_world_position)).normalize();
+        Vec3 new_up_vector = (up_vector.cross(forward_vector)).normalize();
+        Vec3 new_right_vector = (new_up_vector.cross(forward_vector)).normalize();
+
+        up_vector = new_up_vector;
+        right_vector = new_right_vector;
+
+        view_matrix[0][0] = new_right_vector[0];
+        view_matrix[0][1] = new_right_vector[1];
+        view_matrix[0][2] = new_right_vector[2];
+        view_matrix[0][3] = -cam_world_position[0];
+
+        view_matrix[1][0] = new_up_vector[0];
+        view_matrix[1][1] = new_up_vector[1];
+        view_matrix[1][2] = new_up_vector[2];
+        view_matrix[1][3] = -cam_world_position[1];
+
+        view_matrix[2][0] = -forward_vector[0];
+        view_matrix[2][1] = -forward_vector[1];
+        view_matrix[2][2] = -forward_vector[2];
+        view_matrix[2][3] = -cam_world_position[2];
+
+        return view_matrix;
+    }
+    
     Mat4 projection_matrix(float near, float far, float fov, float aspect) {
         Mat4 projection_matrix = Mat4(IDENTITY_4, 16);
         float range = tan(fov / 2) * near;

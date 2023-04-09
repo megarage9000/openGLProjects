@@ -13,7 +13,8 @@ namespace LinearAlgebra {
     Mat4 rotateX(float rotationX);
     Mat4 rotateY(float rotationY);
     Mat4 rotateZ(float rotationZ);
-    Mat4 view_matrix(Vec4 up_vector, Vec4 focus_position, Vec4 cam_world_position);
+    Mat4 view_matrix(Vec3 up_vector, Vec4 focus_position, Vec4 cam_world_position);
+    Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3& up_vector, Vec3& forward_vector, Vec3& right_vector);
     Mat4 projection_matrix(float near, float far, float fov, float aspect);
 
     // To check implementation, need to see 

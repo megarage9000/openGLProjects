@@ -588,9 +588,9 @@ namespace LinearAlgebra
         float result = determinant_matrix3(minors);
 
         // Handles -0's, kinda of annoying
-        // if(result == 0){
-        //     return 0;
-        // }
+         if(result == 0){
+             return 0;
+         }
         return result;
     }
 

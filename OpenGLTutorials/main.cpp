@@ -42,10 +42,23 @@ const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector);
 
+
+
 // GLFW callbacks
 static void cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos);
 
+// Misc
+Vec4 mouse_to_world_space(Mat4 view, Mat4 projection, float z_dist = 10.0f);
+
 using namespace LinearAlgebra;
+
+// OpenGL viewport
+int view_port[4];
+Vec3 mouse_pos { 0.0f, 0.0f, 0.0f };
+Vec3 camera_translation { 0.0f, 0.0f, 0.0f };
+Vec3 up_vector { 0.0f, 1.0f, 0.0f };
+Vec3 forward_vector { 0.0f, 0.0f, -1.0f };
+Vec3 right_vector { 1.0f, 0.0f, 0.0f };
 
 int main() {
 
@@ -87,6 +100,7 @@ int main() {
 		return -1;
 	}
 
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -100,6 +114,8 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);  
 	glDepthFunc(GL_LESS); 
+
+	glGetIntegerv(GL_VIEWPORT, view_port);
 
 
 	//--- Triangle drawing ---
@@ -219,7 +235,7 @@ int main() {
 	// Initialize initial position
 	Mat4 initial_transform = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
 	Mat4 initial_rotation = quat_matrix;
-	Mat4 view = initial_transform * initial_transform;
+	Mat4 view = initial_rotation * initial_transform;
 	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 	
@@ -319,35 +335,41 @@ int main() {
 			cam_moved = true;
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-			cam_yaw += cam_heading_speed * elapsed_seconds;
-			cam_moved = true;
-			is_rotated = true;
+		//if (glfwGetKey(window, GLFW_KEY_LEFT)) {
+		//	cam_yaw += cam_heading_speed * elapsed_seconds;
+		//	cam_moved = true;
+		//	is_rotated = true;
 
-			Versor yaw{up[0], up[1], up[2], cam_yaw};
-			quaternion = (quaternion * yaw).normalize();
-			quat_matrix = quaternion.to_matrix();
+		//	Versor yaw{up[0], up[1], up[2], cam_yaw};
+		//	quaternion = (quaternion * yaw).normalize();
+		//	quat_matrix = quaternion.to_matrix();
 
-			forward = rotate_vector3(quat_matrix, forward);
-			forward = forward.normalize();
-			Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
-			Vec3 up = forward.cross(right).normalize();
-		}
+		//	forward = rotate_vector3(quat_matrix, forward);
+		//	forward = forward.normalize();
+		//	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
+		//	Vec3 up = forward.cross(right).normalize();
+		//}
 
-		if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
-			cam_yaw -= cam_heading_speed * elapsed_seconds;
-			cam_moved = true;
-			is_rotated = true;
+		//if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
+		//	cam_yaw -= cam_heading_speed * elapsed_seconds;
+		//	cam_moved = true;
+		//	is_rotated = true;
 
-			Versor yaw{ up[0], up[1], up[2], cam_yaw };
-			quaternion = (quaternion * yaw).normalize();
-			quat_matrix = quaternion.to_matrix();
-			
-			forward = rotate_vector3(quat_matrix, forward);
-			forward = forward.normalize();
-			Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
-			Vec3 up = forward.cross(right).normalize();
-		}
+		//	Versor yaw{ up[0], up[1], up[2], cam_yaw };
+		//	quaternion = (quaternion * yaw).normalize();
+		//	quat_matrix = quaternion.to_matrix();
+		//	
+		//	forward = rotate_vector3(quat_matrix, forward);
+		//	forward = forward.normalize();
+		//	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
+		//	Vec3 up = forward.cross(right).normalize();
+		//}
+
+		// Camera rotation 
+		Vec4 mouse_world_space = mouse_to_world_space(view, perspective);
+		std::cout << "mouse to world coords\n";
+		mouse_world_space.print();
+
 
 		if (cam_moved) {
 
@@ -364,7 +386,7 @@ int main() {
 
 			Mat4 translation = translate(camera_pos[0] , camera_pos[1], camera_pos[2]);
 			Mat4 rotation = quat_matrix;
-			Mat4 view = rotation * translation;
+			view = rotation * translation;
 
 			int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 
@@ -395,6 +417,33 @@ int main() {
 	
 	glfwTerminate();
 	return 0;
+}
+
+static void cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
+	// std::cout << "x = " << x_pos << ", y = " << y_pos << '\n';
+	mouse_pos[0] = x_pos;
+	mouse_pos[1] = y_pos;
+}
+
+Vec4 mouse_to_world_space(Mat4 view, Mat4 projection, float z_dist)
+{
+	// To NDC coordinates
+	float x_ndc = (2 * mouse_pos[0] / view_port[2]) - 1;
+	float y_ndc = 1 - (2 * mouse_pos[0] / view_port[3]);
+	
+
+	// To Homgenous coordinates
+	Vec4 homogenous_coords{ x_ndc, y_ndc, z_dist, 1.0f };
+	std::cout << "Homogenous coords\n";
+	homogenous_coords.print();
+
+	Mat4 matrix_inversions = (projection * view);
+	std::cout << "projection and view\n";
+	matrix_inversions.print();
+	std::cout << "projection and view inversion\n";
+	matrix_inversions.inverse().print();
+
+	return matrix_inversions * homogenous_coords;
 }
 
 Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector) {
