@@ -211,18 +211,6 @@ int main() {
 	float cam_heading = 0.0f;
 	float cam_speed = 10.0f;
 
-	// directions
-	Versor quaternion{ 0.0f, 1.0f, 0.0f, 0.0f };
-	Mat4 quat_matrix = quaternion.to_matrix();
-
-	Vec3 forward{ 0.0f, 0.0f, -1.0f };
-	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
-	Vec3 up = forward.cross(right).normalize();
-
-	Vec3 local_forward = forward;
-	Vec3 local_right = right;
-	Vec3 local_up = up;
-
 	// Perspective Projection
 	glUseProgram(shaderProgram);
 	float near = 0.1f;
@@ -236,7 +224,7 @@ int main() {
 
 	// Initialize initial position
 	Mat4 initial_transform = translate(camera_pos[0], camera_pos[1], camera_pos[2]);
-	Mat4 initial_rotation = quat_matrix;
+	Mat4 initial_rotation = orientation.to_matrix();
 	Mat4 view = initial_rotation * initial_transform;
 	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
@@ -359,7 +347,6 @@ int main() {
 		
 
 		view = rotation_matrix.inverse() * translation_matrix.inverse();
-
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 		
