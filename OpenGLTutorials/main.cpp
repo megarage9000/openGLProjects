@@ -56,12 +56,16 @@ using namespace LinearAlgebra;
 // OpenGL viewport
 int view_port[4];
 double elapsed_seconds = 1.0f;
-double rotation_speed = 40.0f;
+double rotation_speed = 100.0f;
 Vec3 mouse_pos { 0.0f, 0.0f, 0.0f };
-Vec3 up_vector { 0.0f, 1.0f, 0.0f };
-Vec3 forward_vector { 0.0f, 0.0f, -1.0f };
-Vec3 right_vector { 1.0f, 0.0f, 0.0f };
+Vec3 current_up_vector { 0.0f, 1.0f, 0.0f };
+Vec3 current_forward_vector { 0.0f, 0.0f, -1.0f };
+Vec3 current_right_vector { 1.0f, 0.0f, 0.0f };
 Versor orientation{ 0.0f, 1.0f, 0.0f, 0.0f };
+
+Vec3 up_vector = current_up_vector;
+Vec3 right_vector = current_right_vector;
+Vec3 forward_vector = current_forward_vector;
 
 int main() {
 
@@ -340,9 +344,9 @@ int main() {
 		quaternion = quaternion.normalize();
 		quat_matrix = quaternion.to_matrix();*/
 
-		Vec3 forward_move = forward_vector * -cam_move[2];
-		Vec3 right_move = right_vector * cam_move[0];
-		Vec3 up_move = up_vector * cam_move[1];
+		Vec3 forward_move = current_forward_vector * -cam_move[2];
+		Vec3 right_move = current_right_vector * cam_move[0];
+		Vec3 up_move = current_up_vector * cam_move[1];
 
 
 
@@ -352,9 +356,10 @@ int main() {
 
 		Mat4 translation_matrix = Mat4() * translate(camera_pos);
 		Mat4 rotation_matrix = orientation.to_matrix();
-
+		
 
 		view = rotation_matrix.inverse() * translation_matrix.inverse();
+
 		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 		
@@ -403,19 +408,19 @@ static void keyboard_callback(GLFWwindow* window, int key, int scancode, int act
 		// Rotations
 		case GLFW_KEY_UP:
 			// Rotate along pitch
-			rotation = Versor(right_vector, elapsed_seconds * rotation_speed);
+			rotation = Versor(current_right_vector, elapsed_seconds * rotation_speed);
 			std::cout << "applying rotation\n";
 			break;
 		case GLFW_KEY_DOWN:
-			rotation = Versor(right_vector, -elapsed_seconds * rotation_speed);
+			rotation = Versor(current_right_vector, -elapsed_seconds * rotation_speed);
 			std::cout << "applying rotation\n";
 			break;
 		case GLFW_KEY_RIGHT:
-			rotation = Versor(up_vector, -elapsed_seconds * rotation_speed);
+			rotation = Versor(current_up_vector, -elapsed_seconds * rotation_speed);
 			std::cout << "applying rotation\n";
 			break;
 		case GLFW_KEY_LEFT:
-			rotation = Versor(up_vector, elapsed_seconds * rotation_speed);
+			rotation = Versor(current_up_vector, elapsed_seconds * rotation_speed);
 			std::cout << "applying rotation\n";
 			break;
 		default:
@@ -434,9 +439,11 @@ void apply_rotation(Versor rotation_change) {
 	Mat4 rotation_matrix = orientation.to_matrix();
 
 	// apply to axis
-	up_vector = rotation_matrix * Vec4(up_vector, 0.0f);
-	right_vector = rotation_matrix * Vec4(right_vector, 0.0f);
-	forward_vector = rotation_matrix * Vec4(forward_vector, 0.0f);
+	current_up_vector = rotation_matrix * Vec4(up_vector, 0.0f);
+	current_right_vector = rotation_matrix * Vec4(right_vector, 0.0f);
+	current_forward_vector = rotation_matrix * Vec4(forward_vector, 0.0f);
+
+	rotation_matrix.print();
 }
 
 
