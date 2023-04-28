@@ -516,21 +516,11 @@ namespace LinearAlgebra
 
             // 3. Apply the 1 / determinant (see later in loop)
             float inv_det = 1/det;
-
-            //// Reuse the top row determinant values instead of including them
-            //result_arr[0] = (det_a / a[0]) * inv_det;
-            //result_arr[1] = -(det_b / a[1]) * inv_det;
-            //result_arr[2] = (det_c / a[2]) * inv_det;
-            //result_arr[3] = -(det_d / a[3]) * inv_det;
             for(int row = 0; row < 4; row++) {
                 for(int col = 0; col < 4; col++){
-                    
-                    // 1. Get the Minors value per position
                     int pos = row * 4 + col;
                     result_arr[pos] = matrix4_minors_val(a, row, col) * inv_det * pow(-1, (row + col + 2));
-                }
-                // Alternate for C
-                
+                } 
             }
             // Get Adjugate(Transpose result)
             transpose_matrix4(result_arr);

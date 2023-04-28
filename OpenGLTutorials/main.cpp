@@ -40,25 +40,28 @@ void printProgramInfo(GLuint programIndex);
 void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
-Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector);
 
 
 
 // GLFW callbacks
 static void cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos);
+static void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // Misc
 Vec4 mouse_to_world_space(Mat4 view, Mat4 projection, float z_dist = 10.0f);
+void apply_rotation(Versor rotation_change);
 
 using namespace LinearAlgebra;
 
 // OpenGL viewport
 int view_port[4];
+double elapsed_seconds = 1.0f;
+double rotation_speed = 40.0f;
 Vec3 mouse_pos { 0.0f, 0.0f, 0.0f };
-Vec3 camera_translation { 0.0f, 0.0f, 0.0f };
 Vec3 up_vector { 0.0f, 1.0f, 0.0f };
 Vec3 forward_vector { 0.0f, 0.0f, -1.0f };
 Vec3 right_vector { 1.0f, 0.0f, 0.0f };
+Versor orientation{ 0.0f, 1.0f, 0.0f, 0.0f };
 
 int main() {
 
@@ -101,6 +104,7 @@ int main() {
 	}
 
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetKeyCallback(window, keyboard_callback);
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -196,14 +200,8 @@ int main() {
 		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
-	float matrix3Test[] = {
-		0.0, 2.0, 3.0,
-		1.0, 4.0, 5.0,
-		10.0, 11.0, 9.0
-	};
-
 	// Camera properties
-	Vec3 camera_pos { 0.0f, 0.0f, -5.0f};
+	Vec3 camera_pos { 0.0f, 0.0f, 5.0f};
 
 	float cam_heading_speed = 10.0f;
 	float cam_heading = 0.0f;
@@ -295,7 +293,7 @@ int main() {
 		// Applying matrix transformation
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
-		double elapsed_seconds = current_seconds - previous_seconds;
+		elapsed_seconds = current_seconds - previous_seconds;
 		previous_seconds = current_seconds;
 
 		if (last_position > 1.0f || last_position < -1.0f) {
@@ -335,65 +333,31 @@ int main() {
 			cam_moved = true;
 		}
 
-		//if (glfwGetKey(window, GLFW_KEY_LEFT)) {
-		//	cam_yaw += cam_heading_speed * elapsed_seconds;
-		//	cam_moved = true;
-		//	is_rotated = true;
-
-		//	Versor yaw{up[0], up[1], up[2], cam_yaw};
-		//	quaternion = (quaternion * yaw).normalize();
-		//	quat_matrix = quaternion.to_matrix();
-
-		//	forward = rotate_vector3(quat_matrix, forward);
-		//	forward = forward.normalize();
-		//	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
-		//	Vec3 up = forward.cross(right).normalize();
-		//}
-
-		//if (glfwGetKey(window, GLFW_KEY_RIGHT)) {	
-		//	cam_yaw -= cam_heading_speed * elapsed_seconds;
-		//	cam_moved = true;
-		//	is_rotated = true;
-
-		//	Versor yaw{ up[0], up[1], up[2], cam_yaw };
-		//	quaternion = (quaternion * yaw).normalize();
-		//	quat_matrix = quaternion.to_matrix();
-		//	
-		//	forward = rotate_vector3(quat_matrix, forward);
-		//	forward = forward.normalize();
-		//	Vec3 right = forward.cross(Vec3(0.0f, 1.0f, 0.0f)).normalize();
-		//	Vec3 up = forward.cross(right).normalize();
-		//}
-
 		// Camera rotation 
-		Vec4 mouse_world_space = mouse_to_world_space(view, perspective);
+		/*Vec4 mouse_world_space = mouse_to_world_space(view, perspective);
 		std::cout << "mouse to world coords\n";
-		mouse_world_space.print();
+	
+		quaternion = quaternion.normalize();
+		quat_matrix = quaternion.to_matrix();*/
+
+		Vec3 forward_move = forward_vector * -cam_move[2];
+		Vec3 right_move = right_vector * cam_move[0];
+		Vec3 up_move = up_vector * cam_move[1];
 
 
-		if (cam_moved) {
 
-			quaternion = quaternion.normalize();
-			quat_matrix = quaternion.to_matrix();
+		camera_pos = camera_pos + forward_move;
+		camera_pos = camera_pos + up_move;
+		camera_pos = camera_pos + right_move;
 
-			Vec3 forward_move = forward * cam_move[2];
-			Vec3 right_move = right * cam_move[0];
-			Vec3 up_move = up * cam_move[1];
-
-			camera_pos = camera_pos + forward_move;
-			camera_pos = camera_pos + up_move;
-			camera_pos = camera_pos + right_move;
-
-			Mat4 translation = translate(camera_pos[0] , camera_pos[1], camera_pos[2]);
-			Mat4 rotation = quat_matrix;
-			view = rotation * translation;
-
-			int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
-
-			glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
-		}
+		Mat4 translation_matrix = Mat4() * translate(camera_pos);
+		Mat4 rotation_matrix = orientation.to_matrix();
 
 
+		view = rotation_matrix.inverse() * translation_matrix.inverse();
+		int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
+		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+		
 		Mat4 translation_shape = translate(0.0f, elapsed_seconds * speed, 0.0f);
 		transform_matrix = transform_matrix * translation_shape;
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
@@ -419,6 +383,64 @@ int main() {
 	return 0;
 }
 
+bool key_hold = false;
+static void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+	if (action == GLFW_RELEASE) {
+		key_hold = false;
+	}
+
+	if (action == GLFW_PRESS) {
+		key_hold = true;
+	}
+
+	if(key_hold){
+		
+		Versor rotation;
+		Vec3 translation;
+		
+		switch (key) {
+		// Rotations
+		case GLFW_KEY_UP:
+			// Rotate along pitch
+			rotation = Versor(right_vector, elapsed_seconds * rotation_speed);
+			std::cout << "applying rotation\n";
+			break;
+		case GLFW_KEY_DOWN:
+			rotation = Versor(right_vector, -elapsed_seconds * rotation_speed);
+			std::cout << "applying rotation\n";
+			break;
+		case GLFW_KEY_RIGHT:
+			rotation = Versor(up_vector, -elapsed_seconds * rotation_speed);
+			std::cout << "applying rotation\n";
+			break;
+		case GLFW_KEY_LEFT:
+			rotation = Versor(up_vector, elapsed_seconds * rotation_speed);
+			std::cout << "applying rotation\n";
+			break;
+		default:
+			break;
+		}
+		apply_rotation(rotation);
+
+		// Translations
+	}
+}
+
+void apply_rotation(Versor rotation_change) {
+
+	
+	orientation = rotation_change * orientation;
+	Mat4 rotation_matrix = orientation.to_matrix();
+
+	// apply to axis
+	up_vector = rotation_matrix * Vec4(up_vector, 0.0f);
+	right_vector = rotation_matrix * Vec4(right_vector, 0.0f);
+	forward_vector = rotation_matrix * Vec4(forward_vector, 0.0f);
+}
+
+
+
 static void cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
 	// std::cout << "x = " << x_pos << ", y = " << y_pos << '\n';
 	mouse_pos[0] = x_pos;
@@ -431,29 +453,13 @@ Vec4 mouse_to_world_space(Mat4 view, Mat4 projection, float z_dist)
 	float x_ndc = (2 * mouse_pos[0] / view_port[2]) - 1;
 	float y_ndc = 1 - (2 * mouse_pos[0] / view_port[3]);
 	
-
 	// To Homgenous coordinates
 	Vec4 homogenous_coords{ x_ndc, y_ndc, z_dist, 1.0f };
-	std::cout << "Homogenous coords\n";
-	homogenous_coords.print();
+	Mat4 matrix_inversions = (projection * view).inverse();
+	homogenous_coords = matrix_inversions * homogenous_coords;
+	homogenous_coords = homogenous_coords * (1 / homogenous_coords[3]);
 
-	Mat4 matrix_inversions = (projection * view);
-	std::cout << "projection and view\n";
-	matrix_inversions.print();
-	std::cout << "projection and view inversion\n";
-	matrix_inversions.inverse().print();
-
-	return matrix_inversions * homogenous_coords;
-}
-
-Vec3 rotate_vector3(Mat4 rotation_matrix, Vec3 vector) {
-	Vec4 homogenous_vector = rotation_matrix * Vec4(vector);
-	Vec3 rotated_vector{
-		homogenous_vector[0] / homogenous_vector[3],
-		homogenous_vector[1] / homogenous_vector[3],
-		homogenous_vector[2] / homogenous_vector[3]
-	};
-	return rotated_vector;
+	return homogenous_coords;
 }
 
 void _update_fps_counter(GLFWwindow* window)

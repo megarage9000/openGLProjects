@@ -9,7 +9,7 @@ namespace LinearAlgebra {
         transform_matrix[2][3] = z;
         return transform_matrix;
     }
-    Mat4 translate(Vec4 translation_vector) {
+    Mat4 translate(Vec3 translation_vector) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][3] = translation_vector[0];
         transform_matrix[1][3] = translation_vector[1];
@@ -81,7 +81,28 @@ namespace LinearAlgebra {
         return view_matrix;
     }
 
-    Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3 up_vector) {
+    Mat4 view_matrix(Vec3 up_vector, Vec3 right_vector, Vec3 forward_vector, Vec4 cam_world_position) {
+        Mat4 view;
+
+        view[0][0] = right_vector[0];
+        view[0][1] = right_vector[1];
+        view[0][2] = right_vector[2];
+        view[0][3] = -cam_world_position[0];
+
+        view[1][0] = up_vector[0];
+        view[1][1] = up_vector[1];
+        view[1][2] = up_vector[2];
+        view[1][3] = -cam_world_position[1];
+
+        view[2][0] = forward_vector[0];
+        view[2][1] = forward_vector[1];
+        view[2][2] = forward_vector[2];
+        view[2][3] = -cam_world_position[2];
+
+        return view;
+    }
+
+    Mat4 view_matrix(Vec3 up_vector, Vec4 focus_position, Vec4 cam_world_position) {
         Vec3 forward_vector;
         Vec3 right_vector;
         return view_matrix(focus_position, cam_world_position, up_vector, forward_vector, right_vector);
@@ -135,6 +156,10 @@ namespace LinearAlgebra {
         values[3] = sinf( radians / 2.0f) * z;
     }
 
+    Versor::Versor() {
+        intialize_values(0.0f, 1.0f, 0.0f, 0.0f);
+    }
+
     Versor::Versor(float x, float y, float z, float angle) {
         intialize_values(x, y, z, angle);
     }
@@ -145,10 +170,12 @@ namespace LinearAlgebra {
         }
     }
 
-
-
     Versor::Versor(std::array<float, 3> orientation, float angle) {
         intialize_values(orientation[0], orientation[1], orientation[2], angle);
+    }
+
+    Versor::Versor(Vec3 axis, float angle) {
+        intialize_values(axis[0], axis[1], axis[2], angle);
     }
 
     float& Versor::operator[] (int index) {
@@ -163,7 +190,7 @@ namespace LinearAlgebra {
         new_values[2] = r[0] * values[2] + r[1] * values[3] + r[2] * values[0] - r[3] * values[1];
         new_values[3] = r[0] * values[3] - r[1] * values[2] + r[2] * values[1] + r[3] * values[0];
 
-        return Versor(new_values);
+        return Versor(new_values).normalize();
 
     }
 
