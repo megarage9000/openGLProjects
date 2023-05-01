@@ -40,10 +40,19 @@ void main() {
 	/*
 		1. 
 	*/
-	vec3 reflection_eye = reflect(-dir_to_light_eye, normal_eye);
+
 	vec3 surface_to_viewer_eye = normalize(-position_eye);
+	// Phong 
+/*
+	vec3 reflection_eye = reflect(-dir_to_light_eye, normal_eye);
 	float dot_prod_specular = dot(reflection_eye, surface_to_viewer_eye);
 	dot_prod_specular = max(dot_prod_specular, 0.0);
+*/
+	// Blinn
+	
+	vec3 half_way_eye = normalize(surface_to_viewer_eye + dir_to_light_eye);
+	float dot_prod_specular = max(0.0, dot(half_way_eye, normal_eye));
+
 	float spec_factor = pow(dot_prod_specular, spec_exponent);
 	vec3 spec_intensity = light_spec * reflec_ambi * spec_factor;
 

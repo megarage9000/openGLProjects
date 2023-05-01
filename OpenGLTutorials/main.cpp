@@ -411,8 +411,6 @@ void apply_rotation(Versor rotation_change) {
 	current_up_vector = rotation_matrix * Vec4(up_vector, 0.0f);
 	current_right_vector = rotation_matrix * Vec4(right_vector, 0.0f);
 	current_forward_vector = rotation_matrix * Vec4(forward_vector, 0.0f);
-
-	rotation_matrix.print();
 }
 
 
