@@ -750,8 +750,10 @@ namespace LinearAlgebra
     void normalize_vector(float a[], int a_length) {
         if(a_length != 0){
             float magnitude = vector_magnitude(a, a_length);
-            for(int i = 0; i < a_length; i++){
-                a[i] = a[i] / magnitude;
+            if (float_equals(magnitude, 0) == false) {
+                for(int i = 0; i < a_length; i++){
+                    a[i] = a[i] / magnitude;
+                }
             }
         }       
     }
