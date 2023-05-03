@@ -163,6 +163,7 @@
     </ClInclude>
     <ClInclude Include="LinearTransformations.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Project Ideas.txt" />

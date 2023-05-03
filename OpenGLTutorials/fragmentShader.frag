@@ -1,8 +1,13 @@
 #version 410
 
 in vec3 position_eye, normal_eye; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
+in vec2 texture_coordinates;
 
 uniform mat4 view;
+
+// texture for 4.2
+// layout(binding = 0) uniform sampler2D basic_texture;
+uniform sampler2D basic_texture;
 
 // light position
 vec3 light_position = vec3(0.0, 0.0, 0.2);
@@ -49,7 +54,6 @@ void main() {
 	dot_prod_specular = max(dot_prod_specular, 0.0);
 */
 	// Blinn
-	
 	vec3 half_way_eye = normalize(surface_to_viewer_eye + dir_to_light_eye);
 	float dot_prod_specular = max(0.0, dot(half_way_eye, normal_eye));
 
@@ -57,5 +61,9 @@ void main() {
 	vec3 spec_intensity = light_spec * reflec_ambi * spec_factor;
 
 	// final colour 
-	fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
+	// fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
+
+	// For texture
+	vec4 texel = texture(basic_texture, texture_coordinates);
+	fragColor = texel;
 }

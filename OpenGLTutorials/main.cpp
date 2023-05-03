@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Log.h"
 #include "LinearTransformations.h"
+#include "stb_image.h"
 #include <stdio.h>
 #include <malloc.h>
 
@@ -41,6 +42,8 @@ void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
 bool is_valid(GLuint programIndex);
 
+// Image loading
+void load_image(const char* file_name, unsigned char** image_data, int& x, int& y);
 
 
 // GLFW callbacks
@@ -56,6 +59,8 @@ using namespace LinearAlgebra;
 
 // OpenGL viewport
 int view_port[4];
+
+// Camera Global Variables
 double elapsed_seconds = 1.0f;
 double rotation_speed = 100.0f;
 double translation_speed = 10.0f;
@@ -128,7 +133,6 @@ int main() {
 
 	glGetIntegerv(GL_VIEWPORT, view_port);
 
-
 	//--- Triangle drawing ---
 
 	// Shaders: Vertex Shader
@@ -136,8 +140,6 @@ int main() {
 
 	// Shaders: Fragment Shader
 	char* fragmentShader = loadShaderString("fragmentShader.frag");
-
-	
 
 	// Shaders: Loading and Compilation
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -153,8 +155,6 @@ int main() {
 	if (!checkShaderCompilation(fs)) {
 		return -1;
 	}
-
-	
 	
 	// Shaders: Creating a Shader program
 	GLuint shaderProgram = glCreateProgram();
@@ -179,6 +179,56 @@ int main() {
 	// Getting our transformation matrix location
 	int matrix_location = glGetUniformLocation(shaderProgram, "matrix");
 
+	// Texture Loading
+
+	const char* file_name = "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\OpenGLTutorials\\Monster_Pickle.jfif";
+	unsigned char* image_data = NULL;
+	int x, y;
+	load_image(file_name, &image_data, x, y);
+
+	GLuint tex = 0;
+	glGenTextures(1, &tex);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		x,
+		y,
+		0,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		image_data
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// Getting the texture location for texture sampler
+	int tex_loc = glGetUniformLocation(shaderProgram, "basic_texture");
+
+	GLfloat texcoords[] = {
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+	};
+
+	GLuint vt_vbo;
+	glGenBuffers(1, &vt_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(texcoords),
+		texcoords,
+		GL_STATIC_DRAW
+	);
+	int texture_dim = 2;
 
 	// Our triangle points, going clockwise with xyz float coordinates
 	GLfloat points[] = {
@@ -256,6 +306,7 @@ int main() {
 	// 3. Enabling the arrays
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	
 	// 1. Adding the points vbo
@@ -265,6 +316,12 @@ int main() {
 	// 2. Adding the colors vbo
 	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	// 3. Adding texture coordinates
+	glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
+	glVertexAttribPointer(2, texture_dim, GL_FLOAT, GL_FALSE, 0, NULL);	
+
+
 
 	// Setting up transformation speed
 	float speed = 5.0f;
@@ -285,6 +342,9 @@ int main() {
 		glUseProgram(shaderProgram);
 		glBindVertexArray(vao);
 
+		// Informing the program to use a specific texture slot
+		glUniform1i(tex_loc, 0);
+
 		// Applying matrix transformation
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
@@ -294,7 +354,6 @@ int main() {
 		if (last_position > 1.0f || last_position < -1.0f) {
 			speed = -speed;
 		}
-
 
 		Vec3 forward_move = current_forward_vector * -translation[2];
 		Vec3 right_move = current_right_vector * translation[0];
@@ -336,6 +395,49 @@ int main() {
 	return 0;
 }
 
+void load_image(const char* file_name, unsigned char** image_data, int& x, int& y) {
+	int n;
+	int force_channels = 4;
+	*image_data = stbi_load(file_name, &x, &y, &n, force_channels);
+	if (!image_data) {
+		image_data = NULL;
+		fprintf(stderr, "ERROR: could not load file %s/n", file_name);
+		gl_log("ERROR: could not load file %s/n", file_name);
+		return;
+	}
+
+	// Checking if textures had dimensions to the power of 2
+	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
+		fprintf(stderr, "WARNING: texture %s is not power of 2 dimensions\n", file_name);
+		gl_log("WARNING: texture % s is not power of 2 dimensions\n", file_name);
+	}
+
+	// Flipping the image right side up
+	int width_in_bytes = x * 4; 
+	unsigned char* top = NULL;
+	unsigned char* bottom = NULL;
+	unsigned char temp = 0;
+	int half_height = y / 2;
+
+	for (int row = 0; row < half_height; row++) {
+
+		// Loading top and bottom pointers of the image 
+		top = *image_data + row * width_in_bytes;
+		bottom = *image_data + (y - row - 1) * width_in_bytes;
+
+		// Perform swap of the top and bottom, per row 
+		for (int col = 0; col < width_in_bytes; col++) {
+			temp = *top;
+			*top = *bottom;
+			*bottom = temp;
+
+			top++;
+			bottom++;
+		}
+
+	}
+}
+
 bool key_hold = false;
 static void keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
@@ -354,15 +456,19 @@ static void keyboard_callback(GLFWwindow* window, int key, int scancode, int act
 		switch (key) {
 		// Rotations
 		case GLFW_KEY_UP:
+			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_right_vector, elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_DOWN:
+			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_right_vector, -elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_RIGHT:
+			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_up_vector, -elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_LEFT:
+			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_up_vector, elapsed_seconds * rotation_speed);
 			break;
 		// Translations
@@ -547,7 +653,6 @@ char * loadShaderString(const char * shaderFileLocation){
 	return nullptr;
 }
 // Try using https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/ for this!
-
 bool checkShaderCompilation(GLuint shaderIndex)
 {
 	int params = -1;
