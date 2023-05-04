@@ -9,6 +9,10 @@ uniform mat4 view;
 // layout(binding = 0) uniform sampler2D basic_texture;
 uniform sampler2D basic_texture;
 
+// For texture
+vec4 texel = texture(basic_texture, texture_coordinates);
+vec3 texture_colour = texel.xyz;
+
 // light position
 vec3 light_position = vec3(0.0, 0.0, 0.2);
 vec3 light_spec = vec3(1.0, 1.0, 1.0); // white specular colour
@@ -17,7 +21,7 @@ vec3 light_ambi = vec3(0.2, 0.2, 0.2); // grey ambient colour
 
 // surface properties
 vec3 reflec_spec = vec3(1.0, 1.0, 1.0); // fully reflect specular light
-vec3 reflec_diff = vec3(1.0, 0.5, 0.0); // orange diffuse surface reflectance
+vec3 reflec_diff = texture_colour; // orange diffuse surface reflectance
 vec3 reflec_ambi = vec3(1.0, 1.0, 1.0); // fully reflect ambient light
 float spec_exponent = 100.0; // specular power
 
@@ -61,9 +65,8 @@ void main() {
 	vec3 spec_intensity = light_spec * reflec_ambi * spec_factor;
 
 	// final colour 
-	// fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
+	fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
 
-	// For texture
-	vec4 texel = texture(basic_texture, texture_coordinates);
-	fragColor = texel;
+
+	// fragColor = texel;
 }
