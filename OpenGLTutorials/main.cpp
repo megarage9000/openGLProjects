@@ -230,31 +230,24 @@ int main() {
 	);
 	int texture_dim = 2;
 
-	// Our triangle points, going clockwise with xyz float coordinates
+	// Our square points, going clockwise with xyz float coordinates
 	GLfloat points[] = {
-		0.0f, 0.5f, 0.0f, // top coordinates
-		0.5f, -0.5f, 0.0f, // bottom right coordinates
-		-0.5f, -0.5f, 0.0f // bottom left coordinates
-	};
+		0.5f, 0.5f, 0.0f, // first triangle
+		0.5f, -0.5f, 0.0f, 
+		-0.5f, -0.5f, 0.0f, 
 
-	// Colours!
-	GLfloat colours[] = {
-		1.0f, 0.0f, 0.0f, // Red
-		0.0f, 1.0f, 0.0f, // Green
-		0.0f, 0.0f, 1.0f  // Blue
+		-0.5f, -0.5f, 0.0f, // second triangle
+		-0.5f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f
 	};
 
 	GLfloat normals[] = {
 		0.0f, 0.0f, 1.0f,
 		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f,
 		0.0f, 0.0f, 1.0f
-	};
-
-	float matrix[] = {
-		1.0f, 0.0f, 0.0f, 0.0f, // First Column
-		0.0f, 1.0f, 0.0f, 0.0f, // Second Column
-		0.0f, 0.0f, 0.0f, 1.0f, // Third Column
-		0.5f, 0.0f, 0.0f, 1.0f  // Fourth Column (We move object to right by .5!)
 	};
 
 	// Camera properties
@@ -380,7 +373,7 @@ int main() {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// track events 
 		glfwPollEvents();
@@ -456,19 +449,15 @@ static void keyboard_callback(GLFWwindow* window, int key, int scancode, int act
 		switch (key) {
 		// Rotations
 		case GLFW_KEY_UP:
-			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_right_vector, elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_DOWN:
-			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_right_vector, -elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_RIGHT:
-			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_up_vector, -elapsed_seconds * rotation_speed);
 			break;
 		case GLFW_KEY_LEFT:
-			std::cout << "Rotating!\n";
 			rotation_change = Versor(current_up_vector, elapsed_seconds * rotation_speed);
 			break;
 		// Translations
