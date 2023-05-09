@@ -8,12 +8,12 @@
 #include <malloc.h>
 
 // Reported Window Size
-int g_win_width = 640;
-int g_win_height = 480;
+int g_win_width = 1280;
+int g_win_height = 768;
 
 // Frame Buffer Size
-int g_fb_width = 640;
-int g_fb_height = 480;
+int g_fb_width = 1280;
+int g_fb_height = 768;
 
 // Using transformations library
 using namespace LinearAlgebra;
@@ -201,6 +201,9 @@ int main() {
 		GL_UNSIGNED_BYTE,
 		image_data
 	);
+
+	// Generating bitmaps
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
