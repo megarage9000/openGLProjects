@@ -150,6 +150,7 @@
     <ClCompile Include="LinearTransformations.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MeshLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.frag" />
@@ -157,12 +158,14 @@
     <None Include="vertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="LinearAlgebra.h" />
     <ClInclude Include="LinearTransformationCPlusPlus.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="LinearTransformations.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="MeshLoader.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>

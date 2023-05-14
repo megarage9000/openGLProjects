@@ -6,6 +6,7 @@
 #include "stb_image.h"
 #include <stdio.h>
 #include <malloc.h>
+#include "MeshLoader.h"
 
 // Reported Window Size
 int g_win_width = 1280;
@@ -243,6 +244,8 @@ int main() {
 		-0.5f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.0f
 	};
+
+
 
 	GLfloat normals[] = {
 		0.0f, 0.0f, 1.0f,

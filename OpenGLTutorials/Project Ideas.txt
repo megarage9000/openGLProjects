@@ -22,3 +22,23 @@
 
     6. Work on open-source 3D graphics projects: Contributing to open-source 3D graphics projects such as Blender, Unity, or 
     Unreal Engine can help you gain experience in collaborating with other developers and working on large-scale projects.
+
+
+
+GLOBAL ILLUMINATION
+
+Global illumination (GI) is a complex topic in computer graphics, and it can be challenging to learn without a solid foundation in computer graphics concepts. Here are some steps you can take to begin learning global illumination in OpenGL:
+
+    Learn the basics of OpenGL: If you're new to OpenGL, it's essential to start with the basics. You can begin by learning about the OpenGL pipeline, how to set up a rendering context, and how to create basic shapes and apply materials and textures.
+
+    Learn the fundamentals of computer graphics: Understanding the fundamentals of computer graphics is crucial for working with global illumination. Topics like coordinate systems, transformations, lighting models, and shading are essential for understanding the physics behind light transport and the rendering equation.
+
+    Study global illumination algorithms: There are several global illumination algorithms that you can study, including radiosity, path tracing, and photon mapping. Each algorithm has its strengths and weaknesses, and you should learn about each one to decide which one to use for your project.
+
+    Implement a simple GI algorithm: Once you have a good understanding of global illumination algorithms, you can start implementing a simple one in OpenGL. You can start with a basic algorithm like radiosity, which is relatively simple to implement compared to other algorithms.
+
+    Experiment with more advanced techniques: After you've implemented a basic GI algorithm, you can start experimenting with more advanced techniques. You can try implementing a more complex algorithm like path tracing or photon mapping, or you can try to optimize your existing algorithm to improve performance.
+
+    Read research papers and attend conferences: To stay up-to-date with the latest advancements in global illumination, you should read research papers and attend conferences. This will give you an idea of where the field is heading and what techniques are being developed.
+
+    Practice, practice, practice: Finally, the best way to learn global illumination is to practice. Implementing GI algorithms and experimenting with different techniques will help you develop a deeper understanding of the concepts and how they can be applied in different scenarios.
