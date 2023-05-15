@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define MESH_FILE "box.obj"
+#define MESH_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\cyborg.obj"
 
 /*
 	WE NEED VCPKG

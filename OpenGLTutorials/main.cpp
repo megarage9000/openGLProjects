@@ -180,6 +180,9 @@ int main() {
 	// Getting our transformation matrix location
 	int matrix_location = glGetUniformLocation(shaderProgram, "matrix");
 
+	GLuint test_vao;
+	int test_point_count;
+	load_mesh(MESH_FILE, &test_vao, &test_point_count);
 	// Texture Loading
 
 	const char* file_name = "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\OpenGLTutorials\\Monster_Pickle.jfif";
