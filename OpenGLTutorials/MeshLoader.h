@@ -7,11 +7,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#define MESH_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\cyborg.obj"
+#define MESH_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\box.obj"
 
 /*
 	WE NEED VCPKG
-
 	https://www.youtube.com/watch?v=0h1lC3QHLHU
 */
 

@@ -1,6 +1,6 @@
 #version 410
 
-in vec3 position_eye, normal_eye; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
+in vec3 position_eye, normal_eye, vt_normal; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
 in vec2 texture_coordinates;
 
 uniform mat4 view;
@@ -21,7 +21,7 @@ vec3 light_ambi = vec3(0.2, 0.2, 0.2); // grey ambient colour
 
 // surface properties
 vec3 reflec_spec = vec3(1.0, 1.0, 1.0); // fully reflect specular light
-vec3 reflec_diff = texture_colour; // orange diffuse surface reflectance
+vec3 reflec_diff = vec3(0.95, 0.48, 0.043); // orange diffuse surface reflectance
 vec3 reflec_ambi = vec3(1.0, 1.0, 1.0); // fully reflect ambient light
 float spec_exponent = 100.0; // specular power
 
@@ -66,7 +66,7 @@ void main() {
 
 	// final colour 
 	fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
-
+	//fragColor = vec4(vt_normal, 1.0);
 
 	// fragColor = texel;
 }
