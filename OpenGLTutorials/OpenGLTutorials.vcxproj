@@ -153,6 +153,7 @@
     <ClCompile Include="MeshLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BlinnShader.frag" />
     <None Include="fragmentShader.frag" />
     <None Include="glew32d.dll" />
     <None Include="vertexShader.vert" />

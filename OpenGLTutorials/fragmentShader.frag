@@ -14,14 +14,14 @@ vec4 texel = texture(basic_texture, texture_coordinates);
 vec3 texture_colour = texel.xyz;
 
 // light position
-vec3 light_position = vec3(0.0, 0.0, 0.2);
+uniform vec3 light_position;
 vec3 light_spec = vec3(1.0, 1.0, 1.0); // white specular colour
 vec3 light_diff = vec3(0.7, 0.7, 0.7); // dull white diffuse colour
-vec3 light_ambi = vec3(0.2, 0.2, 0.2); // grey ambient colour
+vec3 light_ambi = vec3(0.95, 0.48, 0.043);  // grey ambient colour
 
 // surface properties
 vec3 reflec_spec = vec3(1.0, 1.0, 1.0); // fully reflect specular light
-vec3 reflec_diff = vec3(0.95, 0.48, 0.043); // orange diffuse surface reflectance
+vec3 reflec_diff = vec3(1.0, 1.0, 1.0); // orange diffuse surface reflectance
 vec3 reflec_ambi = vec3(1.0, 1.0, 1.0); // fully reflect ambient light
 float spec_exponent = 100.0; // specular power
 
@@ -58,6 +58,7 @@ void main() {
 	dot_prod_specular = max(dot_prod_specular, 0.0);
 */
 	// Blinn
+
 	vec3 half_way_eye = normalize(surface_to_viewer_eye + dir_to_light_eye);
 	float dot_prod_specular = max(0.0, dot(half_way_eye, normal_eye));
 
@@ -66,7 +67,7 @@ void main() {
 
 	// final colour 
 	fragColor = vec4(spec_intensity + diff_intensity + ambi_intensity, 1.0);
-	//fragColor = vec4(vt_normal, 1.0);
+	// fragColor = vec4(vt_normal, 1.0);
 
 	// fragColor = texel;
 }

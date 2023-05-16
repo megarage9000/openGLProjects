@@ -63,7 +63,7 @@ int view_port[4];
 
 // Camera Global Variables
 double elapsed_seconds = 1.0f;
-double rotation_speed = 100.0f;
+double rotation_speed = 1000.0f;
 double translation_speed = 10.0f;
 Vec3 mouse_pos { 0.0f, 0.0f, 0.0f };
 Vec3 current_up_vector { 0.0f, 1.0f, 0.0f };
@@ -140,7 +140,7 @@ int main() {
 	char* vertexShader = loadShaderString("vertexShader.vert");
 
 	// Shaders: Fragment Shader
-	char* fragmentShader = loadShaderString("fragmentShader.frag");
+	char* fragmentShader = loadShaderString("BlinnShader.frag");
 
 	// Shaders: Loading and Compilation
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -179,6 +179,7 @@ int main() {
 
 	// Getting our transformation matrix location
 	int matrix_location = glGetUniformLocation(shaderProgram, "matrix");
+	int light_location = glGetUniformLocation(shaderProgram, "light_position");
 
 	//const char* file_name = "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\OpenGLTutorials\\Monster_Pickle.jfif";
 	//unsigned char* image_data = NULL;
@@ -255,7 +256,7 @@ int main() {
 	//};
 
 	// Camera properties
-	Vec3 camera_pos { 0.0f, 0.0f, 5.0f};
+	Vec3 camera_pos { 0.0f, 0.0f, 10.0f};
 
 	float cam_heading_speed = 10.0f;
 	float cam_heading = 0.0f;
@@ -278,6 +279,8 @@ int main() {
 	Mat4 view = initial_rotation * initial_transform;
 	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+
+	glUniform3fv(light_location, 3, camera_pos);
 	
 
 	//// Generating a Vertex Buffer Object for our Triangle, to 
@@ -344,6 +347,7 @@ int main() {
 
 		// Informing the program to use a specific texture slot
 		// glUniform1i(tex_loc, 0);
+		glUniform3fv(light_location, 3, camera_pos);
 
 		// Applying matrix transformation
 		static double previous_seconds = glfwGetTime();
@@ -378,7 +382,7 @@ int main() {
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
 		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		glFrontFace(GL_CW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 

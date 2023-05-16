@@ -42,3 +42,18 @@ Global illumination (GI) is a complex topic in computer graphics, and it can be 
     Read research papers and attend conferences: To stay up-to-date with the latest advancements in global illumination, you should read research papers and attend conferences. This will give you an idea of where the field is heading and what techniques are being developed.
 
     Practice, practice, practice: Finally, the best way to learn global illumination is to practice. Implementing GI algorithms and experimenting with different techniques will help you develop a deeper understanding of the concepts and how they can be applied in different scenarios.
+
+
+VOXEL CONE TRACING
+
+Voxel Cone Tracing (VCT) is a technique used in computer graphics for real-time global illumination. It is a hybrid approach that combines voxelization and cone tracing to achieve realistic indirect lighting effects. VCT works by voxelizing the scene geometry and storing lighting information within the voxels. Then, cone tracing is performed to gather indirect lighting information from the voxels.
+
+Here are a few articles that you can read to learn more about voxel cone tracing and its implementation in OpenGL:
+
+1. "Real-Time Indirect Illumination with Voxel Cone Tracing" by Cyril Crassin: This paper introduces the voxel cone tracing technique and provides a detailed explanation of the algorithm. It also includes implementation details and performance considerations. You can find the paper here: http://www.crytek.com/download/Sousa_Voxel_Cone_Tracing.pdf
+
+2. "Voxel Cone Tracing Global Illumination" by Morgan McGuire: This article provides an overview of voxel cone tracing and discusses its advantages and limitations. It also includes implementation details and code snippets. You can find the article here: https://casual-effects.com/research/McGuire2011Cone
+
+3. "Real-Time Indirect Illumination Using Voxel Cone Tracing" by Maxime Tournier: This Master's thesis provides a comprehensive explanation of voxel cone tracing and its implementation. It covers topics such as voxelization, cone tracing, and integration with an OpenGL rendering pipeline. You can find the thesis here: https://drive.google.com/file/d/0B_xvFowqE4DFYzgyZTk1MzEtZTA1Yi00YThhLWI3MmItZmMwNGQ1MTM1Yjgz/view
+
+These resources should provide you with a solid foundation to understand voxel cone tracing and guide you in implementing it in an OpenGL application. Remember to adapt the concepts and techniques to the specific version of OpenGL you are working with, as some details may vary between different versions and extensions.

@@ -49,6 +49,8 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 	// Normals
 	if (mesh->HasNormals()) {
 
+		printf("Mesh %s has normals!\n", file_name);
+
 		normals = new GLfloat[*point_count * 3 * sizeof(GLfloat)];
 
 		for (int i = 0; i < *point_count; i++) {
@@ -58,6 +60,18 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 			normals[i * 3] = (GLfloat)normal->x;
 			normals[i * 3 + 1] = (GLfloat)normal->y;
 			normals[i * 3 + 2] = (GLfloat)normal->z;			
+		}
+
+		printf("Printing normal values:\n");
+
+		for (int i = 0; i < *point_count; i += 3) {
+			
+			printf("[%.5f, %.5f, %.5f], \n ", 
+					normals[i],
+					normals[i + 1],
+					normals[i + 2]
+				);
+
 		}
 	}
 
