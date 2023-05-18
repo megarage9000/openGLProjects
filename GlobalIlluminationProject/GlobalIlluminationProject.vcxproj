@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,7 +131,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\OpenGLCommon\.cpp\LinearAlgebra.cpp" />
+    <ClCompile Include="..\OpenGLCommon\.cpp\LinearTransformations.cpp" />
+    <ClCompile Include="..\OpenGLCommon\.cpp\Log.cpp" />
+    <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp" />
+    <ClCompile Include="..\OpenGLCommon\.cpp\ShaderLoading.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\OpenGLCommon\.h\LinearAlgebra.h" />
+    <ClInclude Include="..\OpenGLCommon\.h\LinearTransformations.h" />
+    <ClInclude Include="..\OpenGLCommon\.h\Log.h" />
+    <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
+    <ClInclude Include="..\OpenGLCommon\.h\ShaderLoading.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glew32d.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
