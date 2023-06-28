@@ -53,5 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32d.dll" />
+    <None Include="vertexShader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragmentShader.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
