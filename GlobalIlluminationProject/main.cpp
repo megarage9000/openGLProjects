@@ -10,6 +10,7 @@
 #include "../OpenGLCommon/.h/LinearTransformations.h";
 #include "../OpenGLCommon/.h/Log.h";
 #include "../OpenGLCommon/.h/ShaderLoading.h"
+#include "../OpenGLCommon/.h/MeshLoader.h"
 
 
 // Move on with this book!
@@ -37,8 +38,8 @@ GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
 void run_loop();
 
-#pragma region Camera Class
-class Camera {
+#pragma region BasicObject Class
+class BasicObject {
 private:
 	Vec3 forward;
 	Vec3 up;
@@ -54,8 +55,15 @@ private:
 	}
 
 public:
+	BasicObject() {
+		forward = Vec3{ 0.0, 0.0, -1.0f };
+		right = Vec3{ 1.0f, 0.0f, 0.0f };
+		up = Vec3{ 0.0f, 1.0f, 0.0f };
+		position = Vec3{ 0.0f, 0.0f, 0.0f };
+		orientation = Versor{ 0.0f, 1.0f, 0.0f, 0.0f };
+	}
 
-	Camera(Vec3 position, Versor orientation) {
+	BasicObject(Vec3 position, Versor orientation) {
 		forward = Vec3{ 0.0, 0.0, -1.0f };
 		right = Vec3{ 1.0f, 0.0f, 0.0f };
 		up = Vec3{ 0.0f, 1.0f, 0.0f };
@@ -68,7 +76,7 @@ public:
 		return position;
 	}
 	Mat4 OrientationMatrix() {
-		orientation.to_matrix();
+		return orientation.to_matrix();
 	}
 
 	Mat4 ApplyRotations(Versor versors...) {
@@ -97,12 +105,25 @@ public:
 		return translate(position);
 	}
 };
-#pragma endregion Camera Class
+#pragma endregion BasicObject Class
 
 // Transformations
 void set_up_projection_matrix(GLuint shader_program);
 
+// Global Variables
+BasicObject Camera;
+BasicObject Mesh;
+
+float camera_speed = 10.0f;
+float rotation_sensitivity = 1.5f;
+
 int main() {
+	float elapsed_seconds = 0.0f;
+	float last_position = 0.0f;
+	float speed = 10.0f;
+
+	Camera = BasicObject(Vec3{0.0, 0.0, 10.0f}, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	Mesh = BasicObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -154,6 +175,70 @@ int main() {
 		return -1;
 	}
 	set_up_projection_matrix(shader_program);
+	int matrix_location = glGetUniformLocation(shader_program, "matrix");
+
+	// Mesh Loading
+	GLuint vao;
+	int point_count;
+	assert(load_mesh(MESH_FILE, &vao, &point_count));
+	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
+
+	Mat4 view = Camera.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f }) * Camera.OrientationMatrix();
+	int view_mat_loc = glGetUniformLocation(shader_program, "view");
+	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+
+	while (!glfwWindowShouldClose(window)) {
+
+		// Clear drawing surface color
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glViewport(0, 0, g_fb_width, g_fb_height);
+
+		// Draw triangle
+		glUseProgram(shader_program);
+		glBindVertexArray(vao);
+
+		// Informing the program to use a specific texture slot
+		// glUniform1i(tex_loc, 0);
+		// glUniform3fv(light_location, 3, camera_pos);
+
+		// Applying matrix transformation
+		static double previous_seconds = glfwGetTime();
+		double current_seconds = glfwGetTime();
+		elapsed_seconds = current_seconds - previous_seconds;
+		previous_seconds = current_seconds;
+
+		if (last_position > 1.0f || last_position < -1.0f) {
+			speed = -speed;
+		}
+
+		Mat4 view = Camera.GetTranslation(Vec3{0.0f, 0.0f, 0.0f}).inverse() * Camera.OrientationMatrix().inverse();
+		int view_mat_loc = glGetUniformLocation(shader_program, "view");
+		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+
+		Mat4 translation_shape = Mesh.GetTranslation(Vec3{ 0.0f, elapsed_seconds * speed, 0.0f });
+		transform_matrix = transform_matrix * translation_shape;
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
+		last_position = elapsed_seconds * speed + last_position;
+
+		// Enable back face culling
+		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glFrontFace(GL_CW);
+		glDrawArrays(GL_TRIANGLES, 0, point_count);
+
+		// track events 
+		glfwPollEvents();
+		glfwSwapBuffers(window);
+
+		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(window, 1);
+		}
+	}
+
+	glfwTerminate();
+	return 0;
 }
 
 
