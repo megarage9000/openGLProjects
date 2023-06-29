@@ -1,4 +1,4 @@
-#include "LinearAlgebra.h"
+#include "../.h/LinearAlgebra.h"
 
 
 // Private helper function

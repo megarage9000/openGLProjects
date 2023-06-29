@@ -4,12 +4,11 @@ in vec3 position_eye, normal_eye, vt_normal; // The input variable must have the
 in vec2 texture_coordinates;
 
 uniform mat4 view;
-uniform vec3 light_position;
+vec3 light_position = vec3(0.0, 1.0, 5.0);
 
 // Ambience
 vec3 ambience_energy = vec3(0.137, 0.886, 0.922);
 vec3 ambience_reflective = vec3(0.667, 0.71, 0.71);
-
 
 // Diffuse
 vec3 diffuse_energy = vec3(0.141, 0.812, 0.71);
@@ -17,8 +16,8 @@ vec3 diffuse_reflective = vec3(0.682, 0.941, 0.902);
 
 // Specular
 vec3 specular_energy = vec3(1.0, 1.0, 1.0);
-vec3 specular_reflective = vec3(0.75, 0.75, 0.75);
-float shininess_factor = 20;
+vec3 specular_reflective = vec3(1.0, 1.0, 1.0);
+float shininess_factor = 100;
 
 out vec4 fragColor;
 
@@ -41,6 +40,17 @@ void main() {
 					pow((max(dot(light_reflection, viewer_reflection), 0.0)), shininess_factor);
 
 
-	fragColor = vec4(diffuse + ambience + specular);
+	vec4 color = vec4(ambience + diffuse + specular);
 
+	// vec4 color = vec4(normalize(vt_normal), 1.0);
+	if(color.x < 0.0) {
+		color.x = -color.x;
+	}
+	if(color.y < 0.0) {
+		color.y = -color.y;
+	}
+	if(color.z < 0.0) {
+		color.z = -color.z;
+	}
+	fragColor = color;
 }

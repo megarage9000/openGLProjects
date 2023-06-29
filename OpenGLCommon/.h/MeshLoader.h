@@ -19,3 +19,4 @@
 //};
 
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count);
+//bool load_multiple_meshes(const char* file_name, )

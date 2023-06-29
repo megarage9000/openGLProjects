@@ -1,12 +1,13 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Log.h"
-#include "LinearTransformations.h"
+#include "../OpenGLCommon/.h/LinearAlgebra.h"
+#include "../OpenGLCommon/.h/LinearTransformations.h"
+#include "../OpenGLCommon/.h/MeshLoader.h"
+#include "../OpenGLCommon/.h/Log.h"
 #include "stb_image.h"
 #include <stdio.h>
 #include <malloc.h>
-#include "MeshLoader.h"
 
 // Reported Window Size
 int g_win_width = 1280;
@@ -131,7 +132,6 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);  
 	glDepthFunc(GL_LESS); 
-
 	glGetIntegerv(GL_VIEWPORT, view_port);
 
 	//--- Triangle drawing ---
@@ -179,81 +179,7 @@ int main() {
 
 	// Getting our transformation matrix location
 	int matrix_location = glGetUniformLocation(shaderProgram, "matrix");
-	int light_location = glGetUniformLocation(shaderProgram, "light_position");
-
-	//const char* file_name = "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\OpenGLTutorials\\Monster_Pickle.jfif";
-	//unsigned char* image_data = NULL;
-	//int x, y;
-	//load_image(file_name, &image_data, x, y);
-
-	//GLuint tex = 0;
-	//glGenTextures(1, &tex);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, tex);
-	//glTexImage2D(
-	//	GL_TEXTURE_2D,
-	//	0,
-	//	GL_RGBA,
-	//	x,
-	//	y,
-	//	0,
-	//	GL_RGBA,
-	//	GL_UNSIGNED_BYTE,
-	//	image_data
-	//);
-
-	//// Generating bitmaps
-	//glGenerateMipmap(GL_TEXTURE_2D);
-
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	//// Getting the texture location for texture sampler
-	//int tex_loc = glGetUniformLocation(shaderProgram, "basic_texture");
-
-	//GLfloat texcoords[] = {
-	//	0.0f, 1.0f,
-	//	0.0f, 0.0f,
-	//	1.0f, 0.0f,
-	//	1.0f, 0.0f,
-	//	1.0f, 1.0f,
-	//	0.0f, 1.0f
-	//};
-
-	//GLuint vt_vbo;
-	//glGenBuffers(1, &vt_vbo);
-	//glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-	//glBufferData(
-	//	GL_ARRAY_BUFFER,
-	//	sizeof(texcoords),
-	//	texcoords,
-	//	GL_STATIC_DRAW
-	//);
-	//int texture_dim = 2;
-
-	//// Our square points, going clockwise with xyz float coordinates
-	//GLfloat points[] = {
-	//	0.5f, 0.5f, 0.0f, // first triangle
-	//	0.5f, -0.5f, 0.0f, 
-	//	-0.5f, -0.5f, 0.0f, 
-
-	//	-0.5f, -0.5f, 0.0f, // second triangle
-	//	-0.5f, 0.5f, 0.0f,
-	//	0.5f, 0.5f, 0.0f
-	//};
-
-
-
-	//GLfloat normals[] = {
-	//	0.0f, 0.0f, 1.0f,
-	//	0.0f, 0.0f, 1.0f,
-	//	0.0f, 0.0f, 1.0f,
-	//	0.0f, 0.0f, 1.0f,
-	//	0.0f, 0.0f, 1.0f,
-	//	0.0f, 0.0f, 1.0f
-	//};
+	// int light_location = glGetUniformLocation(shaderProgram, "light_position");
 
 	// Camera properties
 	Vec3 camera_pos { 0.0f, 0.0f, 10.0f};
@@ -280,46 +206,7 @@ int main() {
 	int view_mat_loc = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
-	glUniform3fv(light_location, 3, camera_pos);
-	
-
-	//// Generating a Vertex Buffer Object for our Triangle, to 
-	//// store our points into memory
-	//GLuint vbo = 0;
-	//glGenBuffers(1, &vbo);
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-	//// Generating colour points vbo
-	//GLuint normals_vbo = 0;
-	//glGenBuffers(1, &normals_vbo);
-	//glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
-	//
-	//
-	//// --- (VAO) --- Generating a Vertex Array Object for our Triangle, to prevent having to
-	//// bind and defining memory per vertex buffer object
-	//GLuint vao = 0;
-	//glGenVertexArrays(1, &vao);
-	//glBindVertexArray(vao);
-
-	//// 3. Enabling the arrays
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
-	//glEnableVertexAttribArray(2);
-
-	//
-	//// 1. Adding the points vbo
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//// 2. Adding the colors vbo
-	//glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//// 3. Adding texture coordinates
-	//glBindBuffer(GL_ARRAY_BUFFER, vt_vbo);
-	//glVertexAttribPointer(2, texture_dim, GL_FLOAT, GL_FALSE, 0, NULL);	
+	// glUniform3fv(light_location, 3, camera_pos);
 
 	GLuint vao;
 	int point_count;
@@ -347,7 +234,7 @@ int main() {
 
 		// Informing the program to use a specific texture slot
 		// glUniform1i(tex_loc, 0);
-		glUniform3fv(light_location, 3, camera_pos);
+		// glUniform3fv(light_location, 3, camera_pos);
 
 		// Applying matrix transformation
 		static double previous_seconds = glfwGetTime();

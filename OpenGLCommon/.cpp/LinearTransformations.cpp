@@ -1,5 +1,5 @@
 
-#include "LinearTransformations.h"
+#include "../.h/LinearTransformations.h"
 
 namespace LinearAlgebra {
     Mat4 translate(float x, float y, float z) {

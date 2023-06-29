@@ -1,4 +1,4 @@
-#include "MeshLoader.h"
+#include "../.h/MeshLoader.h"
 
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate);
@@ -56,10 +56,17 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 		for (int i = 0; i < *point_count; i++) {
 
 			const aiVector3D* normal = &(mesh->mNormals[i]);
+			
 
-			normals[i * 3] = (GLfloat)normal->x;
-			normals[i * 3 + 1] = (GLfloat)normal->y;
-			normals[i * 3 + 2] = (GLfloat)normal->z;			
+			float x = (GLfloat)normal->x;
+			float y = (GLfloat)normal->y;
+			float z = (GLfloat)normal->z;
+
+			normals[i * 3] = x;
+			normals[i * 3 + 1] = y;
+			normals[i * 3 + 2] = z;
+
+
 		}
 
 		printf("Printing normal values:\n");
