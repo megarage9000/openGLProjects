@@ -36,6 +36,8 @@ static void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, in
 // OpenGL helpers
 GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
+void printAll(GLuint programIndex);
+const char* GL_type_to_string(GLenum type);
 void run_loop();
 
 #pragma region BasicObject Class
@@ -120,7 +122,7 @@ float rotation_sensitivity = 1.5f;
 int main() {
 	float elapsed_seconds = 0.0f;
 	float last_position = 0.0f;
-	float speed = 10.0f;
+	float speed = 5.0f;
 
 	Camera = BasicObject(Vec3{0.0, 0.0, 10.0f}, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 	Mesh = BasicObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
@@ -136,7 +138,7 @@ int main() {
 		return -1;
 	}
 
-	GLFWwindow* window = create_window(4, 1);
+	GLFWwindow* window = create_window(3, 2);
 
 	if (!window) {
 		fprintf(stderr, "ERROR, could not open window with GLFW3\n");
@@ -174,6 +176,9 @@ int main() {
 		printf(e.what());
 		return -1;
 	}
+
+	printAll(shader_program);
+	glUseProgram(shader_program);
 	set_up_projection_matrix(shader_program);
 	int matrix_location = glGetUniformLocation(shader_program, "matrix");
 
@@ -218,6 +223,7 @@ int main() {
 
 		Mat4 translation_shape = Mesh.GetTranslation(Vec3{ 0.0f, elapsed_seconds * speed, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
+		transform_matrix.print();
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
 
@@ -308,6 +314,8 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 	if (!checkLinking(shader_program) || !is_valid(shader_program)) {
 		throw std::runtime_error("Error in linking shaders");
 	}
+
+	return shader_program;
 }
 
 
@@ -323,5 +331,86 @@ void set_up_projection_matrix(GLuint shader_program) {
 
 	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
 	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
+}
+
+void printAll(GLuint programIndex)
+{
+	printf("-------------\n shader programme %i info: \n", programIndex);
+	int params = -1;
+
+	glGetProgramiv(programIndex, GL_LINK_STATUS, &params);
+	printf("GL_LINK_STATUS = %i\n", params);
+
+	glGetProgramiv(programIndex, GL_ATTACHED_SHADERS, &params);
+	printf("GL_ATTACHED_SHADERS = %i\n", params);
+
+
+	// Print attribute information
+	glGetProgramiv(programIndex, GL_ACTIVE_ATTRIBUTES, &params);
+	printf("GL_ACTIVE_ATTRIBUTES = %i\n", params);
+
+	for (GLuint i = 0; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLength = 64;
+		int actualLength = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveAttrib(programIndex, i, maxLength, &actualLength, &size, &type, name);
+		if (size > 1) {
+			for (int j = 0; j < size; j++) {
+				char longName[64];
+				sprintf(longName, "%s[%i]", name, j); // sprintf copies strings unto a buffer
+				int location = glGetAttribLocation(programIndex, longName);
+				printf("%i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), longName, location);
+			}
+		}
+	}
+
+	// Printing all active unifroms
+	glGetProgramiv(programIndex, GL_ACTIVE_UNIFORMS, &params);
+	printf("GL_ACTIVE_UNIFORMS = %i\n", params);
+	for (GLuint i = 0; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLength = 64;
+		int actualLength = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveUniform(programIndex, i, maxLength, &actualLength, &size, &type, name);
+		if (size > 1) {
+			for (int j = 0; j < size; j++) {
+				char longName[64];
+				sprintf(longName, "%s[%i]", name, j);
+				int location = glGetUniformLocation(programIndex, longName);
+				printf(" %i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), name, location);
+			}
+		}
+	}
+
+	printProgramInfo(programIndex);
+}
+
+// We can always add other types here 
+const char* GL_type_to_string(GLenum type)
+{
+	switch (type) {
+
+	case GL_BOOL: return "bool";
+	case GL_INT: return "int";
+	case GL_FLOAT: return "float";
+	case GL_FLOAT_VEC2: return "vec2";
+	case GL_FLOAT_VEC3: return "vec3";
+	case GL_FLOAT_VEC4: return "vec4";
+	case GL_FLOAT_MAT2: return "mat2";
+	case GL_FLOAT_MAT3: return "mat3";
+	case GL_FLOAT_MAT4: return "mat4";
+	case GL_SAMPLER_2D: return "sampler2D";
+	case GL_SAMPLER_3D: return "sampler3D";
+	case GL_SAMPLER_CUBE: return "samplerCube";
+	case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
+	default: return "other";
+
+	}
 }
 #pragma endregion Transformations

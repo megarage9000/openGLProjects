@@ -263,6 +263,7 @@ int main() {
 		
 		Mat4 translation_shape = translate(0.0f, elapsed_seconds * speed, 0.0f);
 		transform_matrix = transform_matrix * translation_shape;
+		transform_matrix.print();
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
 
