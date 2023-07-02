@@ -12,33 +12,7 @@
 #include "../OpenGLCommon/.h/ShaderLoading.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
-
-// Move on with this book!
-// https://learnopengl.com/Introduction
-
-// Window Size
-int g_win_width = 1280;
-int g_win_height = 720;
-
-// Frame Buffer Size
-int g_fb_width = 1080;
-int g_fb_height = 720;
-
 using namespace LinearAlgebra;
-
-// GLFW Callbacks
-void glfw_error_callback(int error, const char* description);
-void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
-void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height);
-static void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos);
-static void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-// OpenGL helpers
-GLFWwindow* create_window(int version_major, int version_minor);
-GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
-void printAll(GLuint programIndex);
-const char* GL_type_to_string(GLenum type);
-void run_loop();
 
 #pragma region BasicObject Class
 class BasicObject {
@@ -49,11 +23,12 @@ private:
 	Vec3 position;
 	Versor orientation;
 
+
 	void ApplyDirections() {
 		Mat4 orientation_matrix = orientation.to_matrix();
-		up = orientation_matrix * Vec4(up, 1.0f);
-		forward = orientation_matrix * Vec4(forward, 1.0f);
-		right = orientation_matrix * Vec4(right, 1.0f);
+		up = orientation_matrix * Vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		forward = orientation_matrix * Vec4(0.0f, 0.0f, -1.0f, 0.0f);
+		right = orientation_matrix * Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 public:
@@ -92,7 +67,7 @@ public:
 
 	Mat4 ApplyRotations(std::vector<Versor> versors) {
 		for (auto versor : versors) {
-			orientation = orientation * versor; 
+			orientation = versor * orientation; 
 		}
 		ApplyDirections();
 		return orientation.to_matrix();
@@ -106,18 +81,64 @@ public:
 		position = position + right_move + up_move + forward_move;
 		return translate(position);
 	}
+
+	Vec3 GetForward() {
+		return forward;
+	}
+
+	Vec3 GetUp() {
+		return up;
+	}
+
+	Vec3 GetRight() {
+		return right;
+	}
 };
 #pragma endregion BasicObject Class
 
-// Transformations
-void set_up_projection_matrix(GLuint shader_program);
+// Move on with this book!
+// https://learnopengl.com/Introduction
+
+// Window Size
+int g_win_width = 1280;
+int g_win_height = 720;
+
+// Frame Buffer Size
+int g_fb_width = 1080;
+int g_fb_height = 720;
 
 // Global Variables
 BasicObject Camera;
 BasicObject Mesh;
 
+float last_mouse_x = g_win_width / 2.0f;
+float last_mouse_y = g_win_height / 2.0f;
+
+
 float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
+
+#pragma region Function Headers
+// GLFW Callbacks
+void glfw_error_callback(int error, const char* description);
+void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
+void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height);
+void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos);
+void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+// OpenGL helpers
+GLFWwindow* create_window(int version_major, int version_minor);
+GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
+void printAll(GLuint programIndex);
+const char* GL_type_to_string(GLenum type);
+void run_loop();
+
+// Transformations
+void set_up_projection_matrix(GLuint shader_program);
+#pragma endregion Function Headers
+
+
+
 
 int main() {
 	float elapsed_seconds = 0.0f;
@@ -151,7 +172,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, glfw_window_framebuffer_callback);
 	glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
 	glfwSetKeyCallback(window, glfw_keyboard_callback);
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
@@ -217,13 +238,12 @@ int main() {
 			speed = -speed;
 		}
 
-		Mat4 view = Camera.GetTranslation(Vec3{0.0f, 0.0f, 0.0f}).inverse() * Camera.OrientationMatrix().inverse();
+		Mat4 view = Camera.OrientationMatrix().inverse() * Camera.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f }).inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
-		Mat4 translation_shape = Mesh.GetTranslation(Vec3{ 0.0f, elapsed_seconds * speed, 0.0f });
+		Mat4 translation_shape = Mesh.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
-		transform_matrix.print();
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
 
@@ -263,12 +283,23 @@ void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height)
 	g_fb_width = width;
 	g_fb_height = height;
 }
+void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
+	float x_offset = (x_pos - last_mouse_x) * (rotation_sensitivity / 100.0f);
+	float y_offset = (y_pos - last_mouse_y) * (rotation_sensitivity / 100.0f);
 
-static void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
+	last_mouse_x = x_pos;
+	last_mouse_y = y_pos;
 
+	Vec3 up_vector = Camera.GetUp();
+	Vec3 right_vector = Camera.GetRight();
+
+	Versor horizontal_rotation{ up_vector, x_offset };
+	Versor vertical_rotation{ right_vector, y_offset };
+
+	Camera.ApplyRotations(std::vector<Versor> {vertical_rotation, horizontal_rotation});
 }
 
-static void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	
 }
 #pragma endregion GLFW Callbacks
