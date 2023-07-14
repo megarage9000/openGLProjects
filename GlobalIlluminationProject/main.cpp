@@ -136,7 +136,7 @@ GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
 void printAll(GLuint programIndex);
 const char* GL_type_to_string(GLenum type);
-void run_loop();
+void process_keyboard(GLFWwindow * window);
 
 // Transformations
 void set_up_projection_matrix(GLuint shader_program);
@@ -257,6 +257,8 @@ int main() {
 		glFrontFace(GL_CW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
+		process_keyboard(window);
+
 		// track events 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -304,7 +306,7 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 
 bool key_hold = false;
 void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
+/*
 	if (action == GLFW_RELEASE) {
 		key_hold = false;
 	}
@@ -346,6 +348,7 @@ void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int actio
 
 		Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
 	}
+*/
 }
 #pragma endregion GLFW Callbacks
 
@@ -394,6 +397,26 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 	return shader_program;
 }
 
+void process_keyboard(GLFWwindow * window) {
+
+	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		translation_change[2] -= 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		translation_change[0] -= 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		translation_change[2] += 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		translation_change[0] += 1;
+	}
+	Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
+}
 
 #pragma endregion OpenGL Helpers
 
