@@ -56,6 +56,10 @@ public:
 		return orientation.to_matrix();
 	}
 
+	Mat4 TranslationMatrix() {
+		return translate(position);
+	}
+
 	Mat4 ApplyRotations(Versor versors...) {
 		va_list args;
 		va_start(args, versors);
@@ -73,7 +77,7 @@ public:
 		return orientation.to_matrix();
 	}
 
-	Mat4 GetTranslation(Vec3 translation_changes) {
+	Mat4 ApplyTranslation(Vec3 translation_changes) {
 		Vec3 right_move = right * translation_changes[0];
 		Vec3 up_move = up * translation_changes[1];
 		Vec3 forward_move = forward * -translation_changes[2];
@@ -115,6 +119,7 @@ float last_mouse_x = g_win_width / 2.0f;
 float last_mouse_y = g_win_height / 2.0f;
 
 
+float elapsed_seconds = 0.0f;
 float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
 
@@ -139,9 +144,7 @@ void set_up_projection_matrix(GLuint shader_program);
 
 
 
-
 int main() {
-	float elapsed_seconds = 0.0f;
 	float last_position = 0.0f;
 	float speed = 5.0f;
 
@@ -209,7 +212,7 @@ int main() {
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
-	Mat4 view = Camera.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f }) * Camera.OrientationMatrix();
+	Mat4 view = Camera.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f }) * Camera.OrientationMatrix();
 	int view_mat_loc = glGetUniformLocation(shader_program, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -238,11 +241,11 @@ int main() {
 			speed = -speed;
 		}
 
-		Mat4 view = Camera.OrientationMatrix().inverse() * Camera.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f }).inverse();
+		Mat4 view = Camera.OrientationMatrix().inverse() * Camera.TranslationMatrix().inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
-		Mat4 translation_shape = Mesh.GetTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
+		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
@@ -299,8 +302,50 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	Camera.ApplyRotations(std::vector<Versor> {vertical_rotation, horizontal_rotation});
 }
 
+bool key_hold = false;
 void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	
+
+	if (action == GLFW_RELEASE) {
+		key_hold = false;
+	}
+
+	if (action == GLFW_PRESS) {
+		key_hold = true;
+	}
+
+	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
+	if (key_hold) {
+		switch (key) {
+			// Translations
+		case GLFW_KEY_A:
+			translation_change[0] -= 1;
+			break;
+
+		case GLFW_KEY_D:
+			translation_change[0] += 1;
+			break;
+
+		case GLFW_KEY_W:
+			translation_change[2] -= 1;
+			break;
+
+		case GLFW_KEY_S:
+			translation_change[2] += 1;
+			break;
+
+		case GLFW_KEY_Q:
+			translation_change[1] += 1;
+			break;
+
+		case GLFW_KEY_E:
+			translation_change[1] -= 1;
+			break;
+		default:
+			break;
+		}
+
+		Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
+	}
 }
 #pragma endregion GLFW Callbacks
 
