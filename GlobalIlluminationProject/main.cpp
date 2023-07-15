@@ -14,7 +14,7 @@
 
 using namespace LinearAlgebra;
 
-#pragma region BasicObject Class
+#pragma region BasicObject Class and CameraObject Class
 class BasicObject {
 private:
 	Vec3 forward;
@@ -27,13 +27,13 @@ private:
 	void ApplyDirections() {
 		Mat4 orientation_matrix = orientation.to_matrix();
 		up = orientation_matrix * Vec4(0.0f, 1.0f, 0.0f, 0.0f);
-		forward = orientation_matrix * Vec4(0.0f, 0.0f, -1.0f, 0.0f);
+		forward = orientation_matrix * Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 		right = orientation_matrix * Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 public:
 	BasicObject() {
-		forward = Vec3{ 0.0, 0.0, -1.0f };
+		forward = Vec3{ 0.0, 0.0, 1.0f };
 		right = Vec3{ 1.0f, 0.0f, 0.0f };
 		up = Vec3{ 0.0f, 1.0f, 0.0f };
 		position = Vec3{ 0.0f, 0.0f, 0.0f };
@@ -41,7 +41,7 @@ public:
 	}
 
 	BasicObject(Vec3 position, Versor orientation) {
-		forward = Vec3{ 0.0, 0.0, -1.0f };
+		forward = Vec3{ 0.0, 0.0, 1.0f };
 		right = Vec3{ 1.0f, 0.0f, 0.0f };
 		up = Vec3{ 0.0f, 1.0f, 0.0f };
 		this->orientation = orientation;
@@ -58,15 +58,6 @@ public:
 
 	Mat4 TranslationMatrix() {
 		return translate(position);
-	}
-
-	Mat4 ApplyRotations(Versor versors...) {
-		va_list args;
-		va_start(args, versors);
-		orientation = orientation * versors;
-		va_end(args);
-		ApplyDirections();
-		return orientation.to_matrix();
 	}
 
 	Mat4 ApplyRotations(std::vector<Versor> versors) {
@@ -98,6 +89,37 @@ public:
 		return right;
 	}
 };
+
+// Based off of LearnOpenGL's camera implementation
+class CameraObject {
+	Vec3 direction;
+	Vec3 position;
+	Vec3 camera_front;
+public:
+
+	CameraObject() {
+		position = Vec3(0.0f, 0.0f, 0.0f);
+	}
+	CameraObject(Vec3 position, Vec3 target) {
+		this->position = position;
+		camera_front = target;
+		direction = (position - target).normalize();
+	}
+
+	void RealignGaze(float pitch, float yaw) {
+		float yaw_rad = yaw * DEG_TO_RAD;
+		float pitch_rad = pitch * DEG_TO_RAD;
+		direction[0] = cos(yaw_rad) * cos(pitch_rad);
+		direction[1] = sin(pitch_rad);
+		direction[2] = sin(yaw_rad) * cos(pitch_rad);
+		direction.print();
+		camera_front = direction.normalize();
+	}
+
+	Mat4 GetLookAt() {
+		return view_matrix(Vec3{ 0.0f, 1.0f, 0.0f }, Vec4(position + camera_front), Vec4(position));
+	}
+};
 #pragma endregion BasicObject Class
 
 // Move on with this book!
@@ -112,16 +134,18 @@ int g_fb_width = 1080;
 int g_fb_height = 720;
 
 // Global Variables
-BasicObject Camera;
+CameraObject Camera;
 BasicObject Mesh;
 
 float last_mouse_x = g_win_width / 2.0f;
 float last_mouse_y = g_win_height / 2.0f;
 
-
 float elapsed_seconds = 0.0f;
 float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
+
+float pitch = 0.0f;
+float yaw = -90.0f;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -148,7 +172,7 @@ int main() {
 	float last_position = 0.0f;
 	float speed = 5.0f;
 
-	Camera = BasicObject(Vec3{0.0, 0.0, 10.0f}, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	Camera = CameraObject(Vec3{ 0.0f, 0.0f, -5.0f }, Vec3{ 0.0f, 0.0f, 0.0f });
 	Mesh = BasicObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 
 	if (!restart_gl_log()) {
@@ -212,7 +236,7 @@ int main() {
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
-	Mat4 view = Camera.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f }) * Camera.OrientationMatrix();
+	Mat4 view = translate(0.0f, 0.0f, 0.0f) * Mat4(IDENTITY_4, 16);
 	int view_mat_loc = glGetUniformLocation(shader_program, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -241,7 +265,7 @@ int main() {
 			speed = -speed;
 		}
 
-		Mat4 view = Camera.OrientationMatrix().inverse() * Camera.TranslationMatrix().inverse();
+		Mat4 view = Camera.GetLookAt().inverse() * translate(0.0f, 0.0f, 0.0f).inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -257,7 +281,7 @@ int main() {
 		glFrontFace(GL_CW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
-		process_keyboard(window);
+		// process_keyboard(window);
 
 		// track events 
 		glfwPollEvents();
@@ -290,18 +314,28 @@ void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height)
 }
 void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
 	float x_offset = (x_pos - last_mouse_x) * (rotation_sensitivity / 100.0f);
-	float y_offset = (y_pos - last_mouse_y) * (rotation_sensitivity / 100.0f);
+	float y_offset = (last_mouse_y - y_pos) * (rotation_sensitivity / 100.0f);
 
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	Vec3 up_vector = Camera.GetUp();
-	Vec3 right_vector = Camera.GetRight();
+	yaw += x_offset;
+	pitch += y_offset;
 
-	Versor horizontal_rotation{ up_vector, x_offset };
-	Versor vertical_rotation{ right_vector, y_offset };
+	if (pitch > 90.0f) {
+		pitch = 90.0f;
+	}
+	if (pitch < -90.0f) {
+		pitch = -90.0f;
+	}
+	Camera.RealignGaze(pitch, yaw);
+	//Vec3 up_vector = Camera.GetUp();
+	//Vec3 right_vector = Camera.GetRight();
 
-	Camera.ApplyRotations(std::vector<Versor> {vertical_rotation, horizontal_rotation});
+	//Versor horizontal_rotation{ up_vector, x_offset };
+	//Versor vertical_rotation{ right_vector, y_offset };
+
+	//Camera.ApplyRotations(std::vector<Versor> {horizontal_rotation, vertical_rotation});
 }
 
 bool key_hold = false;
@@ -415,7 +449,7 @@ void process_keyboard(GLFWwindow * window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		translation_change[0] += 1;
 	}
-	Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
+	// Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
 }
 
 #pragma endregion OpenGL Helpers
