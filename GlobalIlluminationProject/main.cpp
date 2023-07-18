@@ -173,7 +173,7 @@ float last_mouse_x = g_win_width / 2.0f;
 float last_mouse_y = g_win_height / 2.0f;
 
 float elapsed_seconds = 0.0f;
-float camera_speed = 100.0f;
+float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
 
 float pitch = 0.0f;
@@ -296,6 +296,7 @@ int main() {
 		if (last_position > 1.0f || last_position < -1.0f) {
 			speed = -speed;
 		}
+		process_keyboard(window);
 
 		Mat4 view = Camera.GetLookAt().inverse() * translate(0.0f, 0.0f, 0.0f).inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
@@ -350,8 +351,8 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	yaw += x_offset;
-	pitch += y_offset;
+	Camera.yaw += x_offset;
+	Camera.pitch += y_offset;
 
 	if (Camera.pitch > 90.0f) {
 		Camera.pitch = 90.0f;
