@@ -172,7 +172,7 @@ int main() {
 	float last_position = 0.0f;
 	float speed = 5.0f;
 
-	Camera = CameraObject(Vec3{ 0.0f, 0.0f, -5.0f }, Vec3{ 0.0f, 0.0f, 0.0f });
+	Camera = CameraObject(Vec3{ 0.0f, 0.0f, 5.0f }, Vec3{ 0.0f, 0.0f, 0.0f });
 	Mesh = BasicObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 
 	if (!restart_gl_log()) {
@@ -236,7 +236,7 @@ int main() {
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
-	Mat4 view = translate(0.0f, 0.0f, 0.0f) * Mat4(IDENTITY_4, 16);
+	Mat4 view = Camera.GetLookAt().inverse();
 	int view_mat_loc = glGetUniformLocation(shader_program, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -265,7 +265,7 @@ int main() {
 			speed = -speed;
 		}
 
-		Mat4 view = Camera.GetLookAt().inverse() * translate(0.0f, 0.0f, 0.0f).inverse();
+		Mat4 view = Camera.GetLookAt().inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
