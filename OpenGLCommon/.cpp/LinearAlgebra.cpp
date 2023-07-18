@@ -413,7 +413,7 @@ namespace LinearAlgebra
     void Vec3::print() {
         std::cout << "\n--------------------------------\n";
         for (int i = 0; i < dimension; i++) {
-            std::cout << std::setw(8) << (*this)[i];
+            std::cout << std::setw(32) << (*this)[i];
         }
         std::cout << "\n--------------------------------\n";
     }

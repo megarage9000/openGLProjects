@@ -99,39 +99,43 @@ class CameraObject {
 	Vec3 camera_right;
 	Vec3 world_up;
 
-	// pitch and yaw
-	float pitch;
-	float yaw;
 	
 	void GetNewDirections() {
 		camera_right = (camera_front.cross(world_up)).normalize();
 		camera_up = (camera_front.cross(camera_right)).normalize();
+	/*	std::cout << "------RIGHT, UP, FRONT------\n";
+		camera_right.print();
+		camera_up.print();
+		camera_front.print();
+	*/
 	}
 
 public:
+	// pitch and yaw
+	float pitch;
+	float yaw;
 
 	CameraObject() {
-		position = Vec3(0.0f, 0.0f, 0.0f);
+		position = Vec3(0.0f, 0.0f, 5.0f);
 		world_up = Vec3(0.0f, 1.0f, 0.0f);
-		direction = Vec3(0.0f, 0.0f, -1.0f);
-		camera_front = position + direction;
-		GetNewDirections();
+		pitch = 0.0f;
+		yaw = -90.0f;
+		RealignGaze();
 	}
 	CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{0.0f, 1.0f, 0.0f}) {
 		this->position = position;
-		this->camera_up = camera_up;
-		direction = (position - target).normalize();
-		camera_front = position + direction;
-		GetNewDirections();
+		this->world_up = world_up;
+		pitch = 0.0f;
+		yaw = -90.0f;
+		RealignGaze();
 	}
 
-	void RealignGaze(float pitch, float yaw) {
+	void RealignGaze() {
 		float yaw_rad = yaw * DEG_TO_RAD;
 		float pitch_rad = pitch * DEG_TO_RAD;
 		direction[0] = cos(yaw_rad) * cos(pitch_rad);
 		direction[1] = sin(pitch_rad);
 		direction[2] = sin(yaw_rad) * cos(pitch_rad);
-		direction.print();
 		camera_front = direction.normalize();
 		GetNewDirections();
 	}
@@ -139,12 +143,12 @@ public:
 	void ApplyTranslation(Vec3 translation_changes) {
 		position = position +
 			camera_right * translation_changes[0] +
-			camera_up * translation_changes[1] -
+			camera_up * translation_changes[1] +
 			camera_front * translation_changes[2];
 	}
 
 	Mat4 GetLookAt() {
-		return view_matrix(Vec3{ 0.0f, 1.0f, 0.0f }, Vec4(position + camera_front), Vec4(position));
+		return view_matrix(camera_up, Vec4(position + camera_front), Vec4(position));
 	}
 };
 #pragma endregion BasicObject Class
@@ -199,7 +203,7 @@ int main() {
 	float last_position = 0.0f;
 	float speed = 5.0f;
 
-	Camera = CameraObject(Vec3{ 0.0f, 0.0f, 5.0f }, Vec3{ 0.0f, 0.0f, 0.0f });
+	Camera = CameraObject();
 	Mesh = BasicObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 
 	if (!restart_gl_log()) {
@@ -346,16 +350,16 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	yaw += x_offset;
-	pitch += y_offset;
+	Camera.yaw += x_offset;
+	Camera.pitch += y_offset;
 
-	if (pitch > 90.0f) {
-		pitch = 90.0f;
+	if (Camera.pitch > 90.0f) {
+		Camera.pitch = 90.0f;
 	}
-	if (pitch < -90.0f) {
-		pitch = -90.0f;
+	if (Camera.pitch < -90.0f) {
+		Camera.pitch = -90.0f;
 	}
-	Camera.RealignGaze(pitch, yaw);
+	Camera.RealignGaze();
 	//Vec3 up_vector = Camera.GetUp();
 	//Vec3 right_vector = Camera.GetRight();
 
@@ -367,50 +371,9 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 
 bool key_hold = false;
 void glfw_keyboard_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-/*
-	if (action == GLFW_RELEASE) {
-		key_hold = false;
-	}
 
-	if (action == GLFW_PRESS) {
-		key_hold = true;
-	}
-
-	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
-	if (key_hold) {
-		switch (key) {
-			// Translations
-		case GLFW_KEY_A:
-			translation_change[0] -= 1;
-			break;
-
-		case GLFW_KEY_D:
-			translation_change[0] += 1;
-			break;
-
-		case GLFW_KEY_W:
-			translation_change[2] -= 1;
-			break;
-
-		case GLFW_KEY_S:
-			translation_change[2] += 1;
-			break;
-
-		case GLFW_KEY_Q:
-			translation_change[1] += 1;
-			break;
-
-		case GLFW_KEY_E:
-			translation_change[1] -= 1;
-			break;
-		default:
-			break;
-		}
-
-		Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
-	}
-*/
 }
+
 #pragma endregion GLFW Callbacks
 
 #pragma region OpenGL Helpers
@@ -462,19 +425,19 @@ void process_keyboard(GLFWwindow * window) {
 
 	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		translation_change[2] -= 1;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		translation_change[0] -= 1;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		translation_change[2] += 1;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		translation_change[0] += 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		translation_change[2] -= 1;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		translation_change[0] -= 1;
 	}
 	Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
 }
