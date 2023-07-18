@@ -111,7 +111,7 @@ namespace LinearAlgebra {
     Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3& up_vector, Vec3& forward_vector, Vec3& right_vector) {
         Mat4 view_matrix = Mat4(IDENTITY_4, 16);
 
-        forward_vector = Vec3((focus_position - cam_world_position)).normalize();
+        forward_vector = Vec3((cam_world_position - focus_position)).normalize();
         Vec3 new_up_vector = (up_vector.cross(forward_vector)).normalize();
         Vec3 new_right_vector = (new_up_vector.cross(forward_vector)).normalize();
 

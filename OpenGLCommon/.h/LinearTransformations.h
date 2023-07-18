@@ -18,6 +18,7 @@ namespace LinearAlgebra {
     Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3& up_vector, Vec3& forward_vector, Vec3& right_vector);
     Mat4 projection_matrix(float near, float far, float fov, float aspect);
 
+
     // To check implementation, need to see 
     // https://github.com/capnramses/antons_opengl_tutorials_book/blob/master/06_vcam_with_quaternion/main.cpp
 
