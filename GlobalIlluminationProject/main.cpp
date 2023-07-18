@@ -94,6 +94,7 @@ public:
 class CameraObject {
 	Vec3 direction;
 	Vec3 position;
+
 	Vec3 camera_front;
 	Vec3 camera_up;
 	Vec3 camera_right;
@@ -172,7 +173,7 @@ float last_mouse_x = g_win_width / 2.0f;
 float last_mouse_y = g_win_height / 2.0f;
 
 float elapsed_seconds = 0.0f;
-float camera_speed = 10.0f;
+float camera_speed = 100.0f;
 float rotation_sensitivity = 1.5f;
 
 float pitch = 0.0f;
@@ -296,7 +297,7 @@ int main() {
 			speed = -speed;
 		}
 
-		Mat4 view = Camera.GetLookAt().inverse();
+		Mat4 view = Camera.GetLookAt().inverse() * translate(0.0f, 0.0f, 0.0f).inverse();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -312,8 +313,7 @@ int main() {
 		glFrontFace(GL_CW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
-		process_keyboard(window);
-
+		
 		// track events 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -350,8 +350,8 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	Camera.yaw += x_offset;
-	Camera.pitch += y_offset;
+	yaw += x_offset;
+	pitch += y_offset;
 
 	if (Camera.pitch > 90.0f) {
 		Camera.pitch = 90.0f;
@@ -421,6 +421,7 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 	return shader_program;
 }
 
+bool lock_cursor = true;
 void process_keyboard(GLFWwindow * window) {
 
 	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
@@ -439,7 +440,17 @@ void process_keyboard(GLFWwindow * window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		translation_change[0] -= 1;
 	}
-	Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
+
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+		lock_cursor = !lock_cursor;
+		if (lock_cursor) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	}
+	Camera.ApplyTranslation(translation_change * camera_speed * elapsed_seconds);
 }
 
 #pragma endregion OpenGL Helpers
