@@ -95,15 +95,34 @@ class CameraObject {
 	Vec3 direction;
 	Vec3 position;
 	Vec3 camera_front;
+	Vec3 camera_up;
+	Vec3 camera_right;
+	Vec3 world_up;
+
+	// pitch and yaw
+	float pitch;
+	float yaw;
+	
+	void GetNewDirections() {
+		camera_right = (camera_front.cross(world_up)).normalize();
+		camera_up = (camera_front.cross(camera_right)).normalize();
+	}
+
 public:
 
 	CameraObject() {
 		position = Vec3(0.0f, 0.0f, 0.0f);
+		world_up = Vec3(0.0f, 1.0f, 0.0f);
+		direction = Vec3(0.0f, 0.0f, -1.0f);
+		camera_front = position + direction;
+		GetNewDirections();
 	}
-	CameraObject(Vec3 position, Vec3 target) {
+	CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{0.0f, 1.0f, 0.0f}) {
 		this->position = position;
-		camera_front = target;
+		this->camera_up = camera_up;
 		direction = (position - target).normalize();
+		camera_front = position + direction;
+		GetNewDirections();
 	}
 
 	void RealignGaze(float pitch, float yaw) {
@@ -114,6 +133,14 @@ public:
 		direction[2] = sin(yaw_rad) * cos(pitch_rad);
 		direction.print();
 		camera_front = direction.normalize();
+		GetNewDirections();
+	}
+
+	void ApplyTranslation(Vec3 translation_changes) {
+		position = position +
+			camera_right * translation_changes[0] +
+			camera_up * translation_changes[1] -
+			camera_front * translation_changes[2];
 	}
 
 	Mat4 GetLookAt() {
@@ -281,7 +308,7 @@ int main() {
 		glFrontFace(GL_CW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
-		// process_keyboard(window);
+		process_keyboard(window);
 
 		// track events 
 		glfwPollEvents();
@@ -449,7 +476,7 @@ void process_keyboard(GLFWwindow * window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		translation_change[0] += 1;
 	}
-	// Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
+	Camera.ApplyTranslation(translation_change.normalize() * camera_speed * elapsed_seconds);
 }
 
 #pragma endregion OpenGL Helpers
