@@ -1,5 +1,6 @@
 #version 410
 
+in vec4 vt_colour;
 in vec3 position_eye, normal_eye, vt_normal; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
 in vec2 texture_coordinates;
 
@@ -52,5 +53,5 @@ void main() {
 	if(color.z < 0.0) {
 		color.z = -color.z;
 	}
-	fragColor = color;
+	fragColor = color * vec4(0.5, 0.5, 0.5, 1.0);
 }

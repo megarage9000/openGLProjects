@@ -57,7 +57,6 @@ void process_keyboard(GLFWwindow * window);
 void set_up_projection_matrix(GLuint shader_program);
 #pragma endregion Function Headers
 
-
 int main() {
 	float last_position = 0.0f;
 	float speed = 5.0f;
