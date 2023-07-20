@@ -315,6 +315,13 @@ void process_keyboard(GLFWwindow * window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		translation_change[0] -= 1;
 	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		translation_change[1] += 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		translation_change[1] -= 1;
+	}
+
 
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
 		lock_cursor = !lock_cursor;
