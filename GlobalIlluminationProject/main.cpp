@@ -65,7 +65,7 @@ int main() {
 
 	Camera = CameraObject();
 	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-	LightSource = EngineObject(Vec3{ 0.0f, 5.0f, 0.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	LightSource = EngineObject(Vec3{ 10.0f, 10.0f, 10.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -132,11 +132,12 @@ int main() {
 	}
 
 	printAll(shader_program);
-	glUseProgram(shader_program);
+	printAll(light_shader_program);
 	set_up_projection_matrix(shader_program, light_shader_program);
 	int matrix_location = glGetUniformLocation(shader_program, "matrix");
 
 	// Mesh Loading
+	glUseProgram(shader_program);
 	GLuint vao;
 	int point_count;
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
@@ -147,6 +148,7 @@ int main() {
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
 	// Light loading (use same mesh)
+	glUseProgram(light_shader_program);
 	GLuint vao_light;
 	int light_point_count;
 	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
@@ -216,14 +218,11 @@ int main() {
 		glUniform4fv(light_colour_loc, 1, LightColour);
 		
 
-		// Mat4 light_translation_shape = LightSource.ApplyTranslation(Vec3{ last_position, 0.0f, 0.0f });
-		
+		Mat4 light_translation_shape = LightSource.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
+		// Find out why lamp not ligthing up: https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/2.2.basic_lighting_specular/basic_lighting_specular.cpp
 		int light_matrix_location = glGetUniformLocation(light_shader_program, "matrix");
-		glUniformMatrix4fv(light_matrix_location, 1, GL_TRUE, Mat4(IDENTITY_4, 16));
+		glUniformMatrix4fv(light_matrix_location, 1, GL_TRUE, light_translation_shape);
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CCW);
 		glDrawArrays(GL_TRIANGLES, 0, light_point_count);
 		
 		// track events 
@@ -398,9 +397,11 @@ void set_up_projection_matrix(GLuint shader_program, GLuint light_program) {
 	float aspect = (float)g_win_width / (float)g_win_height;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 
+	glUseProgram(shader_program);
 	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
 	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
 
+	glUseProgram(light_program);
 	int proj_light_mat_loc = glGetUniformLocation(light_program, "projection");
 	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective);
 }

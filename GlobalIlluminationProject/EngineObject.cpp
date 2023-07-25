@@ -40,7 +40,7 @@ Mat4 EngineObject::ApplyRotations(std::vector<Versor> versors) {
 Mat4 EngineObject::ApplyTranslation(Vec3 translation_changes) {
 	Vec3 right_move = right * translation_changes[0];
 	Vec3 up_move = up * translation_changes[1];
-	Vec3 forward_move = forward * -translation_changes[2];
+	Vec3 forward_move = forward * translation_changes[2];
 
 	position = position + right_move + up_move + forward_move;
 	return translate(position);
