@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{6719d218-f2a9-43d2-bdee-b6b72dcaa7c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -59,11 +62,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32d.dll" />
-    <None Include="vertexShader.vert">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="fragmentShader.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="vertexShader.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="lightVertexShader.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="lightFragmentShader.frag">
+      <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

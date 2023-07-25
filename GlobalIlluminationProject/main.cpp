@@ -29,6 +29,8 @@ int g_fb_height = 720;
 // Global Variables
 CameraObject Camera;
 EngineObject Mesh;
+EngineObject LightSource;
+Vec4 LightColour{ 1.0f, 1.0f, 1.0f };
 
 float last_mouse_x = g_win_width / 2.0f;
 float last_mouse_y = g_win_height / 2.0f;
@@ -54,7 +56,7 @@ const char* GL_type_to_string(GLenum type);
 void process_keyboard(GLFWwindow * window);
 
 // Transformations
-void set_up_projection_matrix(GLuint shader_program);
+void set_up_projection_matrix(GLuint shader_program, GLuint light_program);
 #pragma endregion Function Headers
 
 int main() {
@@ -62,7 +64,8 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject();
-	Mesh = EngineObject(Vec3{ 0.0, 0.0, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	LightSource = EngineObject(Vec3{ 0.0f, 5.0f, 0.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -115,9 +118,22 @@ int main() {
 		return -1;
 	}
 
+	// Light Shader creation
+	GLuint light_shader_program;
+	try {
+		light_shader_program = create_shader_program(std::map<const char*, GLenum> {
+			{"lightVertexShader.vert", GL_VERTEX_SHADER},
+			{ "lightFragmentShader.frag", GL_FRAGMENT_SHADER }
+		});
+	}
+	catch (std::exception e) {
+		printf(e.what());
+		return -1;
+	}
+
 	printAll(shader_program);
 	glUseProgram(shader_program);
-	set_up_projection_matrix(shader_program);
+	set_up_projection_matrix(shader_program, light_shader_program);
 	int matrix_location = glGetUniformLocation(shader_program, "matrix");
 
 	// Mesh Loading
@@ -130,6 +146,14 @@ int main() {
 	int view_mat_loc = glGetUniformLocation(shader_program, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
+	// Light loading (use same mesh)
+	GLuint vao_light;
+	int light_point_count;
+	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
+
+
+
+
 	while (!glfwWindowShouldClose(window)) {
 
 		// Clear drawing surface color
@@ -137,7 +161,7 @@ int main() {
 
 		glViewport(0, 0, g_fb_width, g_fb_height);
 
-		// Draw triangle
+		// Draw Object
 		glUseProgram(shader_program);
 		glBindVertexArray(vao);
 
@@ -164,10 +188,15 @@ int main() {
 		int camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
 		glUniform3fv(camera_pos_loc, 1, Camera.GetCameraPos());
 
+		// Get light position
+		int light_position = glGetUniformLocation(shader_program, "light_position");
+		glUniform3fv(light_position, 1, LightSource.Position());
+
 		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
 		last_position = elapsed_seconds * speed + last_position;
+
 
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
@@ -176,6 +205,26 @@ int main() {
 		glFrontFace(GL_CCW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
+		// Render light source
+		glUseProgram(light_shader_program);
+		glBindVertexArray(vao_light);
+
+		int light_view_mat_loc = glGetUniformLocation(light_shader_program, "view");
+		glUniformMatrix4fv(light_view_mat_loc, 1, GL_TRUE, view);
+
+		int light_colour_loc = glGetUniformLocation(light_shader_program, "light_colour");
+		glUniform4fv(light_colour_loc, 1, LightColour);
+		
+
+		// Mat4 light_translation_shape = LightSource.ApplyTranslation(Vec3{ last_position, 0.0f, 0.0f });
+		
+		int light_matrix_location = glGetUniformLocation(light_shader_program, "matrix");
+		glUniformMatrix4fv(light_matrix_location, 1, GL_TRUE, Mat4(IDENTITY_4, 16));
+
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glFrontFace(GL_CCW);
+		glDrawArrays(GL_TRIANGLES, 0, light_point_count);
 		
 		// track events 
 		glfwPollEvents();
@@ -342,7 +391,7 @@ void process_keyboard(GLFWwindow * window) {
 #pragma endregion OpenGL Helpers
 
 #pragma region Transformations
-void set_up_projection_matrix(GLuint shader_program) {
+void set_up_projection_matrix(GLuint shader_program, GLuint light_program) {
 	float near = 0.1f;
 	float far = 100.0f;
 	float fov = 67.0f * DEG_TO_RAD;
@@ -351,6 +400,9 @@ void set_up_projection_matrix(GLuint shader_program) {
 
 	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
 	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
+
+	int proj_light_mat_loc = glGetUniformLocation(light_program, "projection");
+	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective);
 }
 
 void printAll(GLuint programIndex)

@@ -5,8 +5,7 @@ in vec3 position_eye, normal_eye, vt_normal, frag_pos; // The input variable mus
 in vec2 texture_coordinates;
 
 uniform mat4 view;
-uniform vec3 camera_pos;
-vec3 light_position = vec3(0.0, 10.0, 0.0);
+uniform vec3 camera_pos, light_position;
 
 // Ambience
 vec3 ambience_energy = vec3(0.137, 0.886, 0.922);

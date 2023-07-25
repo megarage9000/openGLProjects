@@ -81,7 +81,7 @@ void CameraObject::RealignGaze() {
 	float pitch_rad = pitch * DEG_TO_RAD;
 	direction[0] = cos(yaw_rad) * cos(pitch_rad);
 	direction[1] = sin(pitch_rad);
-	direction[2] = sin(yaw_rad) * cos(pitch_rad);
+	direction[2] = sin(yaw_rad) * cos(pitch_rad); 
 	camera_front = direction.normalize();
 	GetNewDirections();
 }

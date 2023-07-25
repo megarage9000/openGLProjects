@@ -150,6 +150,8 @@
   <ItemGroup>
     <None Include="fragmentShader.frag" />
     <None Include="glew32d.dll" />
+    <None Include="lightFragmentShader.frag" />
+    <None Include="lightVertexShader.vert" />
     <None Include="vertexShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
