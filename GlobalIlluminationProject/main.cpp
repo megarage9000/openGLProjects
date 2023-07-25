@@ -160,6 +160,10 @@ int main() {
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
+		// Get camera position
+		int camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
+		glUniform3fv(camera_pos_loc, 1, Camera.GetCameraPos());
+
 		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
 		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
@@ -169,7 +173,7 @@ int main() {
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
+		glFrontFace(GL_CCW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
 		

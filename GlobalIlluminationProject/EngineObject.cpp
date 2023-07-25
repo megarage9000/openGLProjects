@@ -96,4 +96,9 @@ void CameraObject::ApplyTranslation(Vec3 translation_changes) {
 Mat4 CameraObject::GetLookAt() {
 	return view_matrix(camera_up, Vec4(position + camera_front), Vec4(position));
 }
+
+Vec3 CameraObject::GetCameraPos() {
+	return Vec3(position);
+}
+
 #pragma endregion CameraObject Methods

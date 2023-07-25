@@ -8,13 +8,19 @@ layout(location = 3)in vec4 vertex_colour;
 uniform mat4 matrix, view, projection;
 
 out vec4 vt_colour;
-out vec3 position_eye, normal_eye, vt_normal;
+out vec3 position_eye, normal_eye, vt_normal, frag_pos;
 out vec2 texture_coordinates;
 
 void main() {
 	
+	// calculating frag position
+	frag_pos = vec3(matrix * vec4(vertex_position, 1.0f));
+
 	position_eye = vec3(view * matrix * vec4(vertex_position, 1.0));
 	normal_eye = vec3(view * matrix * vec4(vertex_normal, 0.0));
+
+	// For normals, we can use a normal matrix to transform to world coords: www.lighthouse3d.com/tutorials/glsl-tutorial/the-normal-matrix/,
+	// but right now we don't need to. This is only applicable if we are doing a non-uniform scale to a normal
 	vt_normal = vertex_normal;
 	texture_coordinates = texture_coords;
 	vt_colour = vertex_colour;

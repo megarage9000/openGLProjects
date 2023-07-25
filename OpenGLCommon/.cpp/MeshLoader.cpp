@@ -29,6 +29,7 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 
 	GLfloat* points = NULL;
 	GLfloat* normals = NULL;
+	GLfloat* colours = NULL;
 	GLfloat* texcoords = NULL;
 
 	// Vertices
@@ -82,6 +83,21 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 		}
 	}
 
+	// Colour vertices
+	if (mesh->HasVertexColors(1)) {
+		
+		colours = new GLfloat[*point_count * 4 * sizeof(GLfloat)];
+
+		for (int i = 0; i < *point_count; i++) {
+
+			const aiColor4D* colour = &(mesh->mColors[1][i]);
+			colours[i] = colour->r;
+			colours[i + 1] = colour->g;
+			colours[i + 2] = colour->b;
+			colours[i + 3] = colour->a;
+		}
+	}
+
 	// Texture Coordinates
 	if (mesh->HasTextureCoords(0)) {
 
@@ -120,6 +136,7 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 		delete[] normals;
 	}
 
+
 	if (mesh->HasTextureCoords(0)) {
 
 		GLuint vbo;
@@ -132,6 +149,17 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 		delete[] texcoords;
 	}
 
+	if (mesh->HasVertexColors(1)) {
+		printf("Has colours!\n");
+		GLuint vbo;
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, 4 * *point_count * sizeof(GLfloat), colours, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(3);
+
+		delete[] colours;
+	}
 	if (mesh->HasTangentsAndBitangents()) {
 		// NB: could store/print tangents here
 	}

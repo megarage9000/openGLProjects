@@ -62,5 +62,6 @@ public:
 	void RealignGaze();
 	void ApplyTranslation(Vec3 translation_changes);
 	Mat4 GetLookAt();
+	Vec3 GetCameraPos();
 };
 #pragma endregion CameraObject

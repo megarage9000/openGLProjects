@@ -60,8 +60,8 @@ namespace LinearAlgebra {
         Mat4 view_matrix = Mat4(IDENTITY_4, 16);
 
         Vec4 forward_vector = (focus_position - cam_world_position).normalize();
-        Vec4 new_up_vector = (up_vector.cross_vec4(forward_vector)).normalize();
-        Vec4 new_right_vector = (new_up_vector.cross_vec4(forward_vector)).normalize();
+        Vec4 new_right_vector = (forward_vector.cross_vec4(up_vector)).normalize();
+        Vec4 new_up_vector = (forward_vector.cross_vec4(new_right_vector)).normalize();
 
         view_matrix[0][0] = new_right_vector[0];
         view_matrix[0][1] = new_right_vector[1];
