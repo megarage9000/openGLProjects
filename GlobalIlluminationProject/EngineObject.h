@@ -41,52 +41,32 @@ public:
 
 
 class CameraObject {
-	Vec3 direction;
 	Vec3 position;
 
 	Vec3 camera_front;
 	Vec3 camera_up;
 	Vec3 camera_right;
-	Vec3 world_up;
 
-	Vec3 plane_up;
-
-	Versor Orientation;
-
-	void GetNewDirections() {
-		camera_right = (camera_front.cross(world_up)).normalize();
-		camera_up = (camera_front.cross(camera_right)).normalize();
-	}
-
-	int GetSign(float num) {
-		if (num < 0) {
-			return -1;
-		}
-		return 1;
-	}
-
-	Vec3 Lerp(Vec3 a, Vec3 b, float alpha) {
-		return (a * alpha) + (b * (1 - alpha));
-	}
+	Versor orientation;
 
 	void GetNewDirectionsOrientation() {
-		Mat4 orientation_matrix = Orientation.to_matrix();
+		Mat4 orientation_matrix = orientation.to_matrix();
 		camera_front = orientation_matrix * Vec3{ 0.0f, 0.0f, -1.0f };
 		camera_right = orientation_matrix * Vec3{ 1.0f, 0.0f, 0.0f };
 		camera_up = orientation_matrix * Vec3{ 0.0f, 1.0f, 0.0f };
 	}
 
-public:
-	// pitch and yaw
-	float pitch;
-	float yaw;
-	float roll;
+	void InitializeAxes() {
+		camera_up = Vec3{ 0.0, 1.0f, 0.0f };
+		camera_right = Vec3{ 1.0f, 0.0f, 0.0f };
+		camera_front = Vec3{ 0.0f, 0.0f, -1.0f };
+	}
 
-	// Try this: https://gamedev.stackexchange.com/questions/202515/how-to-make-a-concisely-elegantly-and-human-friendly-quaternion-camera
+public:
 
 	CameraObject();
-	CameraObject(Vec3 position, Vec3 target, Vec3 world_up);
-	void RealignGaze();
+	CameraObject(Vec3 position);
+	CameraObject(Vec3 position, Versor orientation);
 	void RealignGaze(float x, float y);
 	void ApplyTranslation(Vec3 translation_changes);
 	Mat4 GetViewMatrix();

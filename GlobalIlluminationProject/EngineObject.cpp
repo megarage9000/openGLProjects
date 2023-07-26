@@ -63,62 +63,28 @@ Vec3 EngineObject::GetRight() {
 #pragma region CameraObject Methods
 CameraObject::CameraObject() {
 	position = Vec3(0.0f, 0.0f, 5.0f);
-	world_up = Vec3(0.0f, 1.0f, 0.0f);
-	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
-
-	camera_up = Vec3{ 0.0, 1.0f, 0.0f };
-	camera_right = Vec3{ 1.0f, 0.0f, 0.0f };
-	camera_front = Vec3{ 0.0f, 0.0f, -1.0f };
-
+	orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+	InitializeAxes();
 	GetNewDirectionsOrientation();
-/*	pitch = 0.0f;
-	yaw = -90.0f;
-	RealignGaze()*/;
-	plane_up = camera_up;
 }
-CameraObject::CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{ 0.0f, 1.0f, 0.0f }) {
-	this->position = position;
-	this->world_up = world_up;
-	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
-
-	camera_up = Vec3{ 0.0, 1.0f, 0.0f };
-	camera_right = Vec3{ 1.0f, 0.0f, 0.0f };
-	camera_front = Vec3{ 0.0f, 0.0f, -1.0f };
-
+CameraObject::CameraObject(Vec3 position) : position (position) {
+	orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+	InitializeAxes();
 	GetNewDirectionsOrientation();
-	//pitch = 0.0f;
-	//yaw = -90.0f;
-	//RealignGaze();
-	plane_up = camera_up;
 }
 
-void CameraObject::RealignGaze() {
-	float yaw_rad = yaw * DEG_TO_RAD;
-	float pitch_rad = pitch * DEG_TO_RAD;
-	Vec3 direction{};
-	direction[0] = cos(yaw_rad) * cos(pitch_rad);
-	direction[1] = sin(pitch_rad);
-	direction[2] = sin(yaw_rad) * cos(pitch_rad); 
-	camera_front = direction.normalize();
-	GetNewDirections();
+CameraObject::CameraObject(Vec3 position, Versor orientation) : position (position), orientation (orientation) {
+	InitializeAxes();
+	GetNewDirectionsOrientation();
 }
-
-
 
 void CameraObject::RealignGaze(float x, float y) {
 
 	Versor horizontal_rotation{ camera_up, x };
 	Versor vertical_rotation{ camera_right, y };
 
-	std::cout << "axes of camera (right, up, front)" << '\n';
-	camera_right.print();
-	camera_up.print();
-	camera_front.print();
-
-	// Get rid of unwanted roll
-	// https://gamedev.stackexchange.com/questions/202515/how-to-make-a-concisely-elegantly-and-human-friendly-quaternion-camera
-	// - Check the comments!: https://gamedev.stackexchange.com/questions/175268/rotating-a-spaceship-around-2-axes-rotates-it-around-3/175306#175306
-	Orientation = horizontal_rotation * vertical_rotation * Orientation;
+	// TODO: Get rid of unwanted roll when using mouse
+	orientation = horizontal_rotation * vertical_rotation * orientation;
 
 	GetNewDirectionsOrientation();
 }
@@ -131,7 +97,7 @@ void CameraObject::ApplyTranslation(Vec3 translation_changes) {
 }
 
 Mat4 CameraObject::GetViewMatrix() {
-	return Orientation.to_matrix().inverse() * translate(position).inverse();
+	return orientation.to_matrix().inverse() * translate(position).inverse();
 }
 
 Vec3 CameraObject::GetCameraPos() {

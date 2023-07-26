@@ -64,9 +64,10 @@ int main() {
 	float last_position = 0.0f;
 	float speed = 5.0f;
 
-	Camera = CameraObject();
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-	LightSource = EngineObject(Vec3{ 10.0f, 10.0f, 10.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
+	// Camera = CameraObject();
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	LightSource = EngineObject(Vec3{ 0.0f, 10.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -197,7 +198,7 @@ int main() {
 
 		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
 		transform_matrix = transform_matrix * translation_shape;
-		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, transform_matrix);
+		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, translation_shape);
 		last_position = elapsed_seconds * speed + last_position;
 
 
@@ -265,18 +266,7 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	// Camera.RealignGaze(x_offset, y_offset);
-
-	//Camera.yaw += x_offset;
-	//Camera.pitch += y_offset;
-
-	//if (Camera.pitch > 90.0f) {
-	//	Camera.pitch = 90.0f;
-	//}
-	//if (Camera.pitch < -90.0f) {
-	//	Camera.pitch = -90.0f;
-	//}
-	//Camera.RealignGaze();
+	Camera.RealignGaze(x_offset, y_offset);
 }
 
 bool cursor_lock = true;
