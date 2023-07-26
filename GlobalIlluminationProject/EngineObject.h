@@ -3,8 +3,11 @@
 #include "../OpenGLCommon/.h/LinearTransformations.h"
 #include <iostream>
 #include <vector>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 using namespace LinearAlgebra;
+
 #pragma region EngineObject
 class EngineObject {
 private:
@@ -73,3 +76,5 @@ public:
 	Vec3 GetCameraPos();
 };
 #pragma endregion CameraObject
+
+

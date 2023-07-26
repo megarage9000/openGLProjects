@@ -1,5 +1,6 @@
 #include "../.h/MeshLoader.h"
 
+#pragma region Mesh Functions
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate);
 
@@ -169,3 +170,36 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 
 	return true;
 }
+
+#pragma endregion Mesh Functions
+
+#pragma region Shader Methods
+
+GLuint Shader::create_shader(const char* shader_source, GLenum shader_type) {
+	char* shader_contents = loadShaderString(shader_source);
+	GLuint shader_id = glCreateShader(shader_type);
+	glShaderSource(shader_id, 1, &shader_contents, NULL);
+	glCompileShader(shader_id);
+	if (!checkShaderCompilation(shader_id)) {
+		throw std::runtime_error("Error in shader compilation");
+	}
+	return shader_id;
+}
+
+Shader::Shader(const char* vertex_shader, const char* fragment_shader) {
+
+	GLuint vertex_shader_id = create_shader(vertex_shader, GL_VERTEX_SHADER);
+	GLuint fragment_shader_id = create_shader(fragment_shader, GL_FRAGMENT_SHADER);
+
+	shader_program = glCreateProgram();
+	glAttachShader(shader_program, vertex_shader_id);
+	glAttachShader(shader_program, fragment_shader_id);
+
+	glLinkProgram(shader_program);
+	if (!checkLinking(shader_program) || !is_valid(shader_program)) {
+		throw std::runtime_error("Error in linking shaders");
+	}
+}
+
+
+#pragma endregion Shader Methods
