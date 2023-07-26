@@ -79,6 +79,7 @@ CameraObject::CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{ 0.0
 void CameraObject::RealignGaze() {
 	float yaw_rad = yaw * DEG_TO_RAD;
 	float pitch_rad = pitch * DEG_TO_RAD;
+	Vec3 direction{};
 	direction[0] = cos(yaw_rad) * cos(pitch_rad);
 	direction[1] = sin(pitch_rad);
 	direction[2] = sin(yaw_rad) * cos(pitch_rad); 
