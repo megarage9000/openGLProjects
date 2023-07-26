@@ -46,22 +46,34 @@ class CameraObject {
 	Vec3 camera_right;
 	Vec3 world_up;
 
+	Versor Orientation;
 
 	void GetNewDirections() {
 		camera_right = (camera_front.cross(world_up)).normalize();
 		camera_up = (camera_front.cross(camera_right)).normalize();
 	}
 
+	void GetNewDirectionsOrientation() {
+		Mat4 orientation_matrix = Orientation.to_matrix();
+		camera_up = orientation_matrix * Vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		camera_front = orientation_matrix * Vec4(0.0f, 0.0f, -1.0f, 0.0f);
+		camera_right = orientation_matrix * Vec4(1.0f, 0.0f, 0.0f, 0.0f);
+	}
+
 public:
 	// pitch and yaw
 	float pitch;
 	float yaw;
+	float roll;
+
+	// Try this: https://gamedev.stackexchange.com/questions/202515/how-to-make-a-concisely-elegantly-and-human-friendly-quaternion-camera
 
 	CameraObject();
 	CameraObject(Vec3 position, Vec3 target, Vec3 world_up);
 	void RealignGaze();
+	void RealignGaze(float x, float y);
 	void ApplyTranslation(Vec3 translation_changes);
-	Mat4 GetLookAt();
+	Mat4 GetViewMatrix();
 	Vec3 GetCameraPos();
 };
 #pragma endregion CameraObject

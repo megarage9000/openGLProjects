@@ -143,7 +143,7 @@ int main() {
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
-	Mat4 view = Camera.GetLookAt().inverse();
+	Mat4 view = Camera.GetViewMatrix().inverse();
 	int view_mat_loc = glGetUniformLocation(shader_program, "view");
 	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -182,7 +182,7 @@ int main() {
 		}
 		process_keyboard(window);
 
-		Mat4 view = Camera.GetLookAt().inverse() * translate(0.0f, 0.0f, 0.0f).inverse();
+		Mat4 view = Camera.GetViewMatrix();
 		int view_mat_loc = glGetUniformLocation(shader_program, "view");
 		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
 
@@ -264,16 +264,18 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	Camera.yaw += x_offset;
-	Camera.pitch += y_offset;
+	Camera.RealignGaze(x_offset, y_offset);
 
-	if (Camera.pitch > 90.0f) {
-		Camera.pitch = 90.0f;
-	}
-	if (Camera.pitch < -90.0f) {
-		Camera.pitch = -90.0f;
-	}
-	Camera.RealignGaze();
+	//Camera.yaw += x_offset;
+	//Camera.pitch += y_offset;
+
+	//if (Camera.pitch > 90.0f) {
+	//	Camera.pitch = 90.0f;
+	//}
+	//if (Camera.pitch < -90.0f) {
+	//	Camera.pitch = -90.0f;
+	//}
+	//Camera.RealignGaze();
 }
 
 bool cursor_lock = true;

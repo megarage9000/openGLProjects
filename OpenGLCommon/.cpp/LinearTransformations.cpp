@@ -118,6 +118,8 @@ namespace LinearAlgebra {
         up_vector = new_up_vector;
         right_vector = new_right_vector;
 
+        Mat4 translation_matrix = translate(cam_world_position * -1);
+
         view_matrix[0][0] = new_right_vector[0];
         view_matrix[0][1] = new_right_vector[1];
         view_matrix[0][2] = new_right_vector[2];

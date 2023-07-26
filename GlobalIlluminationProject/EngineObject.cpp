@@ -64,16 +64,20 @@ Vec3 EngineObject::GetRight() {
 CameraObject::CameraObject() {
 	position = Vec3(0.0f, 0.0f, 5.0f);
 	world_up = Vec3(0.0f, 1.0f, 0.0f);
-	pitch = 0.0f;
+	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+	GetNewDirectionsOrientation();
+/*	pitch = 0.0f;
 	yaw = -90.0f;
-	RealignGaze();
+	RealignGaze()*/;
 }
 CameraObject::CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{ 0.0f, 1.0f, 0.0f }) {
 	this->position = position;
 	this->world_up = world_up;
-	pitch = 0.0f;
-	yaw = -90.0f;
-	RealignGaze();
+	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+	GetNewDirectionsOrientation();
+	//pitch = 0.0f;
+	//yaw = -90.0f;
+	//RealignGaze();
 }
 
 void CameraObject::RealignGaze() {
@@ -87,6 +91,17 @@ void CameraObject::RealignGaze() {
 	GetNewDirections();
 }
 
+void CameraObject::RealignGaze(float x, float y) {
+
+	Versor horizontal_rotation{ camera_up, x };
+	Versor vertical_rotation{ camera_right, y };
+
+	// Get rid of unwanted roll
+	// https://gamedev.stackexchange.com/questions/202515/how-to-make-a-concisely-elegantly-and-human-friendly-quaternion-camera
+	Orientation = Orientation * horizontal_rotation * vertical_rotation;
+	GetNewDirectionsOrientation();
+}
+
 void CameraObject::ApplyTranslation(Vec3 translation_changes) {
 	position = position +
 		camera_right * translation_changes[0] +
@@ -94,8 +109,8 @@ void CameraObject::ApplyTranslation(Vec3 translation_changes) {
 		camera_front * translation_changes[2];
 }
 
-Mat4 CameraObject::GetLookAt() {
-	return view_matrix(camera_up, Vec4(position + camera_front), Vec4(position));
+Mat4 CameraObject::GetViewMatrix() {
+	return Orientation.to_matrix().inverse() * translate(position).inverse();
 }
 
 Vec3 CameraObject::GetCameraPos() {
