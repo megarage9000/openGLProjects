@@ -65,19 +65,31 @@ CameraObject::CameraObject() {
 	position = Vec3(0.0f, 0.0f, 5.0f);
 	world_up = Vec3(0.0f, 1.0f, 0.0f);
 	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+
+	camera_up = Vec3{ 0.0, 1.0f, 0.0f };
+	camera_right = Vec3{ 1.0f, 0.0f, 0.0f };
+	camera_front = Vec3{ 0.0f, 0.0f, -1.0f };
+
 	GetNewDirectionsOrientation();
 /*	pitch = 0.0f;
 	yaw = -90.0f;
 	RealignGaze()*/;
+	plane_up = camera_up;
 }
 CameraObject::CameraObject(Vec3 position, Vec3 target, Vec3 world_up = Vec3{ 0.0f, 1.0f, 0.0f }) {
 	this->position = position;
 	this->world_up = world_up;
 	Orientation = Versor(Vec3{ 0.0, 1.0, 0.0 }, 0.0f);
+
+	camera_up = Vec3{ 0.0, 1.0f, 0.0f };
+	camera_right = Vec3{ 1.0f, 0.0f, 0.0f };
+	camera_front = Vec3{ 0.0f, 0.0f, -1.0f };
+
 	GetNewDirectionsOrientation();
 	//pitch = 0.0f;
 	//yaw = -90.0f;
 	//RealignGaze();
+	plane_up = camera_up;
 }
 
 void CameraObject::RealignGaze() {
@@ -91,19 +103,28 @@ void CameraObject::RealignGaze() {
 	GetNewDirections();
 }
 
+
+
 void CameraObject::RealignGaze(float x, float y) {
 
 	Versor horizontal_rotation{ camera_up, x };
 	Versor vertical_rotation{ camera_right, y };
 
+	std::cout << "axes of camera (right, up, front)" << '\n';
+	camera_right.print();
+	camera_up.print();
+	camera_front.print();
+
 	// Get rid of unwanted roll
 	// https://gamedev.stackexchange.com/questions/202515/how-to-make-a-concisely-elegantly-and-human-friendly-quaternion-camera
-	Orientation = Orientation * horizontal_rotation * vertical_rotation;
+	// - Check the comments!: https://gamedev.stackexchange.com/questions/175268/rotating-a-spaceship-around-2-axes-rotates-it-around-3/175306#175306
+	Orientation = horizontal_rotation * vertical_rotation * Orientation;
+
 	GetNewDirectionsOrientation();
 }
 
 void CameraObject::ApplyTranslation(Vec3 translation_changes) {
-	position = position +
+	position = position -
 		camera_right * translation_changes[0] +
 		camera_up * translation_changes[1] +
 		camera_front * translation_changes[2];

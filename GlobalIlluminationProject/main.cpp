@@ -38,6 +38,7 @@ float last_mouse_y = g_win_height / 2.0f;
 float elapsed_seconds = 0.0f;
 float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
+float camera_rotation_speed = 15;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -202,9 +203,9 @@ int main() {
 
 		// Enable back face culling
 		// More info here: https://www.khronos.org/opengl/wiki/Face_Culling
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CCW);
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_FRONT);
+		//glFrontFace(GL_CCW);
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
 		// Render light source
@@ -264,7 +265,7 @@ void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_po
 	last_mouse_x = x_pos;
 	last_mouse_y = y_pos;
 
-	Camera.RealignGaze(x_offset, y_offset);
+	// Camera.RealignGaze(x_offset, y_offset);
 
 	//Camera.yaw += x_offset;
 	//Camera.pitch += y_offset;
@@ -353,6 +354,9 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 bool lock_cursor = true;
 void process_keyboard(GLFWwindow * window) {
 
+	float pitch = 0.0f;
+	float yaw = 0.0f;
+
 	Vec3 translation_change{ 0.0f, 0.0f, 0.0f };
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		translation_change[2] += 1;
@@ -376,6 +380,19 @@ void process_keyboard(GLFWwindow * window) {
 		translation_change[1] -= 1;
 	}
 
+	// Rotation with arrow keys
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		pitch += rotation_sensitivity * camera_rotation_speed * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		pitch -= rotation_sensitivity * camera_rotation_speed * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		yaw -= rotation_sensitivity * camera_rotation_speed * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		yaw += rotation_sensitivity * camera_rotation_speed * elapsed_seconds;
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
 		lock_cursor = !lock_cursor;
@@ -387,6 +404,7 @@ void process_keyboard(GLFWwindow * window) {
 		}
 	}
 	Camera.ApplyTranslation(translation_change * camera_speed * elapsed_seconds);
+	Camera.RealignGaze(yaw, pitch);
 }
 
 #pragma endregion OpenGL Helpers
