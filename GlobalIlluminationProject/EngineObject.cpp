@@ -106,6 +106,3 @@ Vec3 CameraObject::GetCameraPos() {
 
 #pragma endregion CameraObject Methods
 
-#pragma region Shader Methods
-
-#pragma region 

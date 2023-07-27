@@ -175,7 +175,7 @@ bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 
 #pragma region Shader Methods
 
-GLuint Shader::create_shader(const char* shader_source, GLenum shader_type) {
+GLuint Shader::CreateShader(const char* shader_source, GLenum shader_type) {
 	char* shader_contents = loadShaderString(shader_source);
 	GLuint shader_id = glCreateShader(shader_type);
 	glShaderSource(shader_id, 1, &shader_contents, NULL);
@@ -186,10 +186,19 @@ GLuint Shader::create_shader(const char* shader_source, GLenum shader_type) {
 	return shader_id;
 }
 
+GLuint Shader::GetShaderUniform(const GLchar* id) {
+	UseShader();
+	GLuint uniform_id = glGetUniformLocation(shader_program, id);
+	if(uniform_id == -1) {
+		std::string error = "Unable to find uniform value for id " + std::string(id);
+		throw std::runtime_error(error);
+	}
+}
+
 Shader::Shader(const char* vertex_shader, const char* fragment_shader) {
 
-	GLuint vertex_shader_id = create_shader(vertex_shader, GL_VERTEX_SHADER);
-	GLuint fragment_shader_id = create_shader(fragment_shader, GL_FRAGMENT_SHADER);
+	GLuint vertex_shader_id = CreateShader(vertex_shader, GL_VERTEX_SHADER);
+	GLuint fragment_shader_id = CreateShader(fragment_shader, GL_FRAGMENT_SHADER);
 
 	shader_program = glCreateProgram();
 	glAttachShader(shader_program, vertex_shader_id);
@@ -201,5 +210,19 @@ Shader::Shader(const char* vertex_shader, const char* fragment_shader) {
 	}
 }
 
+void Shader::UseShader() {
+	glUseProgram(shader_program);
+}
+
+
+void Shader::SetMatrix4(const char* id, Mat4 matrix, GLboolean transpose, GLsizei count) {
+	GLuint uniform = GetShaderUniform(id);
+	glUniformMatrix4fv(uniform, count, transpose, matrix);
+}
+
+void Shader::SetVector3(const char* id, Vec3 vector, GLsizei count) {
+	GLuint uniform = GetShaderUniform(id);
+	glUniform3fv(uniform, count, vector);
+}
 
 #pragma endregion Shader Methods
