@@ -30,6 +30,8 @@ int g_fb_height = 720;
 CameraObject Camera;
 EngineObject Mesh;
 EngineObject LightSource;
+Shader CubeShader;
+Shader LightShader;
 Vec4 LightColour{ 1.0f, 1.0f, 1.0f };
 
 float last_mouse_x = g_win_width / 2.0f;
@@ -52,12 +54,10 @@ void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int m
 // OpenGL helpers
 GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
-void printAll(GLuint programIndex);
-const char* GL_type_to_string(GLenum type);
 void process_keyboard(GLFWwindow * window);
 
 // Transformations
-void set_up_projection_matrix(GLuint shader_program, GLuint light_program);
+Mat4 set_up_projection_matrix();
 #pragma endregion Function Headers
 
 int main() {
@@ -65,7 +65,6 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	// Camera = CameraObject();
 	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 	LightSource = EngineObject(Vec3{ 0.0f, 10.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
@@ -109,11 +108,8 @@ int main() {
 	glDepthFunc(GL_LESS);
 
 	// Shader creation
-	GLuint shader_program;
 	try {
-		shader_program = create_shader_program(std::map<const char*, GLenum>{ 
-			{ "vertexShader.vert", GL_VERTEX_SHADER }, 
-			{ "fragmentShader.frag", GL_FRAGMENT_SHADER } });
+		CubeShader = Shader("vertexShader.vert", "fragmentShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
@@ -121,36 +117,30 @@ int main() {
 	}
 
 	// Light Shader creation
-	GLuint light_shader_program;
 	try {
-		light_shader_program = create_shader_program(std::map<const char*, GLenum> {
-			{"lightVertexShader.vert", GL_VERTEX_SHADER},
-			{ "lightFragmentShader.frag", GL_FRAGMENT_SHADER }
-		});
+		LightShader = Shader("lightVertexShader.vert", "lightFragmentShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
 		return -1;
 	}
 
-	printAll(shader_program);
-	printAll(light_shader_program);
-	set_up_projection_matrix(shader_program, light_shader_program);
-	int matrix_location = glGetUniformLocation(shader_program, "matrix");
+	Mat4 projection_matrix = set_up_projection_matrix();
+	CubeShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
+	LightShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
 
 	// Mesh Loading
-	glUseProgram(shader_program);
+	CubeShader.UseShader();
 	GLuint vao;
 	int point_count;
 	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
 	Mat4 view = Camera.GetViewMatrix().inverse();
-	int view_mat_loc = glGetUniformLocation(shader_program, "view");
-	glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+	CubeShader.SetMatrix4("view", view, GL_TRUE);
 
 	// Light loading (use same mesh)
-	glUseProgram(light_shader_program);
+	LightShader.UseShader();
 	GLuint vao_light;
 	int light_point_count;
 	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
@@ -166,7 +156,8 @@ int main() {
 		glViewport(0, 0, g_fb_width, g_fb_height);
 
 		// Draw Object
-		glUseProgram(shader_program);
+		// glUseProgram(shader_program);
+		CubeShader.UseShader();
 		glBindVertexArray(vao);
 
 		// Informing the program to use a specific texture slot
@@ -185,20 +176,14 @@ int main() {
 		process_keyboard(window);
 
 		Mat4 view = Camera.GetViewMatrix();
-		int view_mat_loc = glGetUniformLocation(shader_program, "view");
-		glUniformMatrix4fv(view_mat_loc, 1, GL_TRUE, view);
+		CubeShader.SetMatrix4("view", view, GL_TRUE);
 
 		// Get camera position
-		int camera_pos_loc = glGetUniformLocation(shader_program, "camera_pos");
-		glUniform3fv(camera_pos_loc, 1, Camera.GetCameraPos());
-
+		CubeShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		// Get light position
-		int light_position = glGetUniformLocation(shader_program, "light_position");
-		glUniform3fv(light_position, 1, LightSource.Position());
-
+		CubeShader.SetVector3("light_position", LightSource.Position());
 		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
-		transform_matrix = transform_matrix * translation_shape;
-		glUniformMatrix4fv(matrix_location, 1, GL_TRUE, translation_shape);
+		CubeShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
 		last_position = elapsed_seconds * speed + last_position;
 
 
@@ -210,20 +195,13 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, point_count);
 
 		// Render light source
-		glUseProgram(light_shader_program);
+		LightShader.UseShader();
 		glBindVertexArray(vao_light);
 
-		int light_view_mat_loc = glGetUniformLocation(light_shader_program, "view");
-		glUniformMatrix4fv(light_view_mat_loc, 1, GL_TRUE, view);
-
-		int light_colour_loc = glGetUniformLocation(light_shader_program, "light_colour");
-		glUniform4fv(light_colour_loc, 1, LightColour);
-		
-
+		LightShader.SetMatrix4("view", view, GL_TRUE);
+		LightShader.SetVector4("light_colour", LightColour);
 		Mat4 light_translation_shape = LightSource.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
-		// Find out why lamp not ligthing up: https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/2.2.basic_lighting_specular/basic_lighting_specular.cpp
-		int light_matrix_location = glGetUniformLocation(light_shader_program, "matrix");
-		glUniformMatrix4fv(light_matrix_location, 1, GL_TRUE, light_translation_shape);
+		LightShader.SetMatrix4("matrix", light_translation_shape, GL_TRUE);
 
 		glDrawArrays(GL_TRIANGLES, 0, light_point_count);
 		
@@ -400,100 +378,19 @@ void process_keyboard(GLFWwindow * window) {
 #pragma endregion OpenGL Helpers
 
 #pragma region Transformations
-void set_up_projection_matrix(GLuint shader_program, GLuint light_program) {
+Mat4 set_up_projection_matrix() {
 	float near = 0.1f;
 	float far = 100.0f;
 	float fov = 67.0f * DEG_TO_RAD;
 	float aspect = (float)g_win_width / (float)g_win_height;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
-
-	glUseProgram(shader_program);
+	return perspective;
+/*	glUseProgram(shader_program);
 	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
 	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
 
 	glUseProgram(light_program);
 	int proj_light_mat_loc = glGetUniformLocation(light_program, "projection");
-	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective);
-}
-
-void printAll(GLuint programIndex)
-{
-	printf("-------------\n shader programme %i info: \n", programIndex);
-	int params = -1;
-
-	glGetProgramiv(programIndex, GL_LINK_STATUS, &params);
-	printf("GL_LINK_STATUS = %i\n", params);
-
-	glGetProgramiv(programIndex, GL_ATTACHED_SHADERS, &params);
-	printf("GL_ATTACHED_SHADERS = %i\n", params);
-
-
-	// Print attribute information
-	glGetProgramiv(programIndex, GL_ACTIVE_ATTRIBUTES, &params);
-	printf("GL_ACTIVE_ATTRIBUTES = %i\n", params);
-
-	for (GLuint i = 0; i < (GLuint)params; i++) {
-		char name[64];
-		int maxLength = 64;
-		int actualLength = 0;
-		int size = 0;
-		GLenum type;
-
-		glGetActiveAttrib(programIndex, i, maxLength, &actualLength, &size, &type, name);
-		if (size > 1) {
-			for (int j = 0; j < size; j++) {
-				char longName[64];
-				sprintf(longName, "%s[%i]", name, j); // sprintf copies strings unto a buffer
-				int location = glGetAttribLocation(programIndex, longName);
-				printf("%i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), longName, location);
-			}
-		}
-	}
-
-	// Printing all active unifroms
-	glGetProgramiv(programIndex, GL_ACTIVE_UNIFORMS, &params);
-	printf("GL_ACTIVE_UNIFORMS = %i\n", params);
-	for (GLuint i = 0; i < (GLuint)params; i++) {
-		char name[64];
-		int maxLength = 64;
-		int actualLength = 0;
-		int size = 0;
-		GLenum type;
-
-		glGetActiveUniform(programIndex, i, maxLength, &actualLength, &size, &type, name);
-		if (size > 1) {
-			for (int j = 0; j < size; j++) {
-				char longName[64];
-				sprintf(longName, "%s[%i]", name, j);
-				int location = glGetUniformLocation(programIndex, longName);
-				printf(" %i) type:%s name:%s location:%i\n", i, GL_type_to_string(type), name, location);
-			}
-		}
-	}
-
-	printProgramInfo(programIndex);
-}
-
-// We can always add other types here 
-const char* GL_type_to_string(GLenum type)
-{
-	switch (type) {
-
-	case GL_BOOL: return "bool";
-	case GL_INT: return "int";
-	case GL_FLOAT: return "float";
-	case GL_FLOAT_VEC2: return "vec2";
-	case GL_FLOAT_VEC3: return "vec3";
-	case GL_FLOAT_VEC4: return "vec4";
-	case GL_FLOAT_MAT2: return "mat2";
-	case GL_FLOAT_MAT3: return "mat3";
-	case GL_FLOAT_MAT4: return "mat4";
-	case GL_SAMPLER_2D: return "sampler2D";
-	case GL_SAMPLER_3D: return "sampler3D";
-	case GL_SAMPLER_CUBE: return "samplerCube";
-	case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
-	default: return "other";
-
-	}
+	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective)*/;
 }
 #pragma endregion Transformations

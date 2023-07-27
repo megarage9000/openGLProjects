@@ -24,6 +24,7 @@ using namespace LinearAlgebra;
 //};
 
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count);
+const char* GL_type_to_string(GLenum type);
 //bool load_multiple_meshes(const char* file_name, )
 
 #pragma region Shader
@@ -35,14 +36,19 @@ class Shader {
 	GLuint GetShaderUniform(const char* id);
 
 public:
+	Shader();
 	Shader(const char* vertex_shader, const char* fragment_shader);
+	void printAll();
 	void UseShader();
+	GLuint GetShaderProgramID();
 
 	// Setting Uniform Methods
-	void SetMatrix4(const char* id, Mat4 matrix, GLboolean transpose=false, GLsizei count=1);
+	void SetMatrix4(const char* id, Mat4 matrix, GLboolean transpose=GL_FALSE, GLsizei count=1);
+	void SetVector4(const char* id, Vec4 vector, GLsizei count = 1);
 	void SetVector3(const char* id, Vec3 vector, GLsizei count = 1);
 
 };
+
 
 #pragma endregion Shader
 
