@@ -50,7 +50,7 @@ Mat4 EngineObject::ApplyScale(Vec3 scale_changes) {
 }
 
 Mat4 EngineObject::GetTransformationMatrix() {
-	return orientation.to_matrix() * translate(position) * scale(scale_dimensions);
+	return translate(position) * orientation.to_matrix() * scale(scale_dimensions);
 }
 Vec3 EngineObject::GetForward() {
 	return forward;

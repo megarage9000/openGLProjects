@@ -63,6 +63,7 @@ void main() {
 	vec4 color = vec4(ambience + diffuse + specular);
 
 	// vec4 color = vec4(normalize(vt_normal), 1.0);
+	/*
 	if(color.x < 0.0) {
 		color.x = -color.x;
 	}
@@ -71,6 +72,6 @@ void main() {
 	}
 	if(color.z < 0.0) {
 		color.z = -color.z;
-	}
-	fragColor = color * vec4(0.5, 0.5, 0.5, 1.0);
+	}*/
+	fragColor = color;
 }

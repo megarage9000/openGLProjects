@@ -68,7 +68,7 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 180.0f });
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 	LightSource = EngineObject(Vec3{ 0.0f, 10.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
@@ -404,7 +404,7 @@ void update_colours() {
 	MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour);
 	MeshShader.SetVector4("material.specular_colour", light_colour);
 	MeshShader.SetVector4("light_colour", light_colour);
-	MeshShader.SetFloat("material.shininess", 40.0f);
+	MeshShader.SetFloat("material.shininess", 200.0f);
 
 	// Setting colour properties
 	MeshShader.SetVector4("light.position", LightSource.Position());
