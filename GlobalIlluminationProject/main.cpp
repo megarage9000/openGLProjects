@@ -147,6 +147,14 @@ int main() {
 	int light_point_count;
 	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
 
+	// Setting material properties 
+	MeshShader.SetVector4("material.ambient_colour", Vec4{ 0.588, 0.749, 0.725 });
+	MeshShader.SetVector4("material.diffuse_colour", Vec4{ 0.588, 0.749, 0.725 });
+	MeshShader.SetVector4("material.specular_colour", Vec4{ 1.0f, 1.0f, 1.0f });
+	MeshShader.SetVector4("light_colour", Vec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+	MeshShader.SetFloat("material.shininess", 40.0f);
+
+
 	while (!glfwWindowShouldClose(window)) {
 
 		// Clear drawing surface color

@@ -4,8 +4,18 @@ in vec4 vt_colour;
 in vec3 position_eye, normal_eye, vt_normal, frag_pos; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
 in vec2 texture_coordinates;
 
+// Material
+struct Material {
+	vec4 ambient_colour;
+	vec4 diffuse_colour;
+	vec4 specular_colour;
+	float shininess;
+};
+
 uniform mat4 view;
 uniform vec3 camera_pos, light_position;
+uniform vec4 light_colour;
+uniform Material material;
 
 // Ambience
 vec3 ambience_energy = vec3(0.137, 0.886, 0.922);
@@ -25,25 +35,20 @@ out vec4 fragColor;
 void main() {
 	
 	// Ambience 
-	vec4 ambience = vec4(ambience_energy * ambience_reflective, 1.0);
+	vec4 ambience = light_colour * material.ambient_colour;
 
 	// Diffuse
 	vec3 light_dir = normalize(light_position - frag_pos);
 	vec3 normal = normalize(vt_normal);
 
-	// vec4 light_position_eye = vec4(view * vec4(light_position, 1.0));
-	// vec3 light_source_vector = position_eye - light_position;
-	// light_source_vector = normalize(light_source_vector);
-	vec4 diffuse = vec4(diffuse_energy * diffuse_reflective, 1.0) *
+	vec4 diffuse = light_colour * material.diffuse_colour *
 				   max(dot(normal, light_dir), 0.0);
 
 	// Specular
 	vec3 view_dir = normalize(camera_pos - frag_pos);
 	vec3 reflect_dir = reflect(-light_dir, normal);
-	// vec3 light_reflection = reflect(-light_source_vector, normal_eye);
-	// vec3 viewer_reflection = normalize(-position_eye);
-	vec4 specular = vec4(specular_energy * specular_reflective, 1.0) *
-					pow((max(dot(view_dir, reflect_dir), 0.0)), shininess_factor);
+	vec4 specular = light_colour * material.specular_colour *
+					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess);
 
 
 	vec4 color = vec4(ambience + diffuse + specular);

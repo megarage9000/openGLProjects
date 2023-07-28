@@ -297,4 +297,9 @@ void Shader::SetVector3(const char* id, Vec3 vector, GLsizei count) {
 	glUniform3fv(uniform, count, vector);
 }
 
+void Shader::SetFloat(const char* id, float value, GLsizei count) {
+	GLuint uniform = GetShaderUniform(id);
+	glUniform1f(uniform, value);
+}
+
 #pragma endregion Shader Methods
