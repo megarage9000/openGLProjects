@@ -12,10 +12,19 @@ struct Material {
 	float shininess;
 };
 
+// Light Properties
+struct Light {
+	vec4 position;
+	vec4 ambient_colour;
+	vec4 diffuse_colour;
+	vec4 specular_colour;
+};
+
 uniform mat4 view;
 uniform vec3 camera_pos, light_position;
 uniform vec4 light_colour;
 uniform Material material;
+uniform Light light;
 
 // Ambience
 vec3 ambience_energy = vec3(0.137, 0.886, 0.922);
@@ -35,19 +44,19 @@ out vec4 fragColor;
 void main() {
 	
 	// Ambience 
-	vec4 ambience = light_colour * material.ambient_colour;
+	vec4 ambience = light.ambient_colour * material.ambient_colour;
 
 	// Diffuse
-	vec3 light_dir = normalize(light_position - frag_pos);
+	vec3 light_dir = normalize(vec3(light.position) - frag_pos);
 	vec3 normal = normalize(vt_normal);
 
-	vec4 diffuse = light_colour * material.diffuse_colour *
+	vec4 diffuse = light.diffuse_colour * material.diffuse_colour *
 				   max(dot(normal, light_dir), 0.0);
 
 	// Specular
 	vec3 view_dir = normalize(camera_pos - frag_pos);
 	vec3 reflect_dir = reflect(-light_dir, normal);
-	vec4 specular = light_colour * material.specular_colour *
+	vec4 specular = light.specular_colour * material.specular_colour *
 					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess);
 
 

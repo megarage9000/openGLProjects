@@ -57,6 +57,7 @@ void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int m
 GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
 void process_keyboard(GLFWwindow * window);
+void update_colours();
 
 // Transformations
 Mat4 set_up_projection_matrix();
@@ -135,7 +136,7 @@ int main() {
 	MeshShader.UseShader();
 	GLuint vao;
 	int point_count;
-	assert(load_mesh(TANK_FILE, &vao, &point_count));
+	assert(load_mesh(MESH_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
 	Mat4 view = Camera.GetViewMatrix().inverse();
@@ -147,16 +148,8 @@ int main() {
 	int light_point_count;
 	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
 
-	// Setting material properties 
-	MeshShader.SetVector4("material.ambient_colour", Vec4{ 0.588, 0.749, 0.725 });
-	MeshShader.SetVector4("material.diffuse_colour", Vec4{ 0.588, 0.749, 0.725 });
-	MeshShader.SetVector4("material.specular_colour", Vec4{ 1.0f, 1.0f, 1.0f });
-	MeshShader.SetVector4("light_colour", Vec4{ 1.0f, 1.0f, 1.0f, 1.0f });
-	MeshShader.SetFloat("material.shininess", 40.0f);
-
-
 	while (!glfwWindowShouldClose(window)) {
-
+		update_colours();
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -212,7 +205,6 @@ int main() {
 		glBindVertexArray(vao_light);
 
 		LightShader.SetMatrix4("view", view, GL_TRUE);
-		LightShader.SetVector4("light_colour", LightColour);
 		Mat4 light_translation_shape = LightSource.GetTransformationMatrix();
 		LightShader.SetMatrix4("matrix", light_translation_shape, GL_TRUE);
 
@@ -386,6 +378,41 @@ void process_keyboard(GLFWwindow * window) {
 	}
 	Camera.ApplyTranslation(translation_change * camera_speed * elapsed_seconds);
 	Camera.RealignGaze(yaw, pitch);
+}
+
+void update_colours() {
+	float time = glfwGetTime();
+	Vec4 mat_amb_colour{
+		sin(time) * 0.9f,
+		sin(time) * 0.8f,
+		sin(time) * 0.7f,
+	};
+	Vec4 mat_diff_colour{
+		cos(time) * 0.75f,
+		cos(time) * 0.5f,
+		cos(time) * 0.76f,
+	};
+
+	Vec4 light_colour{
+		sin(time),
+		cos(time),
+		sin(time),
+	};
+
+	// Setting material properties 
+	MeshShader.SetVector4("material.ambient_colour", mat_amb_colour);
+	MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour);
+	MeshShader.SetVector4("material.specular_colour", light_colour);
+	MeshShader.SetVector4("light_colour", light_colour);
+	MeshShader.SetFloat("material.shininess", 40.0f);
+
+	// Setting colour properties
+	MeshShader.SetVector4("light.position", LightSource.Position());
+	MeshShader.SetVector4("light.ambient_colour", light_colour);
+	MeshShader.SetVector4("light.diffuse_colour", light_colour);
+	MeshShader.SetVector4("light.specular_colour", light_colour);
+	LightShader.SetVector4("light_colour", light_colour);
+
 }
 
 #pragma endregion OpenGL Helpers
