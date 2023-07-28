@@ -15,6 +15,7 @@ private:
 	Vec3 up;
 	Vec3 right;
 	Vec3 position;
+	Vec3 scale_dimensions;
 	Versor orientation;
 
 
@@ -33,6 +34,8 @@ public:
 	Mat4 TranslationMatrix();
 	Mat4 ApplyRotations(std::vector<Versor> versors);
 	Mat4 ApplyTranslation(Vec3 translation_changes);
+	Mat4 ApplyScale(Vec3 scale_changes);
+	Mat4 GetTransformationMatrix();
 	Vec3 GetForward();
 	Vec3 GetUp();
 	Vec3 GetRight();

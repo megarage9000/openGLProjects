@@ -9,12 +9,10 @@ EngineObject::EngineObject() {
 	orientation = Versor{ 0.0f, 1.0f, 0.0f, 0.0f };
 }
 
-EngineObject::EngineObject(Vec3 position, Versor orientation) {
+EngineObject::EngineObject(Vec3 position, Versor orientation) : position(position), orientation(orientation) {
 	forward = Vec3{ 0.0, 0.0, 1.0f };
 	right = Vec3{ 1.0f, 0.0f, 0.0f };
 	up = Vec3{ 0.0f, 1.0f, 0.0f };
-	this->orientation = orientation;
-	this->position = position;
 	ApplyDirections();
 }
 
@@ -46,6 +44,14 @@ Mat4 EngineObject::ApplyTranslation(Vec3 translation_changes) {
 	return translate(position);
 }
 
+Mat4 EngineObject::ApplyScale(Vec3 scale_changes) {
+	scale_dimensions = scale_changes;
+	return scale(scale_dimensions);
+}
+
+Mat4 EngineObject::GetTransformationMatrix() {
+	return orientation.to_matrix() * translate(position) * scale(scale_dimensions);
+}
 Vec3 EngineObject::GetForward() {
 	return forward;
 }

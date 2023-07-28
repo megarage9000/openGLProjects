@@ -30,7 +30,7 @@ int g_fb_height = 720;
 CameraObject Camera;
 EngineObject Mesh;
 EngineObject LightSource;
-Shader CubeShader;
+Shader MeshShader;
 Shader LightShader;
 Vec4 LightColour{ 1.0f, 1.0f, 1.0f };
 
@@ -41,6 +41,8 @@ float elapsed_seconds = 0.0f;
 float camera_speed = 10.0f;
 float rotation_sensitivity = 1.5f;
 float camera_rotation_speed = 15;
+
+float mesh_rotation_speed = 50.0f;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -65,7 +67,7 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 180.0f });
 	LightSource = EngineObject(Vec3{ 0.0f, 10.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
@@ -109,7 +111,7 @@ int main() {
 
 	// Shader creation
 	try {
-		CubeShader = Shader("vertexShader.vert", "fragmentShader.frag");
+		MeshShader = Shader("vertexShader.vert", "fragmentShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
@@ -126,18 +128,18 @@ int main() {
 	}
 
 	Mat4 projection_matrix = set_up_projection_matrix();
-	CubeShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
+	MeshShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
 	LightShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
 
 	// Mesh Loading
-	CubeShader.UseShader();
+	MeshShader.UseShader();
 	GLuint vao;
 	int point_count;
 	assert(load_mesh(TANK_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
 	Mat4 view = Camera.GetViewMatrix().inverse();
-	CubeShader.SetMatrix4("view", view, GL_TRUE);
+	MeshShader.SetMatrix4("view", view, GL_TRUE);
 
 	// Light loading (use same mesh)
 	LightShader.UseShader();
@@ -154,7 +156,7 @@ int main() {
 
 		// Draw Object
 		// glUseProgram(shader_program);
-		CubeShader.UseShader();
+		MeshShader.UseShader();
 		glBindVertexArray(vao);
 
 		// Informing the program to use a specific texture slot
@@ -173,14 +175,20 @@ int main() {
 		process_keyboard(window);
 
 		Mat4 view = Camera.GetViewMatrix();
-		CubeShader.SetMatrix4("view", view, GL_TRUE);
+		MeshShader.SetMatrix4("view", view, GL_TRUE);
 
 		// Get camera position
-		CubeShader.SetVector3("camera_pos", Camera.GetCameraPos());
+		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		// Get light position
-		CubeShader.SetVector3("light_position", LightSource.Position());
-		Mat4 translation_shape = Mesh.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
-		CubeShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
+		MeshShader.SetVector3("light_position", LightSource.Position());
+		
+		// Doing random transformations
+		float y_rotation = elapsed_seconds * mesh_rotation_speed / 2.0f;
+		Versor y_versor{ Mesh.GetUp(), y_rotation };
+		Mesh.ApplyRotations(std::vector<Versor> {y_versor});
+
+		Mat4 translation_shape = Mesh.GetTransformationMatrix();
+		MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
 		last_position = elapsed_seconds * speed + last_position;
 
 
@@ -197,7 +205,7 @@ int main() {
 
 		LightShader.SetMatrix4("view", view, GL_TRUE);
 		LightShader.SetVector4("light_colour", LightColour);
-		Mat4 light_translation_shape = LightSource.ApplyTranslation(Vec3{ 0.0f, 0.0f, 0.0f });
+		Mat4 light_translation_shape = LightSource.GetTransformationMatrix();
 		LightShader.SetMatrix4("matrix", light_translation_shape, GL_TRUE);
 
 		glDrawArrays(GL_TRIANGLES, 0, light_point_count);
