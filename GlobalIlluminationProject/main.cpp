@@ -133,7 +133,7 @@ int main() {
 	CubeShader.UseShader();
 	GLuint vao;
 	int point_count;
-	assert(load_mesh(MESH_FILE, &vao, &point_count));
+	assert(load_mesh(TANK_FILE, &vao, &point_count));
 	Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
 
 	Mat4 view = Camera.GetViewMatrix().inverse();
@@ -144,9 +144,6 @@ int main() {
 	GLuint vao_light;
 	int light_point_count;
 	assert(load_mesh(MESH_FILE, &vao_light, &light_point_count));
-
-
-
 
 	while (!glfwWindowShouldClose(window)) {
 

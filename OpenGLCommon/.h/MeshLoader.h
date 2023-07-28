@@ -11,6 +11,7 @@
 #include "../.h/LinearTransformations.h"
 
 #define MESH_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\box.obj"
+#define TANK_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\tank.obj"
 
 using namespace LinearAlgebra;
 
@@ -22,6 +23,7 @@ using namespace LinearAlgebra;
 //class MeshLoader
 //{
 //};
+
 
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count);
 const char* GL_type_to_string(GLenum type);
@@ -52,6 +54,7 @@ public:
 
 #pragma endregion Shader
 
+// TODO: Create Mesh Visual that can load 1 or more Meshes!
 #pragma region MeshVisual
 
 
