@@ -67,9 +67,7 @@ protected:
 	GLuint vao;
 	int point_count;
 public:
-	Renderable() {
-		vao = -1;
-	}
+	Renderable() { vao = -1;}
 	virtual void draw() = 0;
 	void AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized = false, const void * pointer = NULL);
 };

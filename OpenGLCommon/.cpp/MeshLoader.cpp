@@ -315,7 +315,6 @@ void Renderable::AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, G
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(index, size, type, normalized, stride, pointer);
 	glEnableVertexAttribArray(1);
-
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
