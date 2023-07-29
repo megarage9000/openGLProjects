@@ -68,8 +68,8 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -5.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-	LightSource = EngineObject(Vec3{ 0.0f, 10.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -10.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	LightSource = EngineObject(Vec3{ 0.0f, 5.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -184,9 +184,9 @@ int main() {
 		MeshShader.SetVector3("light_position", LightSource.Position());
 		
 		// Doing random transformations
-		float y_rotation = elapsed_seconds * mesh_rotation_speed / 2.0f;
-		Versor y_versor{ Mesh.GetUp(), y_rotation };
-		Mesh.ApplyRotations(std::vector<Versor> {y_versor});
+		//float y_rotation = elapsed_seconds * mesh_rotation_speed / 2.0f;
+		//Versor y_versor{ Mesh.GetUp(), y_rotation };
+		//Mesh.ApplyRotations(std::vector<Versor> {y_versor});
 
 		Mat4 translation_shape = Mesh.GetTransformationMatrix();
 		MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
@@ -394,14 +394,12 @@ void update_colours() {
 	};
 
 	Vec4 light_colour{
-		sin(time),
-		cos(time),
-		sin(time),
+		1.0f, 1.0f, 1.0f
 	};
 
 	// Setting material properties 
-	MeshShader.SetVector4("material.ambient_colour", mat_amb_colour);
-	MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour);
+	MeshShader.SetVector4("material.ambient_colour", mat_amb_colour * 0.5f);
+	MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour * 0.2f);
 	MeshShader.SetVector4("material.specular_colour", light_colour);
 	MeshShader.SetVector4("light_colour", light_colour);
 	MeshShader.SetFloat("material.shininess", 200.0f);

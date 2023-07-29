@@ -37,14 +37,14 @@ void main() {
 	vec3 light_dir = normalize(vec3(light.position) - frag_pos);
 	vec3 normal = normalize(vt_normal);
 
-	vec4 diffuse = light.diffuse_colour * material.diffuse_colour *
-				   max(dot(normal, light_dir), 0.0);
+	vec4 diffuse = light.diffuse_colour * (material.diffuse_colour *
+				   max(dot(normal, light_dir), 0.0));
 
 	// Specular
 	vec3 view_dir = normalize(camera_pos - frag_pos);
 	vec3 reflect_dir = reflect(-light_dir, normal);
-	vec4 specular = light.specular_colour * material.specular_colour *
-					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess);
+	vec4 specular = light.specular_colour * (material.specular_colour *
+					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess));
 
 
 	vec4 color = vec4(ambience + diffuse + specular);
