@@ -54,6 +54,7 @@ public:
 	void SetVector4(const char* id, Vec4 vector, GLsizei count = 1);
 	void SetVector3(const char* id, Vec3 vector, GLsizei count = 1);
 	void SetFloat(const char* id, float value, GLsizei count = 1);
+	void SetInt(const char* id, int value, GLsizei count = 1);
 
 };
 

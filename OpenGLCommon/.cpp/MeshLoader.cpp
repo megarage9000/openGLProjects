@@ -304,6 +304,12 @@ void Shader::SetFloat(const char* id, float value, GLsizei count) {
 	glUniform1f(uniform, value);
 }
 
+void Shader::SetInt(const char* id, int value, GLsizei count) {
+	GLuint uniform = GetShaderUniform(id);
+	glUniform1i(uniform, value);
+}
+
+
 #pragma endregion Shader Methods
 
 #pragma region Renderable Methods
@@ -331,6 +337,7 @@ void CubeRenderer::InitializeMesh() {
 		throw std::exception("Invalid Mesh");
 	}
 	vao_data[vao] = point_count;
+	vao_maps["Cube"] = vao;
 }
 
 CubeRenderer::CubeRenderer() {
