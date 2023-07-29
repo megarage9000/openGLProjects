@@ -74,7 +74,7 @@ Mat4 set_up_projection_matrix();
 // Texture
 // - https://learnopengl.com/Getting-started/Textures
 template<typename TextureInitializer>
-void load_texture(const char* texture_file, GLuint* diffuse_id, int level, TextureInitializer parameter_setup);
+void load_texture(const char* texture_file, GLuint* diffuse_id, TextureInitializer parameter_setup);
 void apply_tex_coord_vbo(GLuint* vbo, float * tex_coords, int num_tex_coords);
 #pragma endregion Texture Functions
 
@@ -198,14 +198,14 @@ int main() {
 	apply_tex_coord_vbo(&texture_vbo, tex_coords, 36);
 	CubeMesh.AttachVBO(texture_vbo, CubeMesh.GetVaoByName("Cube"), 2, 2, GL_FLOAT, 0);
 	
-	load_texture(DIFFUSE_MAP, &diffuse_id, 0, [] {
+	load_texture(DIFFUSE_MAP, &diffuse_id, [] {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	});
 
-	load_texture(SPECULAR_MAP, &specular_id, 1, [] {
+	load_texture(SPECULAR_MAP, &specular_id, [] {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -500,14 +500,12 @@ Mat4 set_up_projection_matrix() {
 
 #pragma region Texture Functions
 template<typename TextureInitializer>
-void load_texture(const char* texture_file, GLuint* diffuse_id, int level, TextureInitializer parameter_setup) {
+void load_texture(const char* texture_file, GLuint* texture_id, TextureInitializer parameter_setup) {
 
 	//Texture setup follows https://learnopengl.com/Getting-started/Textures
 
-	glGenTextures(1, diffuse_id);
-	glBindTexture(GL_TEXTURE_2D, *diffuse_id);
+	glGenTextures(1, texture_id);
 
-	parameter_setup();
 
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(texture_file, &width, &height, &nrChannels, 0);
@@ -522,8 +520,11 @@ void load_texture(const char* texture_file, GLuint* diffuse_id, int level, Textu
 			format = GL_RGBA;
 		else
 			format = GL_RGB;
-		glTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glBindTexture(GL_TEXTURE_2D, *texture_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		parameter_setup();
+
 	}
 	else {
 		std::string error_str = "Unable to generate texture file " + std::string(texture_file);

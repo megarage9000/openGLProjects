@@ -8,6 +8,7 @@ in vec2 texture_coordinates;
 struct Material {
 	sampler2D diffuse;
 	sampler2D specular;
+	
 	float shininess;
 };
 
@@ -31,7 +32,8 @@ void main() {
 
 	vec4 diffuse_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
 	vec4 specular_data = vec4(texture(material.specular, texture_coordinates).rgb, 1.0f);
-	
+	// vec4 specular_data = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	// Ambience 
 	vec4 ambience = light.ambient_colour * diffuse_data;
 
@@ -46,7 +48,7 @@ void main() {
 	vec3 view_dir = normalize(camera_pos - frag_pos);
 	vec3 reflect_dir = reflect(-light_dir, normal);
 	vec4 specular = light.specular_colour * (specular_data *
-					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess));
+					pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess));
 
 
 	vec4 color = vec4(ambience + diffuse + specular);
