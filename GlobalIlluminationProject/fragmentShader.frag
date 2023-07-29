@@ -26,19 +26,6 @@ uniform vec4 light_colour;
 uniform Material material;
 uniform Light light;
 
-// Ambience
-vec3 ambience_energy = vec3(0.137, 0.886, 0.922);
-vec3 ambience_reflective = vec3(0.667, 0.71, 0.71);
-
-// Diffuse
-vec3 diffuse_energy = vec3(0.141, 0.812, 0.71);
-vec3 diffuse_reflective = vec3(0.682, 0.941, 0.902);
-
-// Specular
-vec3 specular_energy = vec3(1.0, 1.0, 1.0);
-vec3 specular_reflective = vec3(1.0, 1.0, 1.0);
-float shininess_factor = 100;
-
 out vec4 fragColor;
 
 void main() {
