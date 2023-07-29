@@ -7,7 +7,7 @@ in vec2 texture_coordinates;
 // Material
 struct Material {
 	sampler2D diffuse;
-	vec4 specular_colour;
+	sampler2D specular;
 	float shininess;
 };
 
@@ -29,22 +29,23 @@ out vec4 fragColor;
 
 void main() {
 
-	vec4 texture_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
+	vec4 diffuse_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
+	vec4 specular_data = vec4(texture(material.specular, texture_coordinates).rgb, 1.0f);
 	
 	// Ambience 
-	vec4 ambience = light.ambient_colour * texture_data;
+	vec4 ambience = light.ambient_colour * diffuse_data;
 
 	// Diffuse
 	vec3 light_dir = normalize(vec3(light.position) - frag_pos);
 	vec3 normal = normalize(vt_normal);
 
-	vec4 diffuse = light.diffuse_colour * (texture_data *
+	vec4 diffuse = light.diffuse_colour * (diffuse_data *
 				   max(dot(normal, light_dir), 0.0));
 
 	// Specular
 	vec3 view_dir = normalize(camera_pos - frag_pos);
 	vec3 reflect_dir = reflect(-light_dir, normal);
-	vec4 specular = light.specular_colour * (material.specular_colour *
+	vec4 specular = light.specular_colour * (specular_data *
 					pow((max(dot(view_dir, reflect_dir), 0.0)), material.shininess));
 
 

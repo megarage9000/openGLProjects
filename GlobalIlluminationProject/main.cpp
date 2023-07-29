@@ -14,7 +14,9 @@
 #include "../OpenGLCommon/.h/ShaderLoading.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
-#define TEXTURE_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\textures\\Woodenbox.png"
+#define DIFFUSE_MAP "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\textures\\Woodenbox.png"
+#define SPECULAR_MAP "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\textures\\BoxSpecular.png"
+
 
 using namespace LinearAlgebra;
 
@@ -72,7 +74,8 @@ Mat4 set_up_projection_matrix();
 // Texture
 // - https://learnopengl.com/Getting-started/Textures
 template<typename TextureInitializer>
-void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, float* tex_coords, int num_tex_coords, int level, TextureInitializer parameter_setup);
+void load_texture(const char* texture_file, GLuint* diffuse_id, int level, TextureInitializer parameter_setup);
+void apply_tex_coord_vbo(GLuint* vbo, float * tex_coords, int num_tex_coords);
 #pragma endregion Texture Functions
 
 int main() {
@@ -80,8 +83,8 @@ int main() {
 	float speed = 5.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -10.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-	LightSource = EngineObject(Vec3{ 0.0f, 3.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	LightSource = EngineObject(Vec3{ 1.2f, 1.0f, 2.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
@@ -148,7 +151,7 @@ int main() {
 	CubeMesh = CubeRenderer(MeshShader);
 
 	// Attach Texture to Cube Renderer
-	GLuint texture_id, texture_vbo;
+	GLuint diffuse_id, specular_id, texture_vbo;
 	float tex_coords[] = {
 		0.0f,  0.0f,
 		1.0f,  0.0f,
@@ -192,14 +195,25 @@ int main() {
 		0.0f,  0.0f,
 		0.0f,  1.0f
 	};
-	load_texture(TEXTURE_FILE, &texture_vbo, &texture_id, tex_coords, 36, 0, [] {
+	apply_tex_coord_vbo(&texture_vbo, tex_coords, 36);
+	CubeMesh.AttachVBO(texture_vbo, CubeMesh.GetVaoByName("Cube"), 2, 2, GL_FLOAT, 0);
+	
+	load_texture(DIFFUSE_MAP, &diffuse_id, 0, [] {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	});
 
-	CubeMesh.AttachVBO(texture_vbo, CubeMesh.GetVaoByName("Cube"), 2, 2, GL_FLOAT, 0);
+	load_texture(SPECULAR_MAP, &specular_id, 1, [] {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		});
+
+	MeshShader.SetInt("material.diffuse", 0);
+	MeshShader.SetInt("material.specular", 1);
 
 	// Setup Light Mesh
 	LightMesh = CubeRenderer(LightShader);
@@ -243,9 +257,12 @@ int main() {
 		last_position = elapsed_seconds * speed + last_position;
 
 		// Setup texture
-		MeshShader.SetInt("material.diffuse", 0);
+
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glBindTexture(GL_TEXTURE_2D, diffuse_id);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specular_id);
 
 		// Render Cube
 		CubeMesh.Draw();
@@ -451,13 +468,13 @@ void update_colours() {
 	//MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour * 0.2f);
 	MeshShader.SetVector4("material.specular_colour", light_colour);
 	MeshShader.SetVector4("light_colour", light_colour);
-	MeshShader.SetFloat("material.shininess", 200.0f);
+	MeshShader.SetFloat("material.shininess", 64.0f);
 
 	// Setting colour properties
 	MeshShader.SetVector4("light.position", LightSource.Position());
-	MeshShader.SetVector4("light.ambient_colour", light_colour);
-	MeshShader.SetVector4("light.diffuse_colour", light_colour);
-	MeshShader.SetVector4("light.specular_colour", light_colour);
+	MeshShader.SetVector4("light.ambient_colour", Vec3{ 0.2f, 0.2f, 0.2f });
+	MeshShader.SetVector4("light.diffuse_colour", Vec3{ 0.5f, 0.5f, 0.5f });
+	MeshShader.SetVector4("light.specular_colour", Vec3{ 1.0f, 1.0f, 1.0f } );
 	LightShader.SetVector4("light_colour", light_colour);
 }
 
@@ -483,12 +500,12 @@ Mat4 set_up_projection_matrix() {
 
 #pragma region Texture Functions
 template<typename TextureInitializer>
-void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, float* tex_coords, int num_tex_coords, int level, TextureInitializer parameter_setup) {
+void load_texture(const char* texture_file, GLuint* diffuse_id, int level, TextureInitializer parameter_setup) {
 
 	//Texture setup follows https://learnopengl.com/Getting-started/Textures
 
-	glGenTextures(1, texture_id);
-	glBindTexture(GL_TEXTURE_2D, *texture_id);
+	glGenTextures(1, diffuse_id);
+	glBindTexture(GL_TEXTURE_2D, *diffuse_id);
 
 	parameter_setup();
 
@@ -503,7 +520,8 @@ void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, flo
 			format = GL_RGB;
 		else if (nrChannels == 4)
 			format = GL_RGBA;
-
+		else
+			format = GL_RGB;
 		glTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -512,10 +530,13 @@ void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, flo
 		throw std::runtime_error(error_str);
 	}
 	stbi_image_free(data);
+}
 
+void apply_tex_coord_vbo(GLuint* vbo, float* tex_coords, int num_tex_coords) {
 	glGenBuffers(1, vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
 	glBufferData(GL_ARRAY_BUFFER, 2 * num_tex_coords * sizeof(GLfloat), tex_coords, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 #pragma endregion Texture Functions
