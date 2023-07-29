@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MESH_LOADER
+#define MESH_LOADER
 
 #include <assimp/cimport.h> // C importer
 #include <assimp/scene.h> // collects data
@@ -7,8 +9,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
+#include <unordered_map>
 #include "../.h/ShaderLoading.h"
 #include "../.h/LinearTransformations.h"
+
 
 #define MESH_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\box.obj"
 #define TANK_FILE "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\testMeshes\\tank.obj"
@@ -20,9 +24,7 @@ using namespace LinearAlgebra;
 	https://www.youtube.com/watch?v=0h1lC3QHLHU
 */
 
-#pragma region Texture Functions
-void load_texture();
-#pragma endregion Texture Functions
+
 
 #pragma region Mesh Functions
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count);
@@ -64,12 +66,15 @@ public:
 class Renderable {
 protected:
 	Shader shader;
-	GLuint vao;
+	std::unordered_map<GLuint, int> vao_data;
+	std::unordered_map<const char*, GLuint> vao_maps;
 	int point_count;
 public:
-	Renderable() { vao = -1;}
-	virtual void draw() = 0;
-	void AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized = false, const void * pointer = NULL);
+	Renderable() {}
+	~Renderable() {}
+	virtual void Draw() = 0;
+	GLuint GetVaoByName(const char* name);
+	void AttachVBO(GLuint vbo, GLuint vao, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized = false, const void * pointer = NULL);
 };
 
 class CubeRenderer : public virtual Renderable{
@@ -77,8 +82,11 @@ class CubeRenderer : public virtual Renderable{
 public:
 	CubeRenderer();
 	CubeRenderer(Shader shader);
+	void Draw();
 };
 
 
 #pragma endregion MeshVisual
 
+
+#endif // !MESH_LOADER

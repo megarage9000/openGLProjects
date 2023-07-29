@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <stdarg.h>
+#include "stb_image.h"
 #include "EngineObject.h"
 #include "../OpenGLCommon/.h/LinearAlgebra.h";
 #include "../OpenGLCommon/.h/LinearTransformations.h";
@@ -32,6 +33,7 @@ EngineObject Mesh;
 EngineObject LightSource;
 Shader MeshShader;
 Shader LightShader;
+CubeRenderer CubeMesh;
 Vec4 LightColour{ 1.0f, 1.0f, 1.0f };
 
 float last_mouse_x = g_win_width / 2.0f;
@@ -62,6 +64,13 @@ void update_colours();
 // Transformations
 Mat4 set_up_projection_matrix();
 #pragma endregion Function Headers
+
+#pragma region Texture Functions
+// Texture
+// - https://learnopengl.com/Getting-started/Textures
+template<typename TextureInitializer>
+void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, float* tex_coords, int num_tex_coords, TextureInitializer parameter_setup);
+#pragma endregion Texture Functions
 
 int main() {
 	float last_position = 0.0f;
@@ -132,6 +141,9 @@ int main() {
 	MeshShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
 	LightShader.SetMatrix4("projection", projection_matrix, GL_TRUE);
 
+	// Setup Cube Mesh
+	CubeMesh = CubeRenderer(MeshShader);
+
 	// Mesh Loading
 	MeshShader.UseShader();
 	GLuint vao;
@@ -157,8 +169,8 @@ int main() {
 
 		// Draw Object
 		// glUseProgram(shader_program);
-		MeshShader.UseShader();
-		glBindVertexArray(vao);
+		//MeshShader.UseShader();
+		//glBindVertexArray(vao);
 
 		// Informing the program to use a specific texture slot
 		// glUniform1i(tex_loc, 0);
@@ -198,7 +210,9 @@ int main() {
 		//glEnable(GL_CULL_FACE);
 		//glCullFace(GL_FRONT);
 		//glFrontFace(GL_CCW);
-		glDrawArrays(GL_TRIANGLES, 0, point_count);
+		// glDrawArrays(GL_TRIANGLES, 0, point_count);
+		CubeMesh.Draw();
+
 
 		// Render light source
 		LightShader.UseShader();
@@ -432,3 +446,34 @@ Mat4 set_up_projection_matrix() {
 	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective)*/;
 }
 #pragma endregion Transformations
+
+#pragma region Texture Functions
+template<typename TextureInitializer>
+void load_texture(const char* texture_file, GLuint* vbo, GLuint* texture_id, float* tex_coords, int num_tex_coords, TextureInitializer parameter_setup) {
+
+	//Texture setup follows https://learnopengl.com/Getting-started/Textures
+
+	glGenTextures(1, texture_id);
+	glBindTexture(GL_TEXTURE_2D, *texture_id);
+
+	parameter_setup();
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(texture_file, &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::string error_str = "Unable to generate texture file " + std::string(texture_file);
+		throw std::exception(error_str);
+	}
+	stbi_image_free(data);
+
+	glGenBuffers(1, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * num_tex_coords * sizeof(GLfloat), tex_coords, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+#pragma endregion Texture Functions

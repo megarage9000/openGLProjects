@@ -1,8 +1,6 @@
 #include "../.h/MeshLoader.h"
 
-#pragma region Texture Functions
 
-#pragma endregion Texture Functions
 
 #pragma region Mesh Functions
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
@@ -310,13 +308,17 @@ void Shader::SetFloat(const char* id, float value, GLsizei count) {
 
 #pragma region Renderable Methods
 
-void Renderable::AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized, const void* pointer) {
+void Renderable::AttachVBO(GLuint vbo, GLuint vao, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized, const void* pointer) {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(index, size, type, normalized, stride, pointer);
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(index);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+GLuint Renderable::GetVaoByName(const char* name) {
+	return vao_maps[name];
 }
 
 #pragma endregion Renderable Methods
@@ -324,18 +326,31 @@ void Renderable::AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, G
 #pragma region Cube Methods
 
 void CubeRenderer::InitializeMesh() {
+	GLuint vao;
 	if (!load_mesh(MESH_FILE, &vao, &point_count)) {
 		throw std::exception("Invalid Mesh");
 	}
+	vao_data[vao] = point_count;
 }
 
 CubeRenderer::CubeRenderer() {
-	InitializeMesh();
+	// InitializeMesh();
 }
 
 CubeRenderer::CubeRenderer(Shader shader) {
 	this->shader = shader;
 	InitializeMesh();
+}
+
+void CubeRenderer::Draw() {
+	shader.UseShader();
+	for (auto vao_data : vao_data) {
+		GLuint vao = vao_data.first;
+		int point_count = vao_data.second;
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, point_count);
+		glBindVertexArray(0);
+	}
 }
 
 #pragma endregion Cube Methods

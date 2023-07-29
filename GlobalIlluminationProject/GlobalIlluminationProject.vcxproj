@@ -146,6 +146,7 @@
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
     <ClInclude Include="..\OpenGLCommon\.h\ShaderLoading.h" />
     <ClInclude Include="EngineObject.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragmentShader.frag" />
