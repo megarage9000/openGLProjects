@@ -1,5 +1,9 @@
 #include "../.h/MeshLoader.h"
 
+#pragma region Texture Functions
+
+#pragma endregion Texture Functions
+
 #pragma region Mesh Functions
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count) {
 	const aiScene* scene = aiImportFile(file_name, aiProcess_Triangulate);
@@ -303,3 +307,36 @@ void Shader::SetFloat(const char* id, float value, GLsizei count) {
 }
 
 #pragma endregion Shader Methods
+
+#pragma region Renderable Methods
+
+void Renderable::AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized, const void* pointer) {
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+#pragma endregion Renderable Methods
+
+#pragma region Cube Methods
+
+void CubeRenderer::InitializeMesh() {
+	if (!load_mesh(MESH_FILE, &vao, &point_count)) {
+		throw std::exception("Invalid Mesh");
+	}
+}
+
+CubeRenderer::CubeRenderer() {
+	InitializeMesh();
+}
+
+CubeRenderer::CubeRenderer(Shader shader) {
+	this->shader = shader;
+	InitializeMesh();
+}
+
+#pragma endregion Cube Methods

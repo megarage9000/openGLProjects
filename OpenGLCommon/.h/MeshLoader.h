@@ -20,14 +20,17 @@ using namespace LinearAlgebra;
 	https://www.youtube.com/watch?v=0h1lC3QHLHU
 */
 
-//class MeshLoader
-//{
-//};
+#pragma region Texture Functions
+void load_texture();
+#pragma endregion Texture Functions
 
-
+#pragma region Mesh Functions
 bool load_mesh(const char* file_name, GLuint* vao, int* point_count);
-const char* GL_type_to_string(GLenum type);
 //bool load_multiple_meshes(const char* file_name, )
+
+#pragma endregion Mesh Functions
+
+const char* GL_type_to_string(GLenum type);
 
 #pragma region Shader
 
@@ -58,6 +61,26 @@ public:
 // TODO: Create Mesh Visual that can load 1 or more Meshes!
 #pragma region MeshVisual
 
+class Renderable {
+protected:
+	Shader shader;
+	GLuint vao;
+	int point_count;
+public:
+	Renderable() {
+		vao = -1;
+	}
+	virtual void draw() = 0;
+	void AttachVBO(GLuint vbo, GLuint index, GLuint size, GLenum type, GLsizei stride, GLboolean normalized = false, const void * pointer = NULL);
+};
+
+class CubeRenderer : public virtual Renderable{
+	void InitializeMesh();
+public:
+	CubeRenderer();
+	CubeRenderer(Shader shader);
+};
 
 
 #pragma endregion MeshVisual
+
