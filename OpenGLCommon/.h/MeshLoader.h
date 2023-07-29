@@ -69,7 +69,6 @@ protected:
 	Shader shader;
 	std::unordered_map<GLuint, int> vao_data;
 	std::unordered_map<const char*, GLuint> vao_maps;
-	int point_count;
 public:
 	Renderable() {}
 	~Renderable() {}

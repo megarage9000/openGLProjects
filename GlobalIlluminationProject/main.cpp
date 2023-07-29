@@ -81,7 +81,7 @@ int main() {
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
 	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, -10.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-	LightSource = EngineObject(Vec3{ 0.0f, 5.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
+	LightSource = EngineObject(Vec3{ 0.0f, 3.0f, -5.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
 		return -1;
