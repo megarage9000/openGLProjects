@@ -149,6 +149,7 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="directionalLightShader.frag" />
     <None Include="fragmentShader.frag" />
     <None Include="glew32d.dll" />
     <None Include="lightFragmentShader.frag" />

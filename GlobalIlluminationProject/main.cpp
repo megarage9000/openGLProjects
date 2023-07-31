@@ -14,8 +14,8 @@
 #include "../OpenGLCommon/.h/ShaderLoading.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
-#define DIFFUSE_MAP "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\textures\\Woodenbox.png"
-#define SPECULAR_MAP "C:\\Users\\gtom_\\source\\repos\\C++Practice\\openGLProjects\\textures\\BoxSpecular.png"
+#define DIFFUSE_MAP "..\\textures\\Woodenbox.png"
+#define SPECULAR_MAP "..\\textures\\BoxSpecular.png"
 
 
 using namespace LinearAlgebra;
@@ -33,7 +33,8 @@ int g_fb_height = 720;
 
 // Global Variables
 CameraObject Camera;
-EngineObject Mesh;
+std::vector<EngineObject> Meshes;
+EngineObject MainMesh;
 EngineObject LightSource;
 Shader MeshShader;
 Shader LightShader;
@@ -50,6 +51,7 @@ float rotation_sensitivity = 1.5f;
 float camera_rotation_speed = 15;
 
 float mesh_rotation_speed = 50.0f;
+float num_meshes = 10;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -80,10 +82,17 @@ void apply_tex_coord_vbo(GLuint* vbo, float * tex_coords, int num_tex_coords);
 
 int main() {
 	float last_position = 0.0f;
-	float speed = 5.0f;
+	float speed = 1.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	Mesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	for (int i = -num_meshes / 2; i <= num_meshes / 2; i++) {
+		float x = i;
+		float y = i;
+		float z = i;
+		EngineObject Mesh = EngineObject(Vec3{ x, y, z }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+		Meshes.push_back(Mesh);
+	}
+	MainMesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 	LightSource = EngineObject(Vec3{ 1.2f, 1.0f, 2.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
@@ -224,10 +233,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, g_fb_width, g_fb_height);
 
-		// Informing the program to use a specific texture slot
-		// glUniform1i(tex_loc, 0);
-		// glUniform3fv(light_location, 3, camera_pos);
-
 		// Applying matrix transformation
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
@@ -240,45 +245,55 @@ int main() {
 		process_keyboard(window);
 
 		Mat4 view = Camera.GetViewMatrix();
-		MeshShader.SetMatrix4("view", view, GL_TRUE);
+
+		MeshShader.UseShader();
 
 		// Get camera position
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		// Get light position
 		MeshShader.SetVector3("light_position", LightSource.Position());
-		
-		// Doing random transformations
-		//float y_rotation = elapsed_seconds * mesh_rotation_speed / 2.0f;
-		//Versor y_versor{ Mesh.GetUp(), y_rotation };
-		//Mesh.ApplyRotations(std::vector<Versor> {y_versor});
-
-		Mat4 translation_shape = Mesh.GetTransformationMatrix();
-		MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
-		last_position = elapsed_seconds * speed + last_position;
-
 		// Setup texture
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuse_id);
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specular_id);
+		
+		MeshShader.SetMatrix4("matrix", Mat4(IDENTITY_4, 16));
+		MeshShader.SetMatrix4("view", view, GL_TRUE);
+		// Doing random transformations
+		//float y_rotation = elapsed_seconds * mesh_rotation_speed;
+		//Versor y_versor{ MainMesh.GetUp(), y_rotation };
+		//MainMesh.ApplyRotations(std::vector<Versor> {y_versor});
+		//Mat4 translation_shape = MainMesh.GetTransformationMatrix();
 
-		// Render Cube
-		CubeMesh.Draw();
+		for (EngineObject Mesh: Meshes) {
+			float y_rotation = elapsed_seconds * mesh_rotation_speed;
+			Versor y_versor{ Mesh.GetUp(), y_rotation };
+			Mesh.ApplyRotations(std::vector<Versor> {y_versor});
+			Mat4 translation_shape = Mesh.GetTransformationMatrix();
+			MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
+			// Render Cube
+			CubeMesh.Draw();
+		}
+		//MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
+
 
 		LightShader.SetMatrix4("view", view, GL_TRUE);
-		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		// LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
+		// LightSource.ApplyTranslation(Vec3{ 1.0f, 0.0f, 0.0f });
+		// LightSource.ApplyRotations(std::vector<Versor> {y_versor});
 		Mat4 light_translation_shape = LightSource.GetTransformationMatrix();
 		LightShader.SetMatrix4("matrix", light_translation_shape, GL_TRUE);
 
 		// Render Light source
 		LightMesh.Draw();
 
-
 		// track events 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
+		last_position = (elapsed_seconds * 0.01 * speed) + last_position;
 
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
 			glfwSetWindowShouldClose(window, 1);

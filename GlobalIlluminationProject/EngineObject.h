@@ -29,6 +29,7 @@ private:
 public:
 	EngineObject();
 	EngineObject(Vec3 position, Versor orientation);
+	void SetPosition(Vec3 position);
 	Vec3 Position();
 	Mat4 OrientationMatrix();
 	Mat4 TranslationMatrix();
