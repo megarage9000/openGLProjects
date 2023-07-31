@@ -51,7 +51,7 @@ float rotation_sensitivity = 1.5f;
 float camera_rotation_speed = 15;
 
 float mesh_rotation_speed = 50.0f;
-float num_meshes = 10;
+int num_meshes = 10;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -85,14 +85,13 @@ int main() {
 	float speed = 1.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	for (int i = -num_meshes / 2; i <= num_meshes / 2; i++) {
+	for (int i = -num_meshes / 2; i < num_meshes / 2; i++) {
 		float x = i;
 		float y = i;
 		float z = i;
-		EngineObject Mesh = EngineObject(Vec3{ x, y, z }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
-		Meshes.push_back(Mesh);
+		Meshes.push_back(EngineObject(Vec3{ x, y, z }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f }));
 	}
-	MainMesh = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+	MainMesh = EngineObject(Vec3{ 0.0f, 2.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 	LightSource = EngineObject(Vec3{ 1.2f, 1.0f, 2.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
 
 	if (!restart_gl_log()) {
@@ -245,9 +244,6 @@ int main() {
 		process_keyboard(window);
 
 		Mat4 view = Camera.GetViewMatrix();
-
-		MeshShader.UseShader();
-
 		// Get camera position
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		// Get light position
@@ -259,33 +255,25 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specular_id);
 		
-		MeshShader.SetMatrix4("matrix", Mat4(IDENTITY_4, 16));
 		MeshShader.SetMatrix4("view", view, GL_TRUE);
-		// Doing random transformations
-		//float y_rotation = elapsed_seconds * mesh_rotation_speed;
-		//Versor y_versor{ MainMesh.GetUp(), y_rotation };
-		//MainMesh.ApplyRotations(std::vector<Versor> {y_versor});
-		//Mat4 translation_shape = MainMesh.GetTransformationMatrix();
 
-		for (EngineObject Mesh: Meshes) {
-			float y_rotation = elapsed_seconds * mesh_rotation_speed;
+		Mat4 transform_matrix;
+
+		// Doing random transformations
+		float y_rotation = elapsed_seconds * mesh_rotation_speed;
+		// ALWAYS DO A REFERENCE when iterating a vector of objects
+		for (EngineObject &Mesh : Meshes) {
 			Versor y_versor{ Mesh.GetUp(), y_rotation };
 			Mesh.ApplyRotations(std::vector<Versor> {y_versor});
-			Mat4 translation_shape = Mesh.GetTransformationMatrix();
-			MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
-			// Render Cube
+			transform_matrix = Mesh.GetTransformationMatrix();
+			MeshShader.SetMatrix4("matrix", transform_matrix, GL_TRUE);
 			CubeMesh.Draw();
 		}
-		//MeshShader.SetMatrix4("matrix", translation_shape, GL_TRUE);
-
-
+		
 		LightShader.SetMatrix4("view", view, GL_TRUE);
-		// LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
 		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
-		// LightSource.ApplyTranslation(Vec3{ 1.0f, 0.0f, 0.0f });
-		// LightSource.ApplyRotations(std::vector<Versor> {y_versor});
-		Mat4 light_translation_shape = LightSource.GetTransformationMatrix();
-		LightShader.SetMatrix4("matrix", light_translation_shape, GL_TRUE);
+		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
 
 		// Render Light source
 		LightMesh.Draw();
