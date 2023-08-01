@@ -1,3 +1,86 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="EngineObject.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenGLCommon\.cpp\LinearAlgebra.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenGLCommon\.cpp\LinearTransformations.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenGLCommon\.cpp\Log.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OpenGLCommon\.cpp\ShaderLoading.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EngineObject.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenGLCommon\.h\LinearAlgebra.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenGLCommon\.h\LinearTransformations.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenGLCommon\.h\Log.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OpenGLCommon\.h\ShaderLoading.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glew32d.dll" />
+    <None Include="directionalLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="fragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lightFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="spotLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="vertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lightVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{1f1d46af-3c4e-44cc-9366-429abca61b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{aeb9e908-cb51-4a56-b0d6-1359ab6c3d4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{63b10090-9e2c-4642-b5ef-d45a9fc2d6ab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="pointLightShader.frag">
+      <Filter>Shaders</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
