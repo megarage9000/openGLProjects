@@ -21,8 +21,7 @@ struct Light {
 };
 
 uniform mat4 view;
-uniform vec3 camera_pos, light_position;
-uniform vec4 light_colour;
+uniform vec3 camera_pos;
 uniform Material material;
 uniform Light light;
 

@@ -212,11 +212,20 @@ GLuint Shader::CreateShader(const char* shader_source, GLenum shader_type) {
 GLuint Shader::GetShaderUniform(const GLchar* id) {
 	UseShader();
 	GLuint uniform_id = glGetUniformLocation(shader_program, id);
-	if(uniform_id == GL_INVALID_VALUE) {
-		std::string error = "Unable to find uniform value for id " + std::string(id);
+	std::string error;
+	switch (uniform_id) {
+	case GL_INVALID_VALUE:
+		error = "Invalid uniform value for id " + std::string(id);
 		throw std::runtime_error(error);
+	case GL_INVALID_OPERATION:
+		error = "Unable to find uniform value for id " + std::string(id);
+		throw std::runtime_error(error);
+	case -1:
+		error = "The given uniform " + std::string(id) + " is not active or is not found, check and make sure it is being used in the shader";
+		throw std::runtime_error(error);
+	default:
+		return uniform_id;
 	}
-	return uniform_id;
 }
 
 Shader::Shader() {

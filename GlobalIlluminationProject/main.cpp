@@ -135,7 +135,7 @@ int main() {
 
 	// Shader creation
 	try {
-		MeshShader = Shader("vertexShader.vert", "fragmentShader.frag");
+		MeshShader = Shader("vertexShader.vert", "directionalLightShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
@@ -231,8 +231,7 @@ int main() {
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, g_fb_width, g_fb_height);
-
-		// Applying matrix transformation
+		
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
 		elapsed_seconds = current_seconds - previous_seconds;
@@ -242,41 +241,54 @@ int main() {
 			speed = -speed;
 		}
 		process_keyboard(window);
-
+	
 		Mat4 view = Camera.GetViewMatrix();
-		// Get camera position
+
+		// - Drawing Light Source
+		LightShader.SetMatrix4("view", view, GL_TRUE);
+		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
+		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
+		// Set light position(Ambient Lighting)
+		// MeshShader.SetVector3("light.position", LightSource.Position());
+		// Set light direction(Directional Lighting)
+		MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
+
+		// Render Light source
+		LightMesh.Draw();
+		
+		// - Rendering Objects
+		// Set camera position
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
-		// Get light position
-		MeshShader.SetVector3("light_position", LightSource.Position());
+		
+
+
+
+		// Set camera view matrix
+		MeshShader.SetMatrix4("view", view, GL_TRUE);
+
 		// Setup texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuse_id);
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specular_id);
-		
-		MeshShader.SetMatrix4("view", view, GL_TRUE);
 
 		Mat4 transform_matrix;
 
 		// Doing random transformations
 		float y_rotation = elapsed_seconds * mesh_rotation_speed;
+		float x_rotation = elapsed_seconds * mesh_rotation_speed * 0.5f;
 		// ALWAYS DO A REFERENCE when iterating a vector of objects
 		for (EngineObject &Mesh : Meshes) {
 			Versor y_versor{ Mesh.GetUp(), y_rotation };
-			Mesh.ApplyRotations(std::vector<Versor> {y_versor});
+			Versor x_versor{ Mesh.GetRight(), x_rotation };
+			Mesh.ApplyRotations(std::vector<Versor> {y_versor, x_versor});
 			transform_matrix = Mesh.GetTransformationMatrix();
 			MeshShader.SetMatrix4("matrix", transform_matrix, GL_TRUE);
 			CubeMesh.Draw();
 		}
 		
-		LightShader.SetMatrix4("view", view, GL_TRUE);
-		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
-		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
-		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
-
-		// Render Light source
-		LightMesh.Draw();
 
 		// track events 
 		glfwPollEvents();
@@ -469,15 +481,13 @@ void update_colours() {
 	// Setting material properties 
 	//MeshShader.SetVector4("material.ambient_colour", mat_amb_colour * 0.5f);
 	//MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour * 0.2f);
-	MeshShader.SetVector4("material.specular_colour", light_colour);
-	MeshShader.SetVector4("light_colour", light_colour);
+	MeshShader.SetVector4("material.specular", light_colour);
 	MeshShader.SetFloat("material.shininess", 64.0f);
 
 	// Setting colour properties
-	MeshShader.SetVector4("light.position", LightSource.Position());
 	MeshShader.SetVector4("light.ambient_colour", Vec3{ 0.2f, 0.2f, 0.2f });
 	MeshShader.SetVector4("light.diffuse_colour", Vec3{ 0.5f, 0.5f, 0.5f });
-	MeshShader.SetVector4("light.specular_colour", Vec3{ 1.0f, 1.0f, 1.0f } );
+	MeshShader.SetVector4("light.specular_colour", Vec3{ 1.0f, 1.0f, 1.0f });
 	LightShader.SetVector4("light_colour", light_colour);
 }
 
