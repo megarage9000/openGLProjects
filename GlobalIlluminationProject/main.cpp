@@ -231,9 +231,9 @@ int main() {
 	MeshShader.SetInt("material.specular", 1);
 
 	// - Setup attenuation values (Point Light)
-	//MeshShader.SetFloat("light.constant", 1.0f);
-	//MeshShader.SetFloat("light.linear", 0.09f);
-	//MeshShader.SetFloat("light.quadratic", 0.032f);
+	MeshShader.SetFloat("light.constant", 1.0f);
+	MeshShader.SetFloat("light.linear", 0.09f);
+	MeshShader.SetFloat("light.quadratic", 0.032f);
 
 	// Setup Light Mesh
 	LightMesh = CubeRenderer(LightShader);
@@ -257,10 +257,10 @@ int main() {
 		Mat4 view = Camera.GetViewMatrix();
 
 		// - Drawing Light Source
-		LightShader.SetMatrix4("view", view, GL_TRUE);
-		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
-		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
-		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
+		//LightShader.SetMatrix4("view", view, GL_TRUE);
+		//LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		//LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
+		//LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
 		// - Set light position(Ambient Lighting & Point Light & Spot Light)
 		MeshShader.SetVector3("light.position", LightSource.Position());
 		// - Set light direction(Directional Lighting)
