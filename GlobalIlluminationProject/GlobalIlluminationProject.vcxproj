@@ -154,6 +154,7 @@
     <None Include="glew32d.dll" />
     <None Include="lightFragmentShader.frag" />
     <None Include="lightVertexShader.vert" />
+    <None Include="spotLightShader.frag" />
     <None Include="vertexShader.vert" />
   </ItemGroup>
   <ItemGroup>

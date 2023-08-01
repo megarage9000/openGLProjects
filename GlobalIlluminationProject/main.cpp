@@ -140,7 +140,9 @@ int main() {
 		// - DIRECTIONAL LIGHT SHADER
 		// MeshShader = Shader("vertexShader.vert", "directionalLightShader.frag");
 		// - POINT LIGHT SHADER
-		MeshShader = Shader("vertexShader.vert", "pointLightShader.frag");
+		// MeshShader = Shader("vertexShader.vert", "pointLightShader.frag");
+		// - SPOT LIGHT SHADER
+		MeshShader = Shader("vertexShader.vert", "spotLightShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
@@ -229,9 +231,9 @@ int main() {
 	MeshShader.SetInt("material.specular", 1);
 
 	// - Setup attenuation values (Point Light)
-	MeshShader.SetFloat("light.constant", 1.0f);
-	MeshShader.SetFloat("light.linear", 0.09f);
-	MeshShader.SetFloat("light.quadratic", 0.032f);
+	//MeshShader.SetFloat("light.constant", 1.0f);
+	//MeshShader.SetFloat("light.linear", 0.09f);
+	//MeshShader.SetFloat("light.quadratic", 0.032f);
 
 	// Setup Light Mesh
 	LightMesh = CubeRenderer(LightShader);
@@ -259,10 +261,14 @@ int main() {
 		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
 		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
 		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
-		// - Set light position(Ambient Lighting & Point Light)
+		// - Set light position(Ambient Lighting & Point Light & Spot Light)
 		MeshShader.SetVector3("light.position", LightSource.Position());
 		// - Set light direction(Directional Lighting)
 		// MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
+
+		// - Set Spot Light Data (Spot Lighting)
+		MeshShader.SetVector3("light.direction", Camera.GetFront());
+		MeshShader.SetFloat("light.cut_off", 12.5f * DEG_TO_RAD);
 
 		// Render Light source
 		LightMesh.Draw();
@@ -270,9 +276,6 @@ int main() {
 		// - Rendering Objects
 		// Set camera position
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
-		
-
-
 
 		// Set camera view matrix
 		MeshShader.SetMatrix4("view", view, GL_TRUE);
@@ -291,10 +294,10 @@ int main() {
 		float x_rotation = elapsed_seconds * mesh_rotation_speed * 0.5f;
 		// ALWAYS DO A REFERENCE when iterating a vector of objects
 		for (EngineObject &Mesh : Meshes) {
-			Versor y_versor{ Mesh.GetUp(), y_rotation };
+			/*Versor y_versor{ Mesh.GetUp(), y_rotation };
 			Versor x_versor{ Mesh.GetRight(), x_rotation };
 			Mesh.ApplyRotations(std::vector<Versor> {y_versor, x_versor});
-			transform_matrix = Mesh.GetTransformationMatrix();
+			*/transform_matrix = Mesh.GetTransformationMatrix();
 			MeshShader.SetMatrix4("matrix", transform_matrix, GL_TRUE);
 			CubeMesh.Draw();
 		}

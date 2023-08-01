@@ -77,6 +77,9 @@ public:
 	void ApplyTranslation(Vec3 translation_changes);
 	Mat4 GetViewMatrix();
 	Vec3 GetCameraPos();
+	Vec3 GetFront();
+	Vec3 GetRight();
+	Vec3 GetUp();
 };
 #pragma endregion CameraObject
 

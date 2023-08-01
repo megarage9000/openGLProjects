@@ -114,5 +114,16 @@ Vec3 CameraObject::GetCameraPos() {
 	return Vec3(position);
 }
 
+Vec3 CameraObject::GetFront() {
+	return camera_front;
+}
+
+Vec3 CameraObject::GetRight() {
+	return camera_right;
+}
+
+Vec3 CameraObject::GetUp() {
+	return camera_up;
+}
 #pragma endregion CameraObject Methods
 

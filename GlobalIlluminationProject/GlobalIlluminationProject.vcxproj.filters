@@ -80,6 +80,9 @@
     <None Include="directionalLightShader.frag">
       <Filter>Source Files\shaders</Filter>
     </None>
+    <None Include="spotLightShader.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="pointLightShader.frag">
