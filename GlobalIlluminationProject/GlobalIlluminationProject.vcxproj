@@ -156,6 +156,9 @@
     <None Include="lightVertexShader.vert" />
     <None Include="vertexShader.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="pointLightShader.frag" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

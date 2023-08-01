@@ -81,4 +81,9 @@
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="pointLightShader.frag">
+      <Filter>Source Files\shaders</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

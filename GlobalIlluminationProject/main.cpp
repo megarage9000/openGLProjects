@@ -135,7 +135,12 @@ int main() {
 
 	// Shader creation
 	try {
-		MeshShader = Shader("vertexShader.vert", "directionalLightShader.frag");
+		// - AMBIENT SHADER
+		// MeshShader = Shader("vertexShader.vert", "fragmentShader.frag");
+		// - DIRECTIONAL LIGHT SHADER
+		// MeshShader = Shader("vertexShader.vert", "directionalLightShader.frag");
+		// - POINT LIGHT SHADER
+		MeshShader = Shader("vertexShader.vert", "pointLightShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
@@ -223,6 +228,11 @@ int main() {
 	MeshShader.SetInt("material.diffuse", 0);
 	MeshShader.SetInt("material.specular", 1);
 
+	// - Setup attenuation values (Point Light)
+	MeshShader.SetFloat("light.constant", 1.0f);
+	MeshShader.SetFloat("light.linear", 0.09f);
+	MeshShader.SetFloat("light.quadratic", 0.032f);
+
 	// Setup Light Mesh
 	LightMesh = CubeRenderer(LightShader);
 
@@ -249,10 +259,10 @@ int main() {
 		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
 		LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
 		LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
-		// Set light position(Ambient Lighting)
-		// MeshShader.SetVector3("light.position", LightSource.Position());
-		// Set light direction(Directional Lighting)
-		MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
+		// - Set light position(Ambient Lighting & Point Light)
+		MeshShader.SetVector3("light.position", LightSource.Position());
+		// - Set light direction(Directional Lighting)
+		// MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
 
 		// Render Light source
 		LightMesh.Draw();
