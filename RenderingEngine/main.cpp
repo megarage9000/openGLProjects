@@ -259,26 +259,25 @@ int main() {
 		Mat4 view = Camera.GetViewMatrix();
 
 		// - Drawing Light Source
-		//LightShader.SetMatrix4("view", view, GL_TRUE);
-		//LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
-		//LightSource.SetPosition(Vec3{ (float)sin(glfwGetTime()) * 2.0f, (float)cos(glfwGetTime()) * 2.0f, 0.0f });
-		//LightShader.SetMatrix4("matrix", LightSource.GetTransformationMatrix(), GL_TRUE);
+		LightShader.SetMatrix4("view", view, GL_TRUE);
+		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		Versor light_rotation{ LightSource.GetRight(), elapsed_seconds * mesh_rotation_speed };
+		LightSource.ApplyRotations(std::vector<Versor> {light_rotation});
+		LightSource.SetPosition(Vec3{ 0.0, 5.0, 0.0 });
+		LightShader.SetMatrix4("matrix", LightSource.OrientationMatrix() * LightSource.TranslationMatrix(), GL_TRUE);
 		// - Set light position(Ambient Lighting & Point Light & Spot Light)
 		// MeshShader.SetVector3("light.position", Camera.GetCameraPos());
 		// - Set light direction(Directional Lighting)
 		// MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
+		LightMesh.Draw();
 
 		// - Set Spot Light Data (Spot Lighting)
-		MeshShader.SetVector3("light.position", Camera.GetCameraPos());
-		MeshShader.SetVector3("light.direction", Camera.GetFront());
+		MeshShader.SetVector4("light.position", LightSource.Position());
+		MeshShader.SetVector3("light.direction", LightSource.GetUp() * -1.0f);
 		MeshShader.SetFloat("light.cut_off", 12.5f * DEG_TO_RAD);
-		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
-
-		// Render Light source
-		// LightMesh.Draw();
+		MeshShader.SetVector3("camera_pos", LightSource.Position());
 		
 		// - Rendering Objects
-
 		// Set camera view matrix
 		MeshShader.SetMatrix4("view", view, GL_TRUE);
 
@@ -295,7 +294,7 @@ int main() {
 		float y_rotation = elapsed_seconds * mesh_rotation_speed;
 		float x_rotation = elapsed_seconds * mesh_rotation_speed * 0.5f;
 		// ALWAYS DO A REFERENCE when iterating a vector of objects
-		for (EngineObject &Mesh : Meshes) {
+		for (EngineObject& Mesh : Meshes) {
 			Versor y_versor{ Mesh.GetUp(), y_rotation };
 			Versor x_versor{ Mesh.GetRight(), x_rotation };
 			Mesh.ApplyRotations(std::vector<Versor> {y_versor, x_versor});
@@ -304,7 +303,6 @@ int main() {
 			CubeMesh.Draw();
 		}
 		
-
 		// track events 
 		glfwPollEvents();
 		glfwSwapBuffers(window);

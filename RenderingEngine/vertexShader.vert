@@ -21,8 +21,9 @@ void main() {
 
 	// For normals, we can use a normal matrix to transform to world coords: www.lighthouse3d.com/tutorials/glsl-tutorial/the-normal-matrix/,
 	// but right now we don't need to. This is only applicable if we are doing a non-uniform scale to a normal
-	vt_normal = vertex_normal;
+	vt_normal = mat3(transpose(inverse(matrix))) * vertex_normal;
 	texture_coordinates = texture_coords;
 	vt_colour = vertex_colour;
-	gl_Position = projection * vec4(position_eye, 1.0); // Here we set the final clip-space position for each vertex position
+	// gl_Position = projection * vec4(position_eye, 1.0); // Here we set the final clip-space position for each vertex position
+	gl_Position = projection * view * vec4(frag_pos, 1.0);
 }
