@@ -25,8 +25,8 @@ the Rendering Engine Folder
 # RenderingEngine
 In this project, I hope to develop a general purpose Rendering Engine that I can use for small 3D games and/or rendering!
 Currently working on:
-- Basic Lighting and Casting
-- Bug Fixing Spotlight casting and Unwanted Local Camera Roll
+- Basic Lighting and Casting, and implementing various light casters in a scene
+- Fix Unwanted Local Camera Roll
 
 Project Playlist:
 
