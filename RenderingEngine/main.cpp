@@ -274,8 +274,8 @@ int main() {
 		// - Set Spot Light Data (Spot Lighting)
 		MeshShader.SetVector3("light.position", Camera.GetCameraPos());
 		MeshShader.SetVector3("light.direction", Camera.GetFront());
-		MeshShader.SetFloat("light.cut_off", cos(12.5f * DEG_TO_RAD));
-		MeshShader.SetFloat("light.outer_cut_off", cos(17.5f * DEG_TO_RAD));
+		MeshShader.SetFloat("light.cut_off", cos(20.5f * DEG_TO_RAD));
+		MeshShader.SetFloat("light.outer_cut_off", cos(26.5f * DEG_TO_RAD));
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		
 		// - Rendering Objects

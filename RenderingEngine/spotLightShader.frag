@@ -1,7 +1,7 @@
 #version 410
 
 in vec4 vt_colour;
-in vec3 position_eye, normal_eye, vt_normal, frag_pos; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
+in vec3 vt_normal, frag_pos; // The input variable must have the same name as the one from vertex shader if you are using one from the vertex!
 in vec2 texture_coordinates;
 
 // Material
