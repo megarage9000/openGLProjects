@@ -14,7 +14,7 @@ struct Material {
 
 // Light Properties
 struct Light {
-	vec4 position;
+	vec3 position;
 	vec3 direction;
 	float cut_off;
 	vec4 ambient_colour;
@@ -38,10 +38,8 @@ void main() {
 	vec4 diffuse_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
 	vec4 specular_data = vec4(texture(material.specular, texture_coordinates).rgb, 1.0f);
 	// vec4 specular_data = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	vec4 color = vec4(light.ambient_colour * diffuse_data);
 	
-	vec3 light_dir = normalize(vec3(light.position) - frag_pos);
+	vec3 light_dir = normalize(light.position - frag_pos);
 	float theta = dot(light_dir, normalize(-light.direction));
 	
 	if(theta > light.cut_off) {
@@ -50,7 +48,6 @@ void main() {
 
 		// Diffuse
 		vec3 normal = normalize(vt_normal);
-
 		vec4 diffuse = light.diffuse_colour * (max(dot(normal, light_dir), 0.0) * diffuse_data);
 
 		// Specular
@@ -66,7 +63,9 @@ void main() {
 		diffuse *= attenuation;
 		specular *= attenuation;
 
-		color = vec4(ambience + diffuse + specular);
+		fragColor = vec4(ambience + diffuse + specular);
 	}
-	fragColor = color;
+	else {
+		fragColor = vec4(light.ambient_colour * diffuse_data);
+	}
 }

@@ -51,7 +51,7 @@ float rotation_sensitivity = 1.5f;
 float camera_rotation_speed = 15;
 
 float mesh_rotation_speed = 50.0f;
-int num_meshes = 10;
+int num_meshes = 6;
 
 #pragma region Function Headers
 // GLFW Callbacks
@@ -66,7 +66,7 @@ void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int m
 GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
 void process_keyboard(GLFWwindow * window);
-void update_colours();
+void update_light_colours();
 
 // Transformations
 Mat4 set_up_projection_matrix();
@@ -85,13 +85,13 @@ int main() {
 	float speed = 1.0f;
 
 	Camera = CameraObject(Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 1.0f, 0.0f, 0.0f});
-	for (int i = -num_meshes / 2; i < num_meshes / 2; i++) {
-		float x = i;
-		float y = i;
-		float z = i;
-		Vec3 position{ (float)i, (float)i, (float)i };
-		position.print();
-		Meshes.push_back(EngineObject(position, Versor{ 0.0f, 1.0f, 0.0f, 0.0f }));
+	for (int x = -num_meshes / 2; x < num_meshes / 2; x++) {
+		for (int y = -num_meshes / 2; y < num_meshes / 2; y++) {
+			for (int z = -num_meshes / 2; z < num_meshes / 2; z++) {
+				Vec3 position{ (float)x, (float)y, (float)z };
+				Meshes.push_back(EngineObject(position, Versor{ 0.0f, 1.0f, 0.0f, 0.0f }));
+			}
+		}
 	}
 	MainMesh = EngineObject(Vec3{ 0.0f, 2.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 	LightSource = EngineObject(Vec3{ 1.2f, 1.0f, 2.0f }, Versor{0.0f, 1.0f, 0.0f, 0.0f});
@@ -241,7 +241,7 @@ int main() {
 	LightMesh = CubeRenderer(LightShader);
 
 	while (!glfwWindowShouldClose(window)) {
-		update_colours();
+		update_light_colours();
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, g_fb_width, g_fb_height);
@@ -259,23 +259,23 @@ int main() {
 		Mat4 view = Camera.GetViewMatrix();
 
 		// - Drawing Light Source
-		LightShader.SetMatrix4("view", view, GL_TRUE);
-		LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
-		Versor light_rotation{ LightSource.GetRight(), elapsed_seconds * mesh_rotation_speed };
-		LightSource.ApplyRotations(std::vector<Versor> {light_rotation});
-		LightSource.SetPosition(Vec3{ 0.0, 5.0, 0.0 });
-		LightShader.SetMatrix4("matrix", LightSource.OrientationMatrix() * LightSource.TranslationMatrix(), GL_TRUE);
+		//LightShader.SetMatrix4("view", view, GL_TRUE);
+		//LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
+		//Versor light_rotation{ LightSource.GetRight(), elapsed_seconds * mesh_rotation_speed };
+		//LightSource.ApplyRotations(std::vector<Versor> {light_rotation});
+		//LightSource.SetPosition(Vec3{ 0.0, 6.0, 0.0 });
+		//LightShader.SetMatrix4("matrix", LightSource.OrientationMatrix() * LightSource.TranslationMatrix(), GL_TRUE);
 		// - Set light position(Ambient Lighting & Point Light & Spot Light)
 		// MeshShader.SetVector3("light.position", Camera.GetCameraPos());
 		// - Set light direction(Directional Lighting)
 		// MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
-		LightMesh.Draw();
+		// LightMesh.Draw();
 
 		// - Set Spot Light Data (Spot Lighting)
-		MeshShader.SetVector4("light.position", LightSource.Position());
-		MeshShader.SetVector3("light.direction", LightSource.GetUp() * -1.0f);
-		MeshShader.SetFloat("light.cut_off", 12.5f * DEG_TO_RAD);
-		MeshShader.SetVector3("camera_pos", LightSource.Position());
+		MeshShader.SetVector3("light.position", Camera.GetCameraPos());
+		MeshShader.SetVector3("light.direction", Camera.GetFront());
+		MeshShader.SetFloat("light.cut_off", cos(12.5f * DEG_TO_RAD));
+		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 		
 		// - Rendering Objects
 		// Set camera view matrix
@@ -298,6 +298,7 @@ int main() {
 			Versor y_versor{ Mesh.GetUp(), y_rotation };
 			Versor x_versor{ Mesh.GetRight(), x_rotation };
 			Mesh.ApplyRotations(std::vector<Versor> {y_versor, x_versor});
+			Mesh.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
 			transform_matrix = Mesh.GetTransformationMatrix();
 			MeshShader.SetMatrix4("matrix", transform_matrix, GL_TRUE);
 			CubeMesh.Draw();
@@ -474,7 +475,7 @@ void process_keyboard(GLFWwindow * window) {
 	Camera.RealignGaze(yaw, pitch);
 }
 
-void update_colours() {
+void update_light_colours() {
 	float time = glfwGetTime();
 	Vec4 mat_amb_colour{
 		sin(time) * 0.9f,
