@@ -339,7 +339,7 @@ void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height)
 bool can_rotate = false;
 void glfw_cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos) {
 	if (!can_rotate) return;
-	float x_offset = (x_pos - last_mouse_x) * (rotation_sensitivity / 100.0f);
+	float x_offset = (x_pos - last_mouse_x) * (rotation_sensitivity / 100.0f) * -1.0f;
 	float y_offset = (last_mouse_y - y_pos) * (rotation_sensitivity / 100.0f);
 
 	last_mouse_x = x_pos;
