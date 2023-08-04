@@ -90,10 +90,11 @@ CameraObject::CameraObject(Vec3 position, Versor orientation) : position (positi
 
 void CameraObject::RealignGaze(float x, float y) {
 
+	// Use Global Up axis for horizontal rotation to 
+	// prevent unwanted z-axis rotation/roll
 	Versor horizontal_rotation{ Vec3{0.0f, 1.0f, 0.0f}, x};
 	Versor vertical_rotation{ camera_right, y};
-	//Versor forward_rotation{ camera_front, 0.0f };
-	// TODO: Get rid of unwanted roll when using mouse
+
 	orientation = horizontal_rotation * vertical_rotation * orientation;
 	GetNewDirectionsOrientation();
 }

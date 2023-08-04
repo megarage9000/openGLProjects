@@ -69,7 +69,6 @@ class CameraObject {
 	}
 
 public:
-
 	CameraObject();
 	CameraObject(Vec3 position);
 	CameraObject(Vec3 position, Versor orientation);
