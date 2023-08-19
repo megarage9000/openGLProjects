@@ -11,9 +11,6 @@ using namespace LinearAlgebra;
 #pragma region EngineObject
 class EngineObject {
 private:
-	Vec3 forward;
-	Vec3 up;
-	Vec3 right;
 	Vec3 position;
 	Vec3 scale_dimensions;
 	Versor orientation;
@@ -26,9 +23,15 @@ private:
 	}
 
 public:
+	Vec3 forward;
+	Vec3 up;
+	Vec3 right;
 	EngineObject();
 	EngineObject(Vec3 position, Versor orientation);
 	void SetPosition(Vec3 position);
+	void SetForward(Vec3 forward);
+	void SetRight(Vec3 right);
+	void SetUp(Vec3 up);
 	Vec3 Position();
 	Mat4 OrientationMatrix();
 	Mat4 TranslationMatrix();
@@ -39,6 +42,7 @@ public:
 	Vec3 GetForward();
 	Vec3 GetUp();
 	Vec3 GetRight();
+
 };
 #pragma endregion EngineObject
 

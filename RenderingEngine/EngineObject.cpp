@@ -16,8 +16,19 @@ EngineObject::EngineObject(Vec3 position, Versor orientation) : position(positio
 	ApplyDirections();
 }
 
+
+
 void EngineObject::SetPosition(Vec3 position) {
 	this->position = position;
+}
+void EngineObject::SetForward(Vec3 forward) {
+	this->forward = forward;
+}
+void EngineObject::SetRight(Vec3 right) {
+	this->right = right;
+}
+void EngineObject::SetUp(Vec3 up) {
+	this->up = up;
 }
 
 Vec3 EngineObject::Position() {

@@ -54,7 +54,7 @@ float mesh_rotation_speed = 50.0f;
 int num_meshes = 6;
 
 // Light variables
-int num_dir_lights = 1;
+int num_dir_lights = 0;
 int num_point_lights = 0;
 int num_spot_lights = 2;
 
@@ -76,7 +76,6 @@ void glfw_mousebutton_callback(GLFWwindow* window, int button, int action, int m
 GLFWwindow* create_window(int version_major, int version_minor);
 GLuint create_shader_program(std::map<const char *, GLenum> shader_infos);
 void process_keyboard(GLFWwindow * window);
-void update_light_colours();
 
 // Transformations
 Mat4 set_up_projection_matrix();
@@ -113,13 +112,13 @@ int main() {
 
 	// Setup Point Light transnforms
 	for (int i = 0; i < num_point_lights; i++) {
-		EngineObject point_light = EngineObject(Vec3{ 1.2f * i, 1.0f * i, 2.0f * i }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+		EngineObject point_light = EngineObject(Vec3{ 1.2f, 1.0f, 2.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 		point_lights.push_back(point_light);
 	}
 
 	// Setup Spot Light transforms
 	for (int i = 1; i < num_spot_lights; i++) {
-		EngineObject spot_light = EngineObject(Vec3{ 1.2f * -i, 1.0f * -i, 2.0f * -i }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
+		EngineObject spot_light = EngineObject(Vec3{ 0.0f, 0.0f, 0.0f }, Versor{ 0.0f, 1.0f, 0.0f, 0.0f });
 		spot_lights.push_back(spot_light);
 	}
 
@@ -164,15 +163,6 @@ int main() {
 
 	// Shader creation
 	try {
-		// - AMBIENT SHADER
-		// MeshShader = Shader("vertexShader.vert", "fragmentShader.frag");
-		// - DIRECTIONAL LIGHT SHADER
-		// MeshShader = Shader("vertexShader.vert", "directionalLightShader.frag");
-		// - POINT LIGHT SHADER
-		// MeshShader = Shader("vertexShader.vert", "pointLightShader.frag");
-		// - SPOT LIGHT SHADER
-		// MeshShader = Shader("vertexShader.vert", "spotLightShader.frag");
-		// Multi-light shader
 		MeshShader = Shader("vertexShader.vert", "multiLightShader.frag");
 
 	}
@@ -304,7 +294,7 @@ int main() {
 	LightMesh = CubeRenderer(LightShader);
 
 	while (!glfwWindowShouldClose(window)) {
-		update_light_colours();
+
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, g_fb_width, g_fb_height);
@@ -320,6 +310,11 @@ int main() {
 		process_keyboard(window);
 	
 		Mat4 view = Camera.GetViewMatrix();
+
+		MeshShader.SetFloat("material.shininess", 32.0f);
+
+		// Setting colour properties
+		LightShader.SetVector4("light_colour", Vec4{1.0f, 1.0f, 1.0f, 1.0f});
 		
 		// Set camera view matrix
 		MeshShader.SetMatrix4("view", view, GL_TRUE);
@@ -329,19 +324,62 @@ int main() {
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 
 		// - Set Spot Light Data (Spot Lighting) (FOR CAMERA)
-		MeshShader.SetVector3("spot_lights[0].position", Camera.GetCameraPos());
-		MeshShader.SetVector3("spot_lights[0].direction", Camera.GetFront());
-		MeshShader.SetFloat("spot_lights[0].cut_off", cos(20.5f * DEG_TO_RAD));
-		MeshShader.SetFloat("spot_lights[0].outer_cut_off", cos(26.5f * DEG_TO_RAD));
+		//MeshShader.SetVector3("spot_lights[0].position", Camera.GetCameraPos());
+		//MeshShader.SetVector3("spot_lights[0].direction", Camera.GetFront());
+		//MeshShader.SetFloat("spot_lights[0].cut_off", cos(20.5f * DEG_TO_RAD));
+		//MeshShader.SetFloat("spot_lights[0].outer_cut_off", cos(26.5f * DEG_TO_RAD));
+
+		// - Set Spot Light Data (Spot Lighting) (NON-CAMMERA)
+		for (int i = 1; i < num_spot_lights; i++) {
+			int radius = 4.0f * (i + 1);
+			float time = glfwGetTime();
+			float y_pos = cos(time) * radius;
+			float z_pos = sin(time) * radius;
+			spot_lights[i - 1].SetPosition(Vec3{ spot_lights[i - 1].Position()[0], y_pos, z_pos });
+
+			Vec3 forward_vec = spot_lights[i - 1].GetForward();
+			Vec3 right_vec = spot_lights[i - 1].GetRight();
+			Vec3 up_vec = spot_lights[i - 1].GetUp();
+
+			Mat4 look_matrix = view_matrix(
+				Vec4{0.0f, 0.0f, 0.0f},
+				spot_lights[i - 1].Position(),
+				up_vec,
+				forward_vec,
+				right_vec
+			);
+
+			spot_lights[i - 1].SetForward(forward_vec);
+			spot_lights[i - 1].SetRight(right_vec);
+			spot_lights[i - 1].SetUp(up_vec);
+
+			LightShader.SetMatrix4("matrix", look_matrix, GL_TRUE);
+			LightMesh.Draw();
+
+			std::string spot_light_str = "spot_lights[" + std::to_string(i) + "]";
+			MeshShader.SetVector3((spot_light_str + ".position").c_str(), spot_lights[i - 1].Position());
+			MeshShader.SetVector3((spot_light_str + ".direction").c_str(), spot_lights[i - 1].GetForward());
+			MeshShader.SetFloat((spot_light_str + ".cut_off").c_str(), cos(20.5f * DEG_TO_RAD));
+			MeshShader.SetFloat((spot_light_str + ".outer_cut_off").c_str(), cos(26.5f * DEG_TO_RAD));
+		}
 
 		// - Set Point Light Data (Point Lighting)
 		for (int i = 0; i < num_point_lights; i++) {
+			// Have point lights "orbit around center"
+			// On the x, z plane
+			int radius = 1.5f * i;
+			float time = glfwGetTime();
+			float x_pos = cos(time) * radius;
+			float z_pos = sin(time) * radius;
+			point_lights[i].SetPosition(Vec3{x_pos, point_lights[i].Position()[1], z_pos});
+			point_lights[i].ApplyScale(Vec3{ 0.25, 0.25, 0.25 });
+
+			LightShader.SetMatrix4("matrix",point_lights[i].GetTransformationMatrix(), GL_TRUE);
+			LightMesh.Draw();
+
 			Vec4 position = point_lights[i].Position();
 			std::string point_light_str = "point_lights[" + std::to_string(i) + "]";
 			MeshShader.SetVector4((point_light_str + ".position").c_str(), position);
-			
-			LightShader.SetMatrix4("matrix", point_lights[i].OrientationMatrix() * point_lights[i].TranslationMatrix(), GL_TRUE);
-			LightMesh.Draw();
 		}
 		
 		// - Set Directional Light Data (Directional Lighting)
@@ -544,34 +582,6 @@ void process_keyboard(GLFWwindow * window) {
 	}
 	Camera.ApplyTranslation(translation_change * camera_speed * elapsed_seconds);
 	Camera.RealignGaze(yaw, pitch);
-}
-
-void update_light_colours() {
-	float time = glfwGetTime();
-	Vec4 mat_amb_colour{
-		sin(time) * 0.9f,
-		sin(time) * 0.8f,
-		sin(time) * 0.7f,
-	};
-	Vec4 mat_diff_colour{
-		cos(time) * 0.75f,
-		cos(time) * 0.5f,
-		cos(time) * 0.76f,
-	};
-
-	Vec4 light_colour{
-		1.0f, 1.0f, 1.0f
-	};
-
-	// Setting material properties 
-	//MeshShader.SetVector4("material.ambient_colour", mat_amb_colour * 0.5f);
-	//MeshShader.SetVector4("material.diffuse_colour", mat_diff_colour * 0.2f);
-	// MeshShader.SetVector4("material.specular", light_colour);
-	MeshShader.SetFloat("material.shininess", 32.0f);
-
-
-	// Setting colour properties
-	LightShader.SetVector4("light_colour", light_colour);
 }
 
 #pragma endregion OpenGL Helpers
