@@ -66,6 +66,9 @@
     <None Include="lightVertexShader.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="multiLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
