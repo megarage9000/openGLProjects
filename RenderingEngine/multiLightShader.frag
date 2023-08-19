@@ -1,7 +1,7 @@
-
+#version 410
 #define MAX_NUM_LIGHTS_PER_TYPE 10
 
-in vec3 vt_normal, frag_pos
+in vec3 vt_normal, frag_pos;
 in vec2 texture_coordinates;
 
 // Directional Lighting
@@ -29,11 +29,13 @@ vec4 calculate_point_light(PointLight light, vec3 normal, vec3 frag_pos, vec3 ca
 
 // Spot Lighting 
 struct SpotLight {
-	vec4 position;
+	vec3 position;
+	vec3 direction;
+	float cut_off;
+	float outer_cut_off;
 	vec4 ambient_colour;
 	vec4 diffuse_colour;
 	vec4 specular_colour;
-	vec3 direction;
 
 	float constant;
 	float linear;
@@ -50,7 +52,7 @@ struct Material {
 };
 
 // Uniforms
-uniform Mat4 view;
+uniform mat4 view;
 uniform vec3 camera_pos;
 uniform Material material;
 
@@ -62,27 +64,27 @@ uniform int num_dir_lights;
 uniform int num_point_lights;
 uniform int num_spot_lights;
 
-out fragColor;
+out vec4 fragColor;
 
 void main() {
 	vec4 diffuse_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
 	vec4 specular_data = vec4(texture(material.specular, texture_coordinates).rgb, 1.0f);
 
-	num_dir_lights = num_dir_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_dir_lights;
-	num_point_lights = num_point_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_point_lights;
-	num_spot_lights = num_spot_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_spot_lights;
+	int dir_light_amount = num_dir_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_dir_lights;
+	int point_light_amount = num_point_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_point_lights;
+	int spot_light_amount = num_spot_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_spot_lights;
 
 	vec4 result = vec4(0.0, 0.0, 0.0, 0.0);
 	// Calculate directional lights
-	for(int i = 0; i < num_dir_lights; i++) {
+	for(int i = 0; i < dir_light_amount; i++) {
 		result += calculate_directional_light(dir_lights[i], vt_normal, frag_pos, camera_pos, diffuse_data, specular_data);
 	}
 	// Calculate point lights
-	for(int i = 0; i < num_point_lights; i++) {
+	for(int i = 0; i < point_light_amount; i++) {
 		result += calculate_point_light(point_lights[i], vt_normal, frag_pos, camera_pos, diffuse_data, specular_data);
 	}
 	// Calculate spot lights
-	for(int i = 0; i < num_spot_lights; i++) {
+	for(int i = 0; i < spot_light_amount; i++) {
 		result += calculate_spot_light(spot_lights[i], vt_normal, frag_pos, camera_pos, diffuse_data, specular_data);
 	}
 	fragColor = result;
