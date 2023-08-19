@@ -55,8 +55,8 @@ int num_meshes = 6;
 
 // Light variables
 int num_dir_lights = 1;
-int num_point_lights = 1;
-int num_spot_lights = 1;
+int num_point_lights = 0;
+int num_spot_lights = 2;
 
 std::vector<Vec3> dir_lights_dirs;
 std::vector<EngineObject> point_lights;
@@ -269,35 +269,35 @@ int main() {
 
 	// - Setup values (Directional Light)
 	for (int i = 0; i < num_dir_lights; i++) {
-		std::string dir_light_str = "dir_lights" + std::to_string(i) + "]";
-		MeshShader.SetVector4(dir_light_str.append(".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
-		MeshShader.SetVector4(dir_light_str.append(".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
-		MeshShader.SetVector4(dir_light_str.append(".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
+		std::string dir_light_str = "dir_lights[" + std::to_string(i) + "]";
+		MeshShader.SetVector4((dir_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
+		MeshShader.SetVector4((dir_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
+		MeshShader.SetVector4((dir_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 
 	}
 
 	// - Setup values (Point Light)
 	for (int i = 0; i < num_point_lights; i++) {
 		std::string point_light_str = "point_lights[" + std::to_string(i) + "]";
-		MeshShader.SetFloat(point_light_str.append(".constant").c_str(), 1.0f);
-		MeshShader.SetFloat(point_light_str.append(".linear").c_str(), 0.09f);
-		MeshShader.SetFloat(point_light_str.append(".quadratic").c_str(), 0.032f);
+		MeshShader.SetFloat((point_light_str +".constant").c_str(), 1.0f);
+		MeshShader.SetFloat((point_light_str +".linear").c_str(), 0.09f);
+		MeshShader.SetFloat((point_light_str +".quadratic").c_str(), 0.032f);
 
-		MeshShader.SetVector4(point_light_str.append(".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
-		MeshShader.SetVector4(point_light_str.append(".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
-		MeshShader.SetVector4(point_light_str.append(".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
+		MeshShader.SetVector4((point_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
+		MeshShader.SetVector4((point_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
+		MeshShader.SetVector4((point_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 	}
 
 	// - Setup values (Spot Light)
 	for (int i = 0; i < num_spot_lights; i++) {
 		std::string spot_light_str = "spot_lights[" + std::to_string(i) + "]";
-		MeshShader.SetFloat(spot_light_str.append(".constant").c_str(), 1.0f);
-		MeshShader.SetFloat(spot_light_str.append(".linear").c_str(), 0.09f);
-		MeshShader.SetFloat(spot_light_str.append(".quadratic").c_str(), 0.032f);
+		MeshShader.SetFloat((spot_light_str + ".constant").c_str(), 1.0f);
+		MeshShader.SetFloat((spot_light_str + ".linear").c_str(), 0.09f);
+		MeshShader.SetFloat((spot_light_str + ".quadratic").c_str(), 0.032f);
 
-		MeshShader.SetVector4(spot_light_str.append(".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
-		MeshShader.SetVector4(spot_light_str.append(".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
-		MeshShader.SetVector4(spot_light_str.append(".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
+		MeshShader.SetVector4((spot_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
+		MeshShader.SetVector4((spot_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
+		MeshShader.SetVector4((spot_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 	}
 
 	// Setup Light Mesh
@@ -320,19 +320,6 @@ int main() {
 		process_keyboard(window);
 	
 		Mat4 view = Camera.GetViewMatrix();
-
-		// - Drawing Light Source
-		//LightShader.SetMatrix4("view", view, GL_TRUE);
-		//LightSource.ApplyScale(Vec3{ 0.5, 0.5, 0.5 });
-		//Versor light_rotation{ LightSource.GetRight(), elapsed_seconds * mesh_rotation_speed };
-		//LightSource.ApplyRotations(std::vector<Versor> {light_rotation});
-		//LightSource.SetPosition(Vec3{ 0.0, 6.0, 0.0 });
-		//LightShader.SetMatrix4("matrix", LightSource.OrientationMatrix() * LightSource.TranslationMatrix(), GL_TRUE);
-		// - Set light position(Ambient Lighting & Point Light & Spot Light)
-		// MeshShader.SetVector3("light.position", Camera.GetCameraPos());
-		// - Set light direction(Directional Lighting)
-		// MeshShader.SetVector3("light.direction", Vec3{ -0.2f, -1.0f, -0.3f });
-		// LightMesh.Draw();
 		
 		// Set camera view matrix
 		MeshShader.SetMatrix4("view", view, GL_TRUE);
@@ -342,7 +329,7 @@ int main() {
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 
 		// - Set Spot Light Data (Spot Lighting) (FOR CAMERA)
-		MeshShader.SetVector4("spot_lights[0].position", Camera.GetCameraPos());
+		MeshShader.SetVector3("spot_lights[0].position", Camera.GetCameraPos());
 		MeshShader.SetVector3("spot_lights[0].direction", Camera.GetFront());
 		MeshShader.SetFloat("spot_lights[0].cut_off", cos(20.5f * DEG_TO_RAD));
 		MeshShader.SetFloat("spot_lights[0].outer_cut_off", cos(26.5f * DEG_TO_RAD));
@@ -351,7 +338,7 @@ int main() {
 		for (int i = 0; i < num_point_lights; i++) {
 			Vec4 position = point_lights[i].Position();
 			std::string point_light_str = "point_lights[" + std::to_string(i) + "]";
-			MeshShader.SetVector4(point_light_str.append(".position").c_str(), position);
+			MeshShader.SetVector4((point_light_str + ".position").c_str(), position);
 			
 			LightShader.SetMatrix4("matrix", point_lights[i].OrientationMatrix() * point_lights[i].TranslationMatrix(), GL_TRUE);
 			LightMesh.Draw();
@@ -360,7 +347,7 @@ int main() {
 		// - Set Directional Light Data (Directional Lighting)
 		for (int i = 0; i < num_dir_lights; i++) {
 			std::string directional_light_str = "dir_lights[" + std::to_string(i) + "]";
-			MeshShader.SetVector4(directional_light_str.append(".direction").c_str(), dir_lights_dirs[i]);
+			MeshShader.SetVector3((directional_light_str + ".direction").c_str(), dir_lights_dirs[i]);
 		}
 		// - Rendering Objects
 
