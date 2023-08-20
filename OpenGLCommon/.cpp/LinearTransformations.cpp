@@ -109,16 +109,17 @@ namespace LinearAlgebra {
     }
 
     Mat4 view_matrix(Vec4 focus_position, Vec4 cam_world_position, Vec3& up_vector, Vec3& forward_vector, Vec3& right_vector) {
+
         Mat4 view_matrix = Mat4(IDENTITY_4, 16);
 
         forward_vector = Vec3((cam_world_position - focus_position)).normalize();
-        Vec3 new_right_vector = (forward_vector.cross(up_vector)).normalize();
+        Vec3 new_right_vector = (Vec3{ 0.0f, 1.0f, 0.0 }.cross(forward_vector)).normalize();
         Vec3 new_up_vector = (forward_vector.cross(new_right_vector)).normalize();
 
         up_vector = new_up_vector;
         right_vector = new_right_vector;
 
-        Mat4 translation_matrix = translate(cam_world_position * -1);
+        /*Mat4 translation_matrix = translate(cam_world_position * -1);
 
         view_matrix[0][0] = new_right_vector[0];
         view_matrix[0][1] = new_right_vector[1];
@@ -133,8 +134,35 @@ namespace LinearAlgebra {
         view_matrix[2][0] = -forward_vector[0];
         view_matrix[2][1] = -forward_vector[1];
         view_matrix[2][2] = -forward_vector[2];
-        view_matrix[2][3] = -cam_world_position[2];
+        view_matrix[2][3] = -cam_world_position[2];*/
 
+        Mat4 translation_matrix = Mat4(IDENTITY_4, 16);
+        translation_matrix[0][3] = -cam_world_position[0];
+        translation_matrix[1][3] = -cam_world_position[1];
+        translation_matrix[2][3] = -cam_world_position[2];
+
+        translation_matrix.print();
+
+
+        right_vector.print();
+        up_vector.print();
+        forward_vector.print();
+
+        Mat4 rotation_matrix = Mat4(IDENTITY_4, 16);
+        rotation_matrix[0][0] = right_vector[0];
+        rotation_matrix[0][1] = right_vector[1];
+        rotation_matrix[0][2] = right_vector[2];
+
+        rotation_matrix[1][0] = up_vector[0];
+        rotation_matrix[1][1] = up_vector[1];
+        rotation_matrix[1][2] = up_vector[2];
+
+        rotation_matrix[2][0] = forward_vector[0];
+        rotation_matrix[2][1] = forward_vector[1];
+        rotation_matrix[2][2] = forward_vector[2];
+        
+        rotation_matrix.print();
+        view_matrix = rotation_matrix * translation_matrix;
         return view_matrix;
     }
     

@@ -16,6 +16,7 @@
 
 #define DIFFUSE_MAP "..\\textures\\Woodenbox.png"
 #define SPECULAR_MAP "..\\textures\\BoxSpecular.png"
+#define SPOT_LIGHT_TEXTURE "..\\textures\\mario_face.jpg"
 
 
 using namespace LinearAlgebra;
@@ -54,9 +55,9 @@ float mesh_rotation_speed = 50.0f;
 int num_meshes = 6;
 
 // Light variables
-int num_dir_lights = 0;
-int num_point_lights = 0;
-int num_spot_lights = 2;
+int num_dir_lights = 1;
+int num_point_lights = 4;
+int num_spot_lights = 1;
 
 std::vector<Vec3> dir_lights_dirs;
 std::vector<EngineObject> point_lights;
@@ -188,7 +189,7 @@ int main() {
 	CubeMesh = CubeRenderer(MeshShader);
 
 	// Attach Texture to Cube Renderer
-	GLuint diffuse_id, specular_id, texture_vbo;
+	GLuint diffuse_id, specular_id, spot_light_texture_id, texture_vbo;
 	float tex_coords[] = {
 		0.0f,  0.0f,
 		1.0f,  0.0f,
@@ -249,8 +250,17 @@ int main() {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		});
 
+	load_texture(SPOT_LIGHT_TEXTURE, &spot_light_texture_id, [] {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		});
+
 	MeshShader.SetInt("material.diffuse", 0);
 	MeshShader.SetInt("material.specular", 1);
+	MeshShader.SetInt("spot_light_texture", 2);
+
 
 	// Setup number of lights per type
 	MeshShader.SetInt("num_dir_lights", num_dir_lights);
@@ -261,7 +271,7 @@ int main() {
 	for (int i = 0; i < num_dir_lights; i++) {
 		std::string dir_light_str = "dir_lights[" + std::to_string(i) + "]";
 		MeshShader.SetVector4((dir_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
-		MeshShader.SetVector4((dir_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
+		MeshShader.SetVector4((dir_light_str + ".diffuse_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
 		MeshShader.SetVector4((dir_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 
 	}
@@ -273,20 +283,20 @@ int main() {
 		MeshShader.SetFloat((point_light_str +".linear").c_str(), 0.09f);
 		MeshShader.SetFloat((point_light_str +".quadratic").c_str(), 0.032f);
 
-		MeshShader.SetVector4((point_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
-		MeshShader.SetVector4((point_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
+		MeshShader.SetVector4((point_light_str + ".diffuse_colour").c_str(), Vec3{ 0.2f, 0.2f, 0.2f });
+		MeshShader.SetVector4((point_light_str + ".ambient_colour").c_str(), Vec3{ 0.2f, 0.2f, 0.2f });
 		MeshShader.SetVector4((point_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 	}
 
 	// - Setup values (Spot Light)
 	for (int i = 0; i < num_spot_lights; i++) {
 		std::string spot_light_str = "spot_lights[" + std::to_string(i) + "]";
-		MeshShader.SetFloat((spot_light_str + ".constant").c_str(), 1.0f);
+		MeshShader.SetFloat((spot_light_str + ".constant").c_str(), 0.5f);
 		MeshShader.SetFloat((spot_light_str + ".linear").c_str(), 0.09f);
 		MeshShader.SetFloat((spot_light_str + ".quadratic").c_str(), 0.032f);
 
-		MeshShader.SetVector4((spot_light_str + ".ambient_colour").c_str(), Vec3{ 0.1f, 0.1f, 0.1f });
-		MeshShader.SetVector4((spot_light_str + ".diffuse_colour").c_str(), Vec3{ 0.8f, 0.8f, 0.8f });
+		MeshShader.SetVector4((spot_light_str + ".ambient_colour").c_str(), Vec3{ 0.5f, 0.5f, 1.0f });
+		MeshShader.SetVector4((spot_light_str + ".diffuse_colour").c_str(), Vec3{ 0.5f, 0.5f, 1.0f });
 		MeshShader.SetVector4((spot_light_str + ".specular_colour").c_str(), Vec3{ 1.0f, 1.0f, 1.0f });
 	}
 
@@ -324,10 +334,10 @@ int main() {
 		MeshShader.SetVector3("camera_pos", Camera.GetCameraPos());
 
 		// - Set Spot Light Data (Spot Lighting) (FOR CAMERA)
-		//MeshShader.SetVector3("spot_lights[0].position", Camera.GetCameraPos());
-		//MeshShader.SetVector3("spot_lights[0].direction", Camera.GetFront());
-		//MeshShader.SetFloat("spot_lights[0].cut_off", cos(20.5f * DEG_TO_RAD));
-		//MeshShader.SetFloat("spot_lights[0].outer_cut_off", cos(26.5f * DEG_TO_RAD));
+		MeshShader.SetVector3("spot_lights[0].position", Camera.GetCameraPos());
+		MeshShader.SetVector3("spot_lights[0].direction", Camera.GetFront());
+		MeshShader.SetFloat("spot_lights[0].cut_off", cos(20.5f * DEG_TO_RAD));
+		MeshShader.SetFloat("spot_lights[0].outer_cut_off", cos(26.5f * DEG_TO_RAD));
 
 		// - Set Spot Light Data (Spot Lighting) (NON-CAMMERA)
 		for (int i = 1; i < num_spot_lights; i++) {
@@ -343,18 +353,19 @@ int main() {
 
 			Mat4 look_matrix = view_matrix(
 				Vec4{0.0f, 0.0f, 0.0f},
-				spot_lights[i - 1].Position(),
+				Vec4(spot_lights[i - 1].Position()),
 				up_vec,
 				forward_vec,
 				right_vec
 			);
 
-			spot_lights[i - 1].SetForward(forward_vec);
-			spot_lights[i - 1].SetRight(right_vec);
-			spot_lights[i - 1].SetUp(up_vec);
 
 			LightShader.SetMatrix4("matrix", look_matrix, GL_TRUE);
 			LightMesh.Draw();
+
+			spot_lights[i - 1].SetForward(forward_vec);
+			spot_lights[i - 1].SetRight(right_vec);
+			spot_lights[i - 1].SetUp(up_vec);
 
 			std::string spot_light_str = "spot_lights[" + std::to_string(i) + "]";
 			MeshShader.SetVector3((spot_light_str + ".position").c_str(), spot_lights[i - 1].Position());
@@ -395,6 +406,9 @@ int main() {
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specular_id);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, spot_light_texture_id);
 
 		Mat4 transform_matrix;
 

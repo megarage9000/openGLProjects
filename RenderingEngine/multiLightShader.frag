@@ -41,7 +41,7 @@ struct SpotLight {
 	float linear;
 	float quadratic;
 };
-vec4 calculate_spot_light(SpotLight light, vec3 vt_normal, vec3 frag_pos, vec3 camera_pos, vec4 diffuse_data, vec4 specular_data);
+vec4 calculate_spot_light(SpotLight light, vec3 vt_normal, vec3 frag_pos, vec3 camera_pos, vec4 ambience_data, vec4 diffuse_data, vec4 specular_data);
 
 // Material
 struct Material {
@@ -64,11 +64,15 @@ uniform int num_dir_lights;
 uniform int num_point_lights;
 uniform int num_spot_lights;
 
+uniform sampler2D spot_light_texture;
+
 out vec4 fragColor;
 
 void main() {
 	vec4 diffuse_data = vec4(texture(material.diffuse, texture_coordinates).rgb, 1.0f);
 	vec4 specular_data = vec4(texture(material.specular, texture_coordinates).rgb, 1.0f);
+
+	vec4 spot_light_texture_data = vec4(texture(spot_light_texture, texture_coordinates).rgb, 1.0f);
 
 	int dir_light_amount = num_dir_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_dir_lights;
 	int point_light_amount = num_point_lights > MAX_NUM_LIGHTS_PER_TYPE ? MAX_NUM_LIGHTS_PER_TYPE : num_point_lights;
@@ -85,7 +89,7 @@ void main() {
 	}
 	// Calculate spot lights
 	for(int i = 0; i < spot_light_amount; i++) {
-		result += calculate_spot_light(spot_lights[i], vt_normal, frag_pos, camera_pos, diffuse_data, specular_data);
+		result += calculate_spot_light(spot_lights[i], vt_normal, frag_pos, camera_pos, diffuse_data, spot_light_texture_data, specular_data);
 	}
 	fragColor = result;
 }
@@ -142,12 +146,12 @@ vec4 calculate_point_light(PointLight light, vec3 vt_normal, vec3 frag_pos, vec3
 }
 
 // Calculating Spot light
-vec4 calculate_spot_light(SpotLight light, vec3 vt_normal, vec3 frag_pos, vec3 camera_pos, vec4 diffuse_data, vec4 specular_data) {
+vec4 calculate_spot_light(SpotLight light, vec3 vt_normal, vec3 frag_pos, vec3 camera_pos, vec4 ambience_data, vec4 diffuse_data, vec4 specular_data) {
 	
 	vec3 light_dir = normalize(light.position - frag_pos);
 	
 	// Ambience 
-	vec4 ambience = light.ambient_colour * diffuse_data;
+	vec4 ambience = light.ambient_colour * ambience_data;
 
 	// Diffuse
 	vec3 normal = normalize(vt_normal);
