@@ -57,7 +57,7 @@ int num_meshes = 6;
 // Light variables
 int num_dir_lights = 1;
 int num_point_lights = 4;
-int num_spot_lights = 1;
+int num_spot_lights = 2;
 
 std::vector<Vec3> dir_lights_dirs;
 std::vector<EngineObject> point_lights;

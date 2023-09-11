@@ -135,34 +135,51 @@ namespace LinearAlgebra {
         view_matrix[2][1] = -forward_vector[1];
         view_matrix[2][2] = -forward_vector[2];
         view_matrix[2][3] = -cam_world_position[2];*/
-
-        Mat4 translation_matrix = Mat4(IDENTITY_4, 16);
-        translation_matrix[0][3] = -cam_world_position[0];
-        translation_matrix[1][3] = -cam_world_position[1];
-        translation_matrix[2][3] = -cam_world_position[2];
-
-        translation_matrix.print();
-
-
-        right_vector.print();
-        up_vector.print();
-        forward_vector.print();
-
-        Mat4 rotation_matrix = Mat4(IDENTITY_4, 16);
-        rotation_matrix[0][0] = right_vector[0];
-        rotation_matrix[0][1] = right_vector[1];
-        rotation_matrix[0][2] = right_vector[2];
-
-        rotation_matrix[1][0] = up_vector[0];
-        rotation_matrix[1][1] = up_vector[1];
-        rotation_matrix[1][2] = up_vector[2];
-
-        rotation_matrix[2][0] = forward_vector[0];
-        rotation_matrix[2][1] = forward_vector[1];
-        rotation_matrix[2][2] = forward_vector[2];
         
-        rotation_matrix.print();
-        view_matrix = rotation_matrix * translation_matrix;
+       
+        //Mat4 translation_matrix = Mat4(IDENTITY_4, 16);
+        //translation_matrix[0][3] = -cam_world_position[0];
+        //translation_matrix[1][3] = -cam_world_position[1];
+        //translation_matrix[2][3] = -cam_world_position[2];
+
+        //translation_matrix.print();
+
+
+        //right_vector.print();
+        //up_vector.print();
+        //forward_vector.print();
+
+        //Mat4 rotation_matrix = Mat4(IDENTITY_4, 16);
+        //rotation_matrix[0][0] = right_vector[0];
+        //rotation_matrix[0][1] = right_vector[1];
+        //rotation_matrix[0][2] = right_vector[2];
+
+        //rotation_matrix[1][0] = up_vector[0];
+        //rotation_matrix[1][1] = up_vector[1];
+        //rotation_matrix[1][2] = up_vector[2];
+
+        //rotation_matrix[2][0] = forward_vector[0];
+        //rotation_matrix[2][1] = forward_vector[1];
+        //rotation_matrix[2][2] = forward_vector[2];
+        //
+        //rotation_matrix.print();
+        //view_matrix = rotation_matrix * translation_matrix;
+
+        view_matrix[0][0] = new_right_vector[0];
+        view_matrix[0][1] = new_right_vector[1];
+        view_matrix[0][2] = new_right_vector[2];
+        view_matrix[0][3] = -cam_world_position[0];
+
+        view_matrix[1][0] = new_up_vector[0];
+        view_matrix[1][1] = new_up_vector[1];
+        view_matrix[1][2] = new_up_vector[2];
+        view_matrix[1][3] = -cam_world_position[1];
+
+        view_matrix[2][0] = -forward_vector[0];
+        view_matrix[2][1] = -forward_vector[1];
+        view_matrix[2][2] = -forward_vector[2];
+        view_matrix[2][3] = -cam_world_position[2];
+
         return view_matrix;
     }
     
