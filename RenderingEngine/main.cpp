@@ -608,13 +608,6 @@ Mat4 set_up_projection_matrix() {
 	float aspect = (float)g_win_width / (float)g_win_height;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 	return perspective;
-/*	glUseProgram(shader_program);
-	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
-	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
-
-	glUseProgram(light_program);
-	int proj_light_mat_loc = glGetUniformLocation(light_program, "projection");
-	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective)*/;
 }
 #pragma endregion Transformations
 
