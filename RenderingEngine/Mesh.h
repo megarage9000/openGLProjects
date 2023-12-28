@@ -34,6 +34,6 @@ public:
 	
 	Mesh(vector<Vertex> _vertices, vector<unsigned int> _indices, vector<Texture> _textures) : 
 		vertices(_vertices), indices(_indices), textures(_textures) {}
-	void Draw(const Shader& shader);
+	void Draw(Shader& shader);
 };
 
