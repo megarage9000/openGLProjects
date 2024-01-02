@@ -6,8 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <stdarg.h>
-#include "stb_image.h"
 #include "EngineObject.h"
+#include "../OpenGLCommon/.h/stb_image.h"
 #include "../OpenGLCommon/.h/LinearAlgebra.h";
 #include "../OpenGLCommon/.h/LinearTransformations.h";
 #include "../OpenGLCommon/.h/Log.h";

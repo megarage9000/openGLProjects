@@ -150,9 +150,9 @@
     <ClInclude Include="..\OpenGLCommon\.h\Log.h" />
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
     <ClInclude Include="..\OpenGLCommon\.h\ShaderLoading.h" />
+    <ClInclude Include="..\OpenGLCommon\.h\stb_image.h" />
     <ClInclude Include="EngineObject.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="directionalLightShader.frag" />
