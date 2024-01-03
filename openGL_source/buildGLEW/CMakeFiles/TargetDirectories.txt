@@ -1,8 +1,0 @@
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/glewinfo.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/glew.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/glew_s.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/uninstall.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/visualinfo.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/INSTALL.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/ALL_BUILD.dir
-C:/Users/gtom_/source/repos/openGLProjects/GL/buildGLEW/CMakeFiles/ZERO_CHECK.dir
