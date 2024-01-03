@@ -6,12 +6,11 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <stdarg.h>
-#include "stb_image.h"
 #include "EngineObject.h"
-#include "../OpenGLCommon/.h/LinearAlgebra.h";
-#include "../OpenGLCommon/.h/LinearTransformations.h";
-#include "../OpenGLCommon/.h/Log.h";
-#include "../OpenGLCommon/.h/ShaderLoading.h"
+#include "GarageMathLibrary.h"
+#include "GarageShaders.h"
+#include "GarageLog.h"
+#include "../OpenGLCommon/.h/stb_image.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
 #define DIFFUSE_MAP "..\\textures\\Woodenbox.png"
@@ -19,7 +18,7 @@
 #define SPOT_LIGHT_TEXTURE "..\\textures\\mario_face.jpg"
 
 
-using namespace LinearAlgebra;
+using namespace GarageLinearAlgebra;
 
 // Move on with this book!
 // https://learnopengl.com/Introduction
@@ -538,7 +537,6 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 	if (!checkLinking(shader_program) || !is_valid(shader_program)) {
 		throw std::runtime_error("Error in linking shaders");
 	}
-
 	return shader_program;
 }
 
@@ -608,13 +606,6 @@ Mat4 set_up_projection_matrix() {
 	float aspect = (float)g_win_width / (float)g_win_height;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 	return perspective;
-/*	glUseProgram(shader_program);
-	int proj_mat_loc = glGetUniformLocation(shader_program, "projection");
-	glUniformMatrix4fv(proj_mat_loc, 1, GL_TRUE, perspective);
-
-	glUseProgram(light_program);
-	int proj_light_mat_loc = glGetUniformLocation(light_program, "projection");
-	glUniformMatrix4fv(proj_light_mat_loc, 1, GL_TRUE, perspective)*/;
 }
 #pragma endregion Transformations
 
@@ -623,7 +614,6 @@ template<typename TextureInitializer>
 void load_texture(const char* texture_file, GLuint* texture_id, TextureInitializer parameter_setup) {
 
 	//Texture setup follows https://learnopengl.com/Getting-started/Textures
-
 	glGenTextures(1, texture_id);
 
 

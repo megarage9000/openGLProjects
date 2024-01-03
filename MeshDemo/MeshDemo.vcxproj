@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{13baf1ae-c41e-47f6-b84a-088497f6013f}</ProjectGuid>
-    <RootNamespace>GlobalIlluminationProject</RootNamespace>
+    <ProjectGuid>{426820ea-ea5c-4aa7-8d76-6677d92d7ced}</ProjectGuid>
+    <RootNamespace>MeshDemo</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>RenderingEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -105,9 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageShaders;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageShaders;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,31 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp" />
-    <ClCompile Include="EngineObject.cpp" />
-    <ClCompile Include="main.cpp">
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
-    <ClInclude Include="..\OpenGLCommon\.h\stb_image.h" />
-    <ClInclude Include="EngineObject.h" />
-    <ClInclude Include="Mesh.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="directionalLightShader.frag" />
-    <None Include="fragmentShader.frag" />
-    <None Include="glew32d.dll" />
-    <None Include="lightFragmentShader.frag" />
-    <None Include="lightVertexShader.vert" />
-    <None Include="multiLightShader.frag" />
-    <None Include="spotLightShader.frag" />
-    <None Include="vertexShader.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="pointLightShader.frag" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">

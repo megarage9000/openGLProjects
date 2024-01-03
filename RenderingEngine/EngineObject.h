@@ -1,12 +1,12 @@
 
 #pragma once
-#include "../OpenGLCommon/.h/LinearTransformations.h"
+#include "GarageMathLibrary.h"
 #include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-using namespace LinearAlgebra;
+using namespace GarageLinearAlgebra;
 
 #pragma region EngineObject
 class EngineObject {
