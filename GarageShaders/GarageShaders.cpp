@@ -1,4 +1,5 @@
-#include "../.h/ShaderLoading.h"
+#include "GarageShaders.h"
+
 char* loadShaderString(const char* shaderFileLocation) {
 
 	// From https://stackoverflow.com/questions/14002954/c-programming-how-to-read-the-whole-file-contents-into-a-buffer, cool ey?

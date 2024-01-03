@@ -4,22 +4,10 @@
     <ClCompile Include="EngineObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\OpenGLCommon\.cpp\LinearAlgebra.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\OpenGLCommon\.cpp\LinearTransformations.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\OpenGLCommon\.cpp\Log.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\OpenGLCommon\.cpp\ShaderLoading.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
@@ -30,19 +18,7 @@
     <ClInclude Include="EngineObject.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\OpenGLCommon\.h\LinearAlgebra.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\OpenGLCommon\.h\LinearTransformations.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\OpenGLCommon\.h\Log.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\OpenGLCommon\.h\ShaderLoading.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">

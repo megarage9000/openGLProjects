@@ -7,11 +7,10 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include "EngineObject.h"
+#include "GarageMathLibrary.h"
+#include "GarageShaders.h"
+#include "GarageLog.h"
 #include "../OpenGLCommon/.h/stb_image.h"
-#include "../OpenGLCommon/.h/LinearAlgebra.h";
-#include "../OpenGLCommon/.h/LinearTransformations.h";
-#include "../OpenGLCommon/.h/Log.h";
-#include "../OpenGLCommon/.h/ShaderLoading.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
 #define DIFFUSE_MAP "..\\textures\\Woodenbox.png"
@@ -19,7 +18,7 @@
 #define SPOT_LIGHT_TEXTURE "..\\textures\\mario_face.jpg"
 
 
-using namespace LinearAlgebra;
+using namespace GarageLinearAlgebra;
 
 // Move on with this book!
 // https://learnopengl.com/Introduction
@@ -616,7 +615,6 @@ template<typename TextureInitializer>
 void load_texture(const char* texture_file, GLuint* texture_id, TextureInitializer parameter_setup) {
 
 	//Texture setup follows https://learnopengl.com/Getting-started/Textures
-
 	glGenTextures(1, texture_id);
 
 

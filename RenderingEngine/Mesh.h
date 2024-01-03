@@ -3,10 +3,10 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "../OpenGLCommon/.h/MeshLoader.h"
-#include "../OpenGLCommon/.h/LinearAlgebra.h"
+#include "GarageMathLibrary.h"
+#include "GarageShaders.h"
 
-using namespace LinearAlgebra;
+using namespace GarageLinearAlgebra;
 using namespace std;
 
 struct Vertex {

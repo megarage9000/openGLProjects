@@ -1,11 +1,15 @@
 #pragma once
 #pragma warning(disable : 4996)
 
+#ifndef GARAGE_SHADERS
+#define GARAGE_SHADERS
+
+
 #include <stdio.h>
 #include <malloc.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Log.h"
+#include "GarageLog.h"
 #include "GarageMathLibrary.h"
 
 using namespace GarageLinearAlgebra;
@@ -42,3 +46,6 @@ public:
 };
 
 #pragma endregion Shader
+
+#endif // !GARAGE_SHADERS
+
