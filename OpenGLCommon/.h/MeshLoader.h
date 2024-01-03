@@ -58,7 +58,6 @@ public:
 
 };
 
-
 #pragma endregion Shader
 
 // TODO: Create Mesh Visual that can load 1 or more Meshes!
@@ -84,7 +83,6 @@ public:
 	CubeRenderer(Shader shader);
 	void Draw();
 };
-
 
 #pragma endregion MeshVisual
 

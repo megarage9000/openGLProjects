@@ -1,7 +1,7 @@
 
-#include "../.h/LinearTransformations.h"
+#include "GarageLinearTransformations.h"
 
-namespace LinearAlgebra {
+namespace GarageLinearAlgebra {
     Mat4 translate(float x, float y, float z) {
         Mat4 transform_matrix = Mat4(IDENTITY_4, 16);
         transform_matrix[0][3] = x;
@@ -136,8 +136,8 @@ namespace LinearAlgebra {
         view_matrix[2][1] = -forward_vector[1];
         view_matrix[2][2] = -forward_vector[2];
         view_matrix[2][3] = -cam_world_position[2];*/
-        
-       
+
+
         //Mat4 translation_matrix = Mat4(IDENTITY_4, 16);
         //translation_matrix[0][3] = -cam_world_position[0];
         //translation_matrix[1][3] = -cam_world_position[1];
@@ -183,7 +183,7 @@ namespace LinearAlgebra {
 
         return view_matrix;
     }
-    
+
     Mat4 projection_matrix(float near, float far, float fov, float aspect) {
         Mat4 projection_matrix = Mat4(IDENTITY_4, 16);
         float range = tan(fov / 2) * near;
@@ -198,10 +198,10 @@ namespace LinearAlgebra {
 
     void Versor::intialize_values(float x, float y, float z, float angle) {
         float radians = angle * DEG_TO_RAD;
-        values[0] = cosf( radians / 2.0f);
-        values[1] = sinf( radians / 2.0f) * x;
-        values[2] = sinf( radians / 2.0f) * y;
-        values[3] = sinf( radians / 2.0f) * z;
+        values[0] = cosf(radians / 2.0f);
+        values[1] = sinf(radians / 2.0f) * x;
+        values[2] = sinf(radians / 2.0f) * y;
+        values[3] = sinf(radians / 2.0f) * z;
     }
 
     Versor::Versor() {
@@ -232,7 +232,7 @@ namespace LinearAlgebra {
 
     Versor Versor::operator * (Versor& r) {
         std::array<float, 4> new_values;
-        
+
         new_values[0] = r[0] * values[0] - r[1] * values[1] - r[2] * values[2] - r[3] * values[3];
         new_values[1] = r[0] * values[1] + r[1] * values[0] - r[2] * values[3] + r[3] * values[2];
         new_values[2] = r[0] * values[2] + r[1] * values[3] + r[2] * values[0] - r[3] * values[1];
@@ -290,7 +290,7 @@ namespace LinearAlgebra {
         std::array<float, 4> new_values;
         new_values[0] = values[0];
         new_values[1] = -values[1];
-        new_values[2] = -values[2];        
+        new_values[2] = -values[2];
         new_values[3] = -values[3];
         return Versor(new_values);
     }

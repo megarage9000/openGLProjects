@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LINEAR_ALGEBRA
-#define LINEAR_ALGEBRA
+#ifndef GARAGE_LINEAR_ALGEBRA
+#define GARAGE_LINEAR_ALGEBRA
 
 #define EPISLON 0.000001
 #include <stdlib.h>
@@ -10,10 +10,11 @@
 #include <array>
 #include <assert.h>
 
-void swap(float &a, float &b);
+void swap(float& a, float& b);
 bool float_equals(float a, float b);
 
-namespace LinearAlgebra {
+namespace GarageLinearAlgebra
+{
 
     // Identity Matrix 4
     static float IDENTITY_4[16] = {
@@ -49,7 +50,7 @@ namespace LinearAlgebra {
 
     // Performs matrix 4 x matrix 4
     // - For matrix 4 x vector 4, set a = matrix, b = vector and pass in is_b_vec to true
-    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]);
+    void matrix4_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]);
 
     // Assumes array lengths are correct
     // Performs matrix 4 x matrix 4 / matrix 4 x vector 4 calculations
@@ -63,12 +64,12 @@ namespace LinearAlgebra {
 
     // Assumes matrix 4 len = 16 and b_vec4, result_arr len = 4, performs
     // a matrix 4(a_mat4) x vector 4(b_vec4) multiplication
-    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[]);  
+    void matrix4_vec4_multi(float a_mat4[], float b_vec4[], float result_arr[]);
 
     // Assumes a, b, and result_arr lens = 16
     // Performs a matrix 4 x matrix 4 calculation
     void matrix4_multi(float a[], float b[], float result_arr[]);
-    
+
     // Calculates inverse of a matrix
     void matrix4_inv(float a[], float result_arr[], int a_len, int result_len);
 
@@ -89,11 +90,11 @@ namespace LinearAlgebra {
 
     // Copies contents from vector 3 to another
     void copy_from_vec3(float src[], float dest[], int src_len, int dest_len);
-    
+
     // Performs matrix 3 x matrix 3
     // - For matrix 3 x vector calculation, set b to a vector 3, and pass true to is_b_vec
-    void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len ,float result_arr[]);
-    
+    void matrix3_multi(float a[], float b[], int a_len, int b_len, int result_len, float result_arr[]);
+
     // Assumes array lengths are correct
     // Performs matrix 3 x matrix 3 / matrix 3 x vector 3 calculation
     // - For matrix 3 x vector calculation, set b to a vector 3, and pass true to is_b_vec
@@ -127,10 +128,10 @@ namespace LinearAlgebra {
 
 
     // --- Vectors --- 
-    
+
     // Multiple row and column vector
     void multiply_vectors(float row_vector[], float col_vector[], float res[], int length, int result_length);
-    
+
     // Add vectors
     void add_vectors(float a[], float b[], float res[], int length);
 
@@ -142,7 +143,7 @@ namespace LinearAlgebra {
 
     // Calculates the vector magnitude
     float vector_magnitude(float a[], int a_length);
-    
+
     // Calculates the dot product between vectors a and b, returns angle in radians
     // - a and b must be both of same length
     float dot_product(float a[], float b[], int a_length, int b_length);
@@ -196,7 +197,7 @@ namespace LinearAlgebra {
         Mat4 operator * (const Mat4&);
         Mat4 operator + (const Mat4&);
         bool operator == (const Mat4&);
-        operator float * const () { return values.data(); }
+        operator float* const () { return values.data(); }
         std::array<float, 16> data() const { return values; };
         void print();
     };
@@ -280,3 +281,4 @@ namespace LinearAlgebra {
 };
 
 #endif 
+
