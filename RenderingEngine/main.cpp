@@ -537,7 +537,6 @@ GLuint create_shader_program(std::map<const char *, GLenum> shader_infos) {
 	if (!checkLinking(shader_program) || !is_valid(shader_program)) {
 		throw std::runtime_error("Error in linking shaders");
 	}
-
 	return shader_program;
 }
 
