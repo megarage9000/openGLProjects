@@ -138,26 +138,22 @@
     <ClCompile Include="main.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
     <ClInclude Include="..\OpenGLCommon\.h\stb_image.h" />
     <ClInclude Include="EngineObject.h" />
-    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="directionalLightShader.frag" />
-    <None Include="fragmentShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\directionalLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\fragmentShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\lightFragmentShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\lightVertexShader.vert" />
+    <None Include="..\OpenGLCommon\Shaders\multiLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\pointLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\spotLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\vertexShader.vert" />
     <None Include="glew32d.dll" />
-    <None Include="lightFragmentShader.frag" />
-    <None Include="lightVertexShader.vert" />
-    <None Include="multiLightShader.frag" />
-    <None Include="spotLightShader.frag" />
-    <None Include="vertexShader.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="pointLightShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">

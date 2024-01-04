@@ -163,7 +163,7 @@ int main() {
 
 	// Shader creation
 	try {
-		MeshShader = Shader("vertexShader.vert", "multiLightShader.frag");
+		MeshShader = Shader("..\\OpenGLCommon\\Shaders\\vertexShader.vert", "..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
 
 	}
 	catch (std::exception e) {
@@ -173,7 +173,7 @@ int main() {
 
 	// Light Shader creation
 	try {
-		LightShader = Shader("lightVertexShader.vert", "lightFragmentShader.frag");
+		LightShader = Shader("..\\OpenGLCommon\\Shaders\\lightVertexShader.vert", "..\\OpenGLCommon\\Shaders\\lightFragmentShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());

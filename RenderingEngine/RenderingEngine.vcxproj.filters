@@ -10,9 +10,6 @@
     <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>ModelLoading\src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineObject.h">
@@ -21,36 +18,20 @@
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>ModelLoading\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\OpenGLCommon\.h\stb_image.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32d.dll" />
-    <None Include="directionalLightShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="fragmentShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="lightFragmentShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="spotLightShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="vertexShader.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="lightVertexShader.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="multiLightShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="..\OpenGLCommon\Shaders\directionalLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\fragmentShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\lightFragmentShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\lightVertexShader.vert" />
+    <None Include="..\OpenGLCommon\Shaders\multiLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\pointLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\spotLightShader.frag" />
+    <None Include="..\OpenGLCommon\Shaders\vertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -59,22 +40,5 @@
     <Filter Include="Sources">
       <UniqueIdentifier>{aeb9e908-cb51-4a56-b0d6-1359ab6c3d4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{63b10090-9e2c-4642-b5ef-d45a9fc2d6ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ModelLoading">
-      <UniqueIdentifier>{6e88c4b2-dccc-41e3-8043-b5f7e7820458}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ModelLoading\include">
-      <UniqueIdentifier>{dce36086-fc46-4166-8dd1-f61fa29761f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ModelLoading\src">
-      <UniqueIdentifier>{d6448fa4-cdd3-49c1-9dc6-ed3f90b87fd8}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="pointLightShader.frag">
-      <Filter>Shaders</Filter>
-    </Text>
   </ItemGroup>
 </Project>

@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">
@@ -142,6 +143,9 @@
     <ProjectReference Include="..\GarageShaders\GarageShaders.vcxproj">
       <Project>{1ec31011-cbc0-45aa-8926-98984e4cd5ea}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
