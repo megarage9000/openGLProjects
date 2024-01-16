@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageShaders;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageEngineObjects;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageShaders;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,8 +132,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GarageEngineObjects\GarageEngineObjects.vcxproj">
+      <Project>{a5eb2910-78c7-4af1-bc32-14cf69824ce8}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">
       <Project>{5ec4bbc2-40e2-40a3-9976-77da650c4695}</Project>
     </ProjectReference>
@@ -146,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

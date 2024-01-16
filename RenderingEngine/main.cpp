@@ -6,10 +6,10 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <stdarg.h>
-#include "EngineObject.h"
 #include "GarageMathLibrary.h"
 #include "GarageShaders.h"
 #include "GarageLog.h"
+#include "GarageEngine.h"
 #include "../OpenGLCommon/.h/stb_image.h"
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
@@ -19,6 +19,7 @@
 
 
 using namespace GarageLinearAlgebra;
+using namespace GarageEngine;
 
 // Move on with this book!
 // https://learnopengl.com/Introduction
