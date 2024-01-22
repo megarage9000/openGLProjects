@@ -149,6 +149,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\OpenGLCommon\.h\stb_image.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
   </ItemGroup>

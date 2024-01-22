@@ -134,7 +134,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp" />
-    <ClCompile Include="EngineObject.cpp" />
     <ClCompile Include="main.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
@@ -142,7 +141,6 @@
   <ItemGroup>
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h" />
     <ClInclude Include="..\OpenGLCommon\.h\stb_image.h" />
-    <ClInclude Include="EngineObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\OpenGLCommon\Shaders\directionalLightShader.frag" />

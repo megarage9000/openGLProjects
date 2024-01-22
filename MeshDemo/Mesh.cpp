@@ -26,8 +26,16 @@ void Mesh::SetupMesh() {
 
 	// Enable texture coordinates
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
 
+	/*
+		Doing the above reads the vertices buffer as following 
+
+		vertices = [Vertex [ position (vec3), normal (vec3), texture (array of 2), ...]
+
+		ARRAY_BUFFER = [ (position.x ,position.y, position.z), (normal.x, normal.y, normal.z), (texture.u, texture.v), ...]
+					 = [ position.x ,position.y, position.z, normal.x, normal.y, normal.z, texture.u, texture.v, ...]
+	*/
 }
 
 void Mesh::Draw(Shader& shader) {
