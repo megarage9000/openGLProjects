@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef MESH
+#define MESH
+
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -42,3 +46,4 @@ public:
 	void Draw(Shader& shader);
 };
 
+#endif

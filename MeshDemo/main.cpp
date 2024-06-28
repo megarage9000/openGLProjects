@@ -4,7 +4,7 @@
 #include "GarageLog.h"
 #include "GarageMathLibrary.h"
 #include "GarageShaders.h"
-#include "Mesh.h"
+#include "Model.h"
 
 // Window Size
 int g_win_width = 1280;
@@ -49,8 +49,14 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-	while (!glfwWindowShouldClose(window)) {
+	// Define Shader here
+	Shader MeshShader = Shader("..\\OpenGLCommon\\Shaders\\vertexShader.vert", "..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
 
+	// Define Model here
+	Model model { "..\\testMeshes\\tank.obj" };
+
+	while (!glfwWindowShouldClose(window)) {
+		model.Draw(MeshShader);
 	}
 }
 
