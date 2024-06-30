@@ -3,11 +3,11 @@
 #ifndef MODEL
 #define MODEL
 
-#include "Mesh.h"
-#include "../OpenGLCommon/.h/stb_image.h"
+#include <stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "Mesh.h"
 
 class Model
 {
@@ -29,5 +29,6 @@ private:
 };
 
 unsigned int TextureFromFile(const char * path, const string &directory, bool gamma=false);
+
 #endif
 

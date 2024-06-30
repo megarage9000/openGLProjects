@@ -1,8 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "GarageLog.h"
-#include "GarageMathLibrary.h"
 #include "GarageShaders.h"
 #include "Model.h"
 
@@ -20,6 +18,9 @@ void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height)
 GLFWwindow* create_window(int version_major, int version_minor);
 
 int main() {
+
+	
+	
 	if (!restart_gl_log()) {
 		return -1;
 	}
