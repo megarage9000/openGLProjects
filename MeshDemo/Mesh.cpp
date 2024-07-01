@@ -1,6 +1,9 @@
 #include "Mesh.h"
 
 void Mesh::SetupMesh() {
+	// Setting up VAO
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 	
 	// Setting up VBO
 	glGenBuffers(1, &VBO);
@@ -12,9 +15,6 @@ void Mesh::SetupMesh() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-	// Setting up VAO
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
 
 	// Enable position
 	glEnableVertexAttribArray(0);
@@ -36,6 +36,8 @@ void Mesh::SetupMesh() {
 		ARRAY_BUFFER = [ (position.x ,position.y, position.z), (normal.x, normal.y, normal.z), (texture.u, texture.v), ...]
 					 = [ position.x ,position.y, position.z, normal.x, normal.y, normal.z, texture.u, texture.v, ...]
 	*/
+
+	glBindVertexArray(0);
 }
 
 void Mesh::Draw(Shader& shader) {
@@ -61,5 +63,11 @@ void Mesh::Draw(Shader& shader) {
 	// Draw Mesh
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	try {
+		glBindVertexArray(0);
+	}
+
+	catch (std::exception& e) {
+		std::cout << "ERROR IN DRAWING: " << e.what() << '\n';
+	}
 }

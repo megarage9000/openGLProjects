@@ -17,9 +17,7 @@ void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height)
 
 GLFWwindow* create_window(int version_major, int version_minor);
 
-int main() {
-
-	
+int main() {	
 	
 	if (!restart_gl_log()) {
 		return -1;
@@ -58,6 +56,7 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		model.Draw(MeshShader);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 }
 
