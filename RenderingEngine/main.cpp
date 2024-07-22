@@ -10,7 +10,7 @@
 #include "GarageShaders.h"
 #include "GarageLog.h"
 #include "GarageEngine.h"
-#include "../OpenGLCommon/.h/stb_image.h"
+#include <stb_image.h>
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
 #define DIFFUSE_MAP "..\\textures\\Woodenbox.png"

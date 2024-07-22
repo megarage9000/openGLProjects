@@ -7,12 +7,15 @@
     <ClCompile Include="..\OpenGLCommon\.cpp\MeshLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\OpenGLCommon\.h\MeshLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\OpenGLCommon\.h\stb_image.h">
+    <ClInclude Include="stb_image.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
