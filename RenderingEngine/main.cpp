@@ -6,11 +6,11 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <stdarg.h>
-#include "EngineObject.h"
 #include "GarageMathLibrary.h"
 #include "GarageShaders.h"
 #include "GarageLog.h"
-#include "../OpenGLCommon/.h/stb_image.h"
+#include "GarageEngine.h"
+#include <stb_image.h>
 #include "../OpenGLCommon/.h/MeshLoader.h"
 
 #define DIFFUSE_MAP "..\\textures\\Woodenbox.png"
@@ -19,6 +19,7 @@
 
 
 using namespace GarageLinearAlgebra;
+using namespace GarageEngine;
 
 // Move on with this book!
 // https://learnopengl.com/Introduction
@@ -163,7 +164,7 @@ int main() {
 
 	// Shader creation
 	try {
-		MeshShader = Shader("vertexShader.vert", "multiLightShader.frag");
+		MeshShader = Shader("..\\OpenGLCommon\\Shaders\\vertexShader.vert", "..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
 
 	}
 	catch (std::exception e) {
@@ -173,7 +174,7 @@ int main() {
 
 	// Light Shader creation
 	try {
-		LightShader = Shader("lightVertexShader.vert", "lightFragmentShader.frag");
+		LightShader = Shader("..\\OpenGLCommon\\Shaders\\lightVertexShader.vert", "..\\OpenGLCommon\\Shaders\\lightFragmentShader.frag");
 	}
 	catch (std::exception e) {
 		printf(e.what());
