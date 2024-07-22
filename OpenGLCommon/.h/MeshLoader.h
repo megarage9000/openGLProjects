@@ -2,7 +2,7 @@
 #ifndef MESH_LOADER
 #define MESH_LOADER
 
-#include <assimp/cimport.h> // C importer
+#include <assimp/cimport.h>
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
 #include <stdlib.h> // memory management

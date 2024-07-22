@@ -51,6 +51,7 @@
     <None Include="multiLightShader.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="assimp-vc143-mt.dll" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">

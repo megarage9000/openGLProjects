@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -136,18 +136,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GarageShaders.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GarageShaders.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">
       <Project>{5ec4bbc2-40e2-40a3-9976-77da650c4695}</Project>
     </ProjectReference>
     <ProjectReference Include="..\GarageMathLibrary\GarageMathLibrary.vcxproj">
       <Project>{fc86f217-516a-4967-8c8f-c38bad6adecf}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GarageShaders.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="GarageShaders.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -105,15 +105,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageShaders;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageLog;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\GarageMathLibrary;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glfw-3.3.2\include;C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageShaders;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\assimp\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\gtom_\source\repos\C++Practice\openGLProjects\openGL_source\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32d.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,6 +147,7 @@
     <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assimp-vc143-mt.dll" />
     <None Include="directionalLightShader.frag" />
     <None Include="fragmentShader.frag" />
     <None Include="glew32d.dll" />
