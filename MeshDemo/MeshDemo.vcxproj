@@ -104,7 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\assimp\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageShaders;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\AdditionalIncludes;C:\Users\John Ordoyo\source\repos\OpenGLWork\assimp\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageShaders;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ShowIncludes>true</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,6 +132,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GarageLog\GarageLog.vcxproj">
@@ -142,6 +146,10 @@
     <ProjectReference Include="..\GarageShaders\GarageShaders.vcxproj">
       <Project>{1ec31011-cbc0-45aa-8926-98984e4cd5ea}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
