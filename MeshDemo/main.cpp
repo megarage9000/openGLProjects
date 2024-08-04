@@ -49,7 +49,9 @@ int main() {
 	glDepthFunc(GL_LESS);
 
 	// Define Shader here
-	Shader MeshShader = Shader("..\\OpenGLCommon\\Shaders\\vertexShader.vert", "..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
+	Shader MeshShader = Shader(
+		"..\\OpenGLCommon\\Shaders\\vertexShader.vert", 
+		"..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
 
 	// Define Model here
 	Model model { "..\\testMeshes\\tank.obj" };
