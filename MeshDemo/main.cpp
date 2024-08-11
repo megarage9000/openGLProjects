@@ -50,15 +50,18 @@ int main() {
 
 	// Define Shader here
 	Shader MeshShader = Shader(
-		"..\\OpenGLCommon\\Shaders\\vertexShader.vert", 
-		"..\\OpenGLCommon\\Shaders\\multiLightShader.frag");
+		"mesh.vert", 
+		"mesh.frag");
 
 	// Define Model here
-	Model model { "..\\testMeshes\\tank.obj" };
+	Model model { "..\\testMeshes\\RobotHead.obj" };
 
 	while (!glfwWindowShouldClose(window)) {
+		MeshShader.UseShader();
 		model.Draw(MeshShader);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glfwSwapBuffers(window);
 	}
 }
 

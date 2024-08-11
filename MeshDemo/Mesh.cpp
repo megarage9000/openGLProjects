@@ -1,6 +1,7 @@
 #include "Mesh.h"
 
 void Mesh::SetupMesh() {
+
 	// Setting up VAO
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -8,12 +9,12 @@ void Mesh::SetupMesh() {
 	// Setting up VBO
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices.data()[0], GL_STATIC_DRAW);
 	
 	// Setting up EBO
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.data()[0], GL_STATIC_DRAW);
 
 
 	// Enable position
@@ -26,7 +27,7 @@ void Mesh::SetupMesh() {
 
 	// Enable texture coordinates
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
 
 	/*
 		Doing the above reads the vertices buffer as following 
@@ -49,11 +50,15 @@ void Mesh::Draw(Shader& shader) {
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		string number;
+
 		string name = textures[i].type;
 		if (name == "texture_diffuse")
 			number = std::to_string(diffuseNr++);
+		
 		else if (name == "texture_specular")
 			number = std::to_string(specularNr++);
+
+		
 
 		// Textures named as 'material.texture_diffuse1' for example
 		shader.SetInt(("material." + name + number).c_str(), i);
@@ -62,12 +67,12 @@ void Mesh::Draw(Shader& shader) {
 
 	// Draw Mesh
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	try {
-		glBindVertexArray(0);
+	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	/*try {
 	}
 
 	catch (std::exception& e) {
 		std::cout << "ERROR IN DRAWING: " << e.what() << '\n';
-	}
+	}*/
 }

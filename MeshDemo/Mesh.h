@@ -18,7 +18,7 @@ struct Vertex {
 	Vec3 normal;
 
 	// TODO: Make a vec2 class
-	float tex_coords[2];
+	float textureCoordinates[2];
 };
 
 struct Texture {
@@ -29,6 +29,7 @@ struct Texture {
 class Mesh
 {
 private:
+
 	// Mesh Data
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;

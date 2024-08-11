@@ -65,12 +65,12 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		if (mesh->mTextureCoords[0]) {
 
 			// TODO: Make a vec2 class
-			vertex.tex_coords[0] = mesh->mTextureCoords[0][i].x;
-			vertex.tex_coords[1] = mesh->mTextureCoords[0][i].y;
+			vertex.textureCoordinates[0] = mesh->mTextureCoords[0][i].x;
+			vertex.textureCoordinates[1] = mesh->mTextureCoords[0][i].y;
 		}
 		else {
-			vertex.tex_coords[0] = 0.0f;
-			vertex.tex_coords[1] = 0.0f;
+			vertex.textureCoordinates[0] = 0.0f;
+			vertex.textureCoordinates[1] = 0.0f;
 		}
 
 		vertices.push_back(vertex);
