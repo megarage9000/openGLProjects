@@ -56,11 +56,14 @@ int main() {
 	// Define Model here
 	Model model { "..\\testMeshes\\RobotHead.obj" };
 
+	// TODO: Add transforms and such:
+
 	while (!glfwWindowShouldClose(window)) {
 		MeshShader.UseShader();
 		model.Draw(MeshShader);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 }
