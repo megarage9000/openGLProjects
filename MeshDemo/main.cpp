@@ -2,20 +2,35 @@
 #include <GLFW/glfw3.h>
 
 #include "GarageShaders.h"
+#include "GarageEngineObject.h"
 #include "Model.h"
 
 // Window Size
-int g_win_width = 1280;
-int g_win_height = 720;
+int WINDOW_WIDTH = 1280;
+int WINDOW_HEIGHT = 720;
 
 // Frame Buffer Size
-int g_fb_width = 1080;
-int g_fb_height = 720;
+int FRAME_BUFFER_WIDTH = 1080;
+int FRAME_BUFFER_HEIGHT = 720;
 
+#pragma region Callbacks
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
 void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height);
+#pragma endregion
 
+#pragma region Camera Object
+GarageEngine::CameraObject cameraObject = GarageEngine::CameraObject{ Vec3 {0.0f, 0.0f, 0.0f}, Versor {0.0f, 0.0f, 0.0f, 0.0f} };
+#pragma endregion
+
+#pragma region Mesh Object
+GarageEngine::EngineObject meshObject = GarageEngine::EngineObject{ Vec3 {0.0f, 0.0f, -5.0f}, Versor {0.0f, 0.0f, 0.0f, 0.0f} };
+#pragma endregion
+
+
+#pragma region Function declarations
 GLFWwindow* create_window(int version_major, int version_minor);
+Mat4 set_up_projection_matrix();
+#pragma endregion
 
 int main() {	
 	
@@ -56,10 +71,19 @@ int main() {
 	// Define Model here
 	Model model { "..\\testMeshes\\RobotHead.obj" };
 
+	// Define projection matrix
+	Mat4 projection = set_up_projection_matrix();
+
 	// TODO: Add transforms and such:
 
 	while (!glfwWindowShouldClose(window)) {
+		
 		MeshShader.UseShader();
+
+		MeshShader.SetMatrix4("transform_matrix", meshObject.GetTransformationMatrix(), GL_TRUE);
+		MeshShader.SetMatrix4("projection", projection, GL_TRUE);
+		MeshShader.SetMatrix4("view", cameraObject.GetViewMatrix(), GL_TRUE);
+
 		model.Draw(MeshShader);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
@@ -79,7 +103,7 @@ GLFWwindow* create_window(int version_major, int version_minor) {
 	// Enable Anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	GLFWwindow* window = glfwCreateWindow(g_win_width, g_win_height, "Global Illumination Project", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Global Illumination Project", NULL, NULL);
 
 	glfwSetWindowSizeCallback(window, glfw_window_resize_callback);
 	glfwSetFramebufferSizeCallback(window, glfw_window_framebuffer_callback);
@@ -88,11 +112,20 @@ GLFWwindow* create_window(int version_major, int version_minor) {
 }
 
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height) {
-	g_win_width = width;
-	g_win_height = height;
+	WINDOW_WIDTH = width;
+	WINDOW_HEIGHT = height;
 }
 
 void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height) {
-	g_fb_width = width;
-	g_fb_height = height;
+	FRAME_BUFFER_WIDTH = width;
+	FRAME_BUFFER_HEIGHT = height;
+}
+
+Mat4 set_up_projection_matrix() {
+	float near = 0.1f;
+	float far = 100.0f;
+	float fov = 67.0f * DEG_TO_RAD;
+	float aspect = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+	Mat4 perspective = projection_matrix(near, far, fov, aspect);
+	return perspective;
 }
