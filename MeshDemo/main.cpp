@@ -4,6 +4,7 @@
 #include "GarageShaders.h"
 #include "GarageEngineObject.h"
 #include "Model.h"
+#include "DebugOutput.h"
 
 // Window Size
 int WINDOW_WIDTH = 1280;
@@ -26,9 +27,9 @@ GarageEngine::CameraObject cameraObject = GarageEngine::CameraObject{ Vec3 {0.0f
 GarageEngine::EngineObject meshObject = GarageEngine::EngineObject{ Vec3 {0.0f, 0.0f, -5.0f}, Versor {0.0f, 0.0f, 0.0f, 0.0f} };
 #pragma endregion
 
-
 #pragma region Function declarations
 GLFWwindow* create_window(int version_major, int version_minor);
+void setup_debug();
 Mat4 set_up_projection_matrix();
 #pragma endregion
 
@@ -55,6 +56,8 @@ int main() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+	setup_debug();
+
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
 	printf("Render %s\n", renderer);
@@ -74,6 +77,7 @@ int main() {
 	// Define projection matrix
 	Mat4 projection = set_up_projection_matrix();
 
+
 	// TODO: Add transforms and such:
 
 	while (!glfwWindowShouldClose(window)) {
@@ -92,6 +96,19 @@ int main() {
 	}
 }
 
+void setup_debug() {
+	
+	// Grabbing GL bits and checking if debugging is enabled
+	int flags;
+	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+		std::cout << "Enabling Debug" << std::endl;
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(glDebugOutput, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	}
+}
 
 GLFWwindow* create_window(int version_major, int version_minor) {
 	// Change opengl version here
@@ -99,6 +116,9 @@ GLFWwindow* create_window(int version_major, int version_minor) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// Debugging output
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 	// Enable Anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 4);
