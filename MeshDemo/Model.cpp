@@ -47,19 +47,17 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		Vertex vertex;
 
 		// Process vertex positions, normals, and texture coordinates
-		Vec3 vec;
 
 		// -- Position
-		vec[0] = mesh->mVertices[i].x;
-		vec[1] = mesh->mVertices[i].y;
-		vec[2] = mesh->mVertices[i].z;
-		vertex.position = vec;
+		vertex.position[0] = mesh->mVertices[i].x;
+		vertex.position[1] = mesh->mVertices[i].y;
+		vertex.position[2] = mesh->mVertices[i].z;
 
 		// -- Normal
-		vec[0] = mesh->mNormals[i].x;
-		vec[1] = mesh->mNormals[i].y;
-		vec[2] = mesh->mNormals[i].z;
-		vertex.normal = vec;
+		vertex.normal[0] = mesh->mNormals[i].x;
+		vertex.normal[1] = mesh->mNormals[i].y;
+		vertex.normal[2] = mesh->mNormals[i].z;
+		
 
 		// Assimp allows up to 8 texture coordinates, we will only use the first set, if there's any
 		if (mesh->mTextureCoords[0]) {

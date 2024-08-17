@@ -13,9 +13,9 @@ struct Material {
 
 uniform Material[32] material;
 
-out vec4 fragColor;
+out vec4 FragColor;
 
 void main() 
 {
-	fragColor = vec4(0.5f, 0.5f, 0.5f, 0.5f);
+	FragColor = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 }

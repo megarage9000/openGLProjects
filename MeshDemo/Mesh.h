@@ -14,11 +14,11 @@ using namespace GarageLinearAlgebra;
 using namespace std;
 
 struct Vertex {
-	Vec3 position;
-	Vec3 normal;
+	std::array<float, 3> position;
+	std::array<float, 3> normal;
 
 	// TODO: Make a vec2 class
-	float textureCoordinates[2];
+	std::array<float, 2> textureCoordinates;
 };
 
 struct Texture {
