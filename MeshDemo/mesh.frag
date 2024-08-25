@@ -1,6 +1,6 @@
 #version 410
 
-in vec4 vertex_colour;
+in vec4 vertex_colour_out;
 in vec3 vertex_normal_out, fragment_position_out;
 in vec2 texture_coordinates_out;
 
@@ -17,5 +17,5 @@ out vec4 FragColor;
 
 void main() 
 {
-	FragColor = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	FragColor = vertex_colour_out;
 }

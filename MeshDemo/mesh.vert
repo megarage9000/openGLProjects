@@ -2,11 +2,12 @@
 
 layout(location = 0)in vec3 vertex_position;
 layout(location = 1)in vec3 vertex_normal;
+layout(location = 3)in vec4 vertex_colour;
 layout(location = 2)in vec2 texture_coordinates;
 
 uniform mat4 transform_matrix, view, projection;
 
-out vec4 vertex_colour;
+out vec4 vertex_colour_out;
 out vec3 vertex_normal_out, fragment_position_out;
 out vec2 texture_coordinates_out;
 
@@ -21,6 +22,8 @@ void main() {
 	vertex_normal_out = mat3(transpose(inverse(transform_matrix))) * vertex_normal;
 	// vertex_normal_out = vertex_normal;
 	texture_coordinates_out = texture_coordinates;
+
+	vertex_colour_out = vertex_colour;
 
 	gl_Position = projection * view * vec4(fragment_position_out, 1.0f);
 	// gl_Position = vec4(fragment_position_out, 1.0);

@@ -57,12 +57,24 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		vertex.normal[0] = mesh->mNormals[i].x;
 		vertex.normal[1] = mesh->mNormals[i].y;
 		vertex.normal[2] = mesh->mNormals[i].z;
-		
+
+		// -- Vertex Colour
+		if (mesh->mColors[1]) {
+			std::cout << "Colours present\n";
+			vertex.colour[0] = mesh->mColors[1][i].r;
+			vertex.colour[1] = mesh->mColors[1][i].g;
+			vertex.colour[2] = mesh->mColors[1][i].b;
+			vertex.colour[3] = mesh->mColors[1][i].a;
+		}
+		else {
+			vertex.colour[0] = 0.5f;
+			vertex.colour[1] = 0.5f;
+			vertex.colour[2] = 0.5f;
+			vertex.colour[3] = 1.0f;
+		}
 
 		// Assimp allows up to 8 texture coordinates, we will only use the first set, if there's any
 		if (mesh->mTextureCoords[0]) {
-
-			// TODO: Make a vec2 class
 			vertex.textureCoordinates[0] = mesh->mTextureCoords[0][i].x;
 			vertex.textureCoordinates[1] = mesh->mTextureCoords[0][i].y;
 		}

@@ -16,10 +16,10 @@ using namespace std;
 struct Vertex {
 	std::array<float, 3> position;
 	std::array<float, 3> normal;
-
+	std::array<float, 4> colour;
 	// TODO: Make a vec2 class
 	std::array<float, 2> textureCoordinates;
-};
+};     
 
 struct Texture {
 	unsigned int id;

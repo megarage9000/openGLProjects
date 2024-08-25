@@ -24,7 +24,7 @@ GarageEngine::CameraObject cameraObject = GarageEngine::CameraObject{ Vec3 {0.0f
 #pragma endregion
 
 #pragma region Mesh Object
-GarageEngine::EngineObject meshObject = GarageEngine::EngineObject{ Vec3 {0.0f, 0.0f, -1.0f}, Versor {0.0f, 0.0f, 0.0f, 0.0f} };
+GarageEngine::EngineObject meshObject = GarageEngine::EngineObject{ Vec3 {0.0f, 0.0f, -5.0f}, Versor {0.0f, 0.0f, 0.0f, 0.0f} };
 #pragma endregion
 
 #pragma region Function declarations
@@ -77,12 +77,11 @@ int main() {
 
 	// TODO: Add transforms and such:
 
+
 	while (!glfwWindowShouldClose(window)) {
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
-		MeshShader.UseShader();
 
 		MeshShader.SetMatrix4("transform_matrix", meshObject.GetTransformationMatrix(), GL_TRUE);
 		MeshShader.SetMatrix4("projection", projection, GL_TRUE);
