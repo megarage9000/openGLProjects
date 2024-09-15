@@ -25,12 +25,12 @@ using namespace GarageEngine;
 // https://learnopengl.com/Introduction
 
 // Window Size
-int g_win_width = 1280;
-int g_win_height = 720;
+int WINDOW_WIDTH = 1280;
+int WINDOW_HEIGHT = 720;
 
 // Frame Buffer Size
-int g_fb_width = 1080;
-int g_fb_height = 720;
+int FRAME_BUFFER_WIDTH = 1080;
+int FRAME_BUFFER_HEIGHT = 720;
 
 // Global Variables
 CameraObject Camera;
@@ -43,8 +43,8 @@ CubeRenderer CubeMesh;
 CubeRenderer LightMesh;
 Vec4 LightColour{ 1.0f, 1.0f, 1.0f };
 
-float last_mouse_x = g_win_width / 2.0f;
-float last_mouse_y = g_win_height / 2.0f;
+float last_mouse_x = WINDOW_WIDTH / 2.0f;
+float last_mouse_y = WINDOW_HEIGHT / 2.0f;
 
 float elapsed_seconds = 0.0f;
 float camera_speed = 10.0f;
@@ -307,7 +307,7 @@ int main() {
 
 		// Clear drawing surface color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, g_fb_width, g_fb_height);
+		glViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
@@ -448,13 +448,13 @@ void glfw_error_callback(int error, const char* description) {
 }
 
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height) {
-	g_win_width = width;
-	g_win_height = height;
+	WINDOW_WIDTH = width;
+	WINDOW_HEIGHT = height;
 }
 
 void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height) {
-	g_fb_width = width;
-	g_fb_height = height;
+	FRAME_BUFFER_WIDTH = width;
+	FRAME_BUFFER_HEIGHT = height;
 }
 
 bool can_rotate = false;
@@ -508,7 +508,7 @@ GLFWwindow* create_window(int version_major, int version_minor) {
 	// Enable Anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	GLFWwindow* window = glfwCreateWindow(g_win_width, g_win_height, "Global Illumination Project", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Global Illumination Project", NULL, NULL);
 
 	glfwSetWindowSizeCallback(window, glfw_window_resize_callback);
 	glfwSetFramebufferSizeCallback(window, glfw_window_framebuffer_callback);
@@ -604,7 +604,7 @@ Mat4 set_up_projection_matrix() {
 	float near = 0.1f;
 	float far = 100.0f;
 	float fov = 67.0f * DEG_TO_RAD;
-	float aspect = (float)g_win_width / (float)g_win_height;
+	float aspect = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 	return perspective;
 }

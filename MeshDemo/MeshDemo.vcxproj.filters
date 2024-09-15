@@ -30,6 +30,12 @@
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DebugOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -38,5 +44,43 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DebugOutput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\OpenGLCommon\Shaders\directionalLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\fragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\lightFragmentShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\lightVertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\multiLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\pointLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\spotLightShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\OpenGLCommon\Shaders\vertexShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="mesh.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="mesh.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

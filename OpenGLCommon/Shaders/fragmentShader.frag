@@ -8,7 +8,6 @@ in vec2 texture_coordinates;
 struct Material {
 	sampler2D diffuse;
 	sampler2D specular;
-	
 	float shininess;
 };
 

@@ -14,6 +14,10 @@ int WINDOW_HEIGHT = 720;
 int FRAME_BUFFER_WIDTH = 1080;
 int FRAME_BUFFER_HEIGHT = 720;
 
+// Time
+double previous_time = 0.0f;
+double elapsed_seconds = 0.0f;
+
 #pragma region Callbacks
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
 void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height);
@@ -31,6 +35,7 @@ GarageEngine::EngineObject meshObject = GarageEngine::EngineObject{ Vec3 {0.0f, 
 GLFWwindow* create_window(int version_major, int version_minor);
 void setup_debug();
 Mat4 set_up_projection_matrix();
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 #pragma endregion
 
 int main() {	
@@ -74,14 +79,23 @@ int main() {
 	// Define projection matrix
 	Mat4 projection = set_up_projection_matrix();
 
+	// Input handle
+	glfwSetKeyCallback(window, input_callback);
 
 	// TODO: Add transforms and such:
 
+
+	previous_time = glfwGetTime();
 
 	while (!glfwWindowShouldClose(window)) {
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		double current_time = glfwGetTime();
+		elapsed_seconds = current_time - previous_time;
+		previous_time = current_time;
+
 
 		MeshShader.SetMatrix4("transform_matrix", meshObject.GetTransformationMatrix(), GL_TRUE);
 		MeshShader.SetMatrix4("projection", projection, GL_TRUE);
@@ -146,4 +160,43 @@ Mat4 set_up_projection_matrix() {
 	float aspect = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
 	Mat4 perspective = projection_matrix(near, far, fov, aspect);
 	return perspective;
+}
+
+void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+	if (action == GLFW_PRESS) {
+
+		Vec3 translationChanges{ 0.0f, 0.0f, 0.0f };
+
+		switch (key) {
+			// Movement
+			case GLFW_KEY_W:
+				translationChanges[2] += -1.0f;
+				break;
+			case GLFW_KEY_A:
+				translationChanges[0] += -1.0f;
+				break;
+			case GLFW_KEY_S:
+				translationChanges[2] += 1.0f;
+				break;
+			case GLFW_KEY_D:
+				translationChanges[0] += 1.0f;
+				break;
+
+			// Look
+			case GLFW_KEY_UP:
+				break;
+			case GLFW_KEY_RIGHT:
+				break;
+			case GLFW_KEY_DOWN:
+				break;
+			case GLFW_KEY_LEFT:
+				break;
+			default:
+				break;
+		}
+		
+		cameraObject.ApplyTranslation(translationChanges * 5.0f * elapsed_seconds);
+	}
+
 }

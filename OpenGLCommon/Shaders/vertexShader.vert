@@ -21,6 +21,7 @@ void main() {
 	vt_normal = mat3(transpose(inverse(matrix))) * vertex_normal;
 	texture_coordinates = texture_coords;
 	vt_colour = vertex_colour;
+
 	// gl_Position = projection * vec4(position_eye, 1.0); // Here we set the final clip-space position for each vertex position
 	gl_Position = projection * view * vec4(frag_pos, 1.0);
 }

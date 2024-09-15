@@ -59,8 +59,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		vertex.normal[2] = mesh->mNormals[i].z;
 
 		// -- Vertex Colour
-		if (mesh->mColors[1]) {
-			std::cout << "Colours present\n";
+		if (mesh->mColors[1]) {              
 			vertex.colour[0] = mesh->mColors[1][i].r;
 			vertex.colour[1] = mesh->mColors[1][i].g;
 			vertex.colour[2] = mesh->mColors[1][i].b;

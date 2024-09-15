@@ -152,6 +152,9 @@ void Shader::printAll()
 	glGetProgramiv(shader_program, GL_ATTACHED_SHADERS, &params);
 	printf("GL_ATTACHED_SHADERS = %i\n", params);
 
+	// Print active uniforms present in program
+	glGetProgramiv(shader_program, GL_ACTIVE_UNIFORMS, &params);
+	printf("GL_ACTIVE_UNIFORMS = %i\n", params);
 
 	// Print attribute information
 	glGetProgramiv(shader_program, GL_ACTIVE_ATTRIBUTES, &params);

@@ -42,7 +42,6 @@ namespace GarageEngine {
 		Vec3 GetForward();
 		Vec3 GetUp();
 		Vec3 GetRight();
-
 	};
 #pragma endregion EngineObject
 
