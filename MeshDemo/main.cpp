@@ -18,6 +18,10 @@ int FRAME_BUFFER_HEIGHT = 720;
 double previous_time = 0.0f;
 double elapsed_seconds = 0.0f;
 
+// Movement parameters
+float camera_rotation_sensitivity = 10.0f;
+float camera_movement_speed = 10.0f;
+
 #pragma region Callbacks
 void glfw_window_resize_callback(GLFWwindow* window, int width, int height);
 void glfw_window_framebuffer_callback(GLFWwindow* window, int width, int height);
@@ -36,6 +40,7 @@ GLFWwindow* create_window(int version_major, int version_minor);
 void setup_debug();
 Mat4 set_up_projection_matrix();
 void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void input_continuous_callback(GLFWwindow* window);
 #pragma endregion
 
 int main() {	
@@ -91,6 +96,8 @@ int main() {
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		input_continuous_callback(window);
 
 		double current_time = glfwGetTime();
 		elapsed_seconds = current_time - previous_time;
@@ -164,24 +171,11 @@ Mat4 set_up_projection_matrix() {
 
 void input_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-	if (action == GLFW_PRESS) {
 
-		Vec3 translationChanges{ 0.0f, 0.0f, 0.0f };
+
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 
 		switch (key) {
-			// Movement
-			case GLFW_KEY_W:
-				translationChanges[2] += -1.0f;
-				break;
-			case GLFW_KEY_A:
-				translationChanges[0] += -1.0f;
-				break;
-			case GLFW_KEY_S:
-				translationChanges[2] += 1.0f;
-				break;
-			case GLFW_KEY_D:
-				translationChanges[0] += 1.0f;
-				break;
 
 			// Look
 			case GLFW_KEY_UP:
@@ -195,8 +189,43 @@ void input_callback(GLFWwindow* window, int key, int scancode, int action, int m
 			default:
 				break;
 		}
-		
-		cameraObject.ApplyTranslation(translationChanges * 5.0f * elapsed_seconds);
 	}
+}
 
+void input_continuous_callback(GLFWwindow* window)
+{
+	Vec3 translationChanges{ 0.0f, 0.0f, 0.0f };
+	float pitch = 0.0f;
+	float yaw = 0.0f;
+
+	// Movement
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		translationChanges[2] += 1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		translationChanges[2] += -1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		translationChanges[0] += 1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		translationChanges[0] += -1.0f;
+	}
+	
+	// Rotation
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		pitch += camera_rotation_sensitivity * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		pitch -= camera_rotation_sensitivity * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		yaw += camera_rotation_sensitivity * elapsed_seconds;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		yaw -= camera_rotation_sensitivity * elapsed_seconds;
+	}
+	
+	cameraObject.ApplyTranslation(translationChanges * 5.0f * elapsed_seconds);
+	cameraObject.RealignGaze(yaw, pitch);
 }
