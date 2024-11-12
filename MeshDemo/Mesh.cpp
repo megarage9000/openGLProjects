@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#include <algorithm>
+#include <iterator>
 
 void Mesh::SetupMesh() {
 
@@ -50,6 +52,15 @@ void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 
+	std::vector<int> diffuseNrs;
+	std::fill_n(std::back_inserter(diffuseNrs), 32, -1);
+	std::vector<int> specularNrs;
+	std::fill_n(std::back_inserter(specularNrs), 32, -1);
+	std::vector<unsigned int> diffuseSet;
+	std::fill_n(std::back_inserter(diffuseSet), 32, 0);
+	std::vector<unsigned int> specularSet;
+	std::fill_n(std::back_inserter(specularSet), 32, 0);
+
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 
@@ -57,17 +68,28 @@ void Mesh::Draw(Shader& shader) {
 
 		string name = textures[i].type;
 		if (name == "texture_diffuse") {
-			number = std::to_string(diffuseNr++);
+			// number = std::to_string(diffuseNr++);
+			diffuseNrs[diffuseNr - 1] = i;
+			diffuseSet[diffuseNr - 1] = 1;
+			diffuseNr++;
 		}
 		
 		else if (name == "texture_specular") {
-			number = std::to_string(specularNr++);
+			// number = std::to_string(specularNr++);
+			specularNrs[specularNr - 1] = i;
+			specularSet[diffuseNr - 1] = 1;
+			specularNr++;
 		}
 
 		// Textures named as 'material.texture_diffuse1' for example
-		shader.SetInt(("material." + name + number).c_str(), i);
+		//shader.SetInt(("material." + name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
+
+	shader.SetIntArray("specular_samplers", specularNrs.data(), 6);
+	shader.SetIntArray("diffuse_samplers", diffuseNrs.data(), 6);
+	shader.SetUIntArray("specular_set", specularSet.data(), 6);
+	shader.SetUIntArray("diffuse_set", diffuseSet.data(), 6);
 
 	// Draw Mesh
 	glBindVertexArray(VAO);

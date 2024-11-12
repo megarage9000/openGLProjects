@@ -12,7 +12,8 @@ void Model::LoadModel(string path) {
 	Assimp::Importer importer;
 
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
+	// Flip the textures
+	stbi_set_flip_vertically_on_load(true);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR\n";
 		return;
@@ -126,20 +127,22 @@ vector<Texture> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType 
 		*/
 		bool skip = false;
 		for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-
 			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
+				std::cout << "Skipping texture: " << str.C_Str() << std::endl;
 				textures.push_back(textures_loaded[j]);
 				skip = true;
 				break;
 			}
 		}
-		
-		Texture texture;
-		texture.id = TextureFromFile(str.C_Str(), directory);
-		texture.type = typeName;
-		texture.path = str.C_Str();
-		textures.push_back(texture);
-		textures_loaded.push_back(texture);
+		if (!skip) {
+			std::cout << "Loading texture: " << str.C_Str() << std::endl;
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), directory);
+			texture.type = typeName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+			textures_loaded.push_back(texture);
+		}
 	}
 
 	return textures;

@@ -227,5 +227,16 @@ void Shader::SetInt(const char* id, int value, GLsizei count) {
 	glUniform1i(uniform, value);
 }
 
+void Shader::SetIntArray(const char* id, const int* values, GLsizei count) {
+	const GLuint uniform = GetShaderUniform(id);
+	glUniform1iv(uniform, count, values);
+}
+
+void Shader::SetUIntArray(const char* id, const unsigned int* values, GLsizei count){
+	const GLuint uniform = GetShaderUniform(id);
+	glUniform1uiv(uniform, count, values);
+}
+
+
 
 #pragma endregion Shader Methods
