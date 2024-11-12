@@ -18,8 +18,8 @@ void Model::LoadModel(string path) {
 		return;
 	}
 
-	directory = path.substr(0, path.find_last_of('/'));
-
+	directory = path.substr(0, path.find_last_of('\\'));
+	std::cout << "directory: " << directory << std::endl;
 	ProcessNode(scene->mRootNode, scene);
 }
 
@@ -84,7 +84,6 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 
 		vertices.push_back(vertex);
 	}
-
 	// Process Indices
 	// - Each face contains 
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
@@ -93,8 +92,6 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-
-
 
 	// Process Material
 	if (mesh->mMaterialIndex >= 0) {
@@ -105,7 +102,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		// Speculare Maps
+		// Specular Maps
 		vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
@@ -151,7 +148,7 @@ vector<Texture> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma) {
 
 	string filename = string(path);
-	filename = directory + '/' + filename;
+	filename = directory + '\\' + filename;
 
 	unsigned int textureID;
 

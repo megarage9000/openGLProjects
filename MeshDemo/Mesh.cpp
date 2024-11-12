@@ -56,13 +56,13 @@ void Mesh::Draw(Shader& shader) {
 		string number;
 
 		string name = textures[i].type;
-		if (name == "texture_diffuse")
+		if (name == "texture_diffuse") {
 			number = std::to_string(diffuseNr++);
+		}
 		
-		else if (name == "texture_specular")
+		else if (name == "texture_specular") {
 			number = std::to_string(specularNr++);
-
-		
+		}
 
 		// Textures named as 'material.texture_diffuse1' for example
 		shader.SetInt(("material." + name + number).c_str(), i);
@@ -73,10 +73,4 @@ void Mesh::Draw(Shader& shader) {
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	/*try {
-	}
-
-	catch (std::exception& e) {
-		std::cout << "ERROR IN DRAWING: " << e.what() << '\n';
-	}*/
 }

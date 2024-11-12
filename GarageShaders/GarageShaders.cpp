@@ -129,9 +129,6 @@ GLuint Shader::GetShaderUniform(const GLchar* id) {
 	case GL_INVALID_OPERATION:
 		error = "Unable to find uniform value for id " + std::string(id);
 		throw std::runtime_error(error);
-	case -1:
-		error = "The given uniform " + std::string(id) + " is not active or is not found, check and make sure it is being used in the shader";
-		throw std::runtime_error(error);
 	default:
 		return uniform_id;
 	}
