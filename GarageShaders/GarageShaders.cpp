@@ -237,6 +237,4 @@ void Shader::SetUIntArray(const char* id, const unsigned int* values, GLsizei co
 	glUniform1uiv(uniform, count, values);
 }
 
-
-
 #pragma endregion Shader Methods

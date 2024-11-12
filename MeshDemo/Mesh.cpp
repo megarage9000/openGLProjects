@@ -52,10 +52,6 @@ void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 
-	std::vector<int> diffuseNrs;
-	std::fill_n(std::back_inserter(diffuseNrs), 32, -1);
-	std::vector<int> specularNrs;
-	std::fill_n(std::back_inserter(specularNrs), 32, -1);
 	std::vector<unsigned int> diffuseSet;
 	std::fill_n(std::back_inserter(diffuseSet), 32, 0);
 	std::vector<unsigned int> specularSet;
@@ -68,16 +64,16 @@ void Mesh::Draw(Shader& shader) {
 
 		string name = textures[i].type;
 		if (name == "texture_diffuse") {
-			// number = std::to_string(diffuseNr++);
-			diffuseNrs[diffuseNr - 1] = i;
+			number = std::to_string(diffuseNr - 1);
 			diffuseSet[diffuseNr - 1] = 1;
+			shader.SetInt(std::string("diffuse_samplers[" + number + "]").c_str(), i);
 			diffuseNr++;
 		}
 		
 		else if (name == "texture_specular") {
-			// number = std::to_string(specularNr++);
-			specularNrs[specularNr - 1] = i;
+			number = std::to_string(specularNr - 1);
 			specularSet[diffuseNr - 1] = 1;
+			shader.SetInt(std::string("specular_samplers[" + number + "]").c_str(), i);
 			specularNr++;
 		}
 
@@ -86,10 +82,9 @@ void Mesh::Draw(Shader& shader) {
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
-	shader.SetIntArray("specular_samplers", specularNrs.data(), 6);
-	shader.SetIntArray("diffuse_samplers", diffuseNrs.data(), 6);
-	shader.SetUIntArray("specular_set", specularSet.data(), 6);
-	shader.SetUIntArray("diffuse_set", diffuseSet.data(), 6);
+	shader.UseShader();
+	shader.SetUIntArray("specular_set", specularSet.data(), 32);
+	shader.SetUIntArray("diffuse_set", diffuseSet.data(), 32);
 
 	// Draw Mesh
 	glBindVertexArray(VAO);
