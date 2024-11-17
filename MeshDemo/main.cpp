@@ -92,13 +92,13 @@ int main() {
 
 	previous_time = glfwGetTime();
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 	while (!glfwWindowShouldClose(window)) {
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		input_continuous_callback(window);
 
