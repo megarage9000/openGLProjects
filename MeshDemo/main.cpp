@@ -19,7 +19,7 @@ double previous_time = 0.0f;
 double elapsed_seconds = 0.0f;
 
 // Movement parameters
-float camera_rotation_sensitivity = 10.0f;
+float camera_rotation_sensitivity = 40.0f;
 float camera_movement_speed = 10.0f;
 
 #pragma region Callbacks
@@ -79,7 +79,7 @@ int main() {
 		"mesh.frag");
 
 	// Define Model here
-	Model model { "..\\testMeshes\\RobotHead.obj" };
+	Model model { "..\\testMeshes\\backpack\\backpack.obj" };
 
 	// Define projection matrix
 	Mat4 projection = set_up_projection_matrix();
@@ -92,10 +92,13 @@ int main() {
 
 	previous_time = glfwGetTime();
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 	while (!glfwWindowShouldClose(window)) {
-		
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		input_continuous_callback(window);
 

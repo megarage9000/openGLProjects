@@ -12,14 +12,15 @@ void Model::LoadModel(string path) {
 	Assimp::Importer importer;
 
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
+	// Flip the textures
+	stbi_set_flip_vertically_on_load(true);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "ERROR\n";
 		return;
 	}
 
-	directory = path.substr(0, path.find_last_of('/'));
-
+	directory = path.substr(0, path.find_last_of('\\'));
+	std::cout << "directory: " << directory << std::endl;
 	ProcessNode(scene->mRootNode, scene);
 }
 
@@ -76,15 +77,16 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		if (mesh->mTextureCoords[0]) {
 			vertex.textureCoordinates[0] = mesh->mTextureCoords[0][i].x;
 			vertex.textureCoordinates[1] = mesh->mTextureCoords[0][i].y;
+			// std::cout << "texture coords\n" << vertex.textureCoordinates[0] << ", " << vertex.textureCoordinates[1] << '\n';
 		}
 		else {
+			// std::cout << "no texture coords\n";
 			vertex.textureCoordinates[0] = 0.0f;
 			vertex.textureCoordinates[1] = 0.0f;
 		}
 
 		vertices.push_back(vertex);
 	}
-
 	// Process Indices
 	// - Each face contains 
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
@@ -93,8 +95,6 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-
-
 
 	// Process Material
 	if (mesh->mMaterialIndex >= 0) {
@@ -105,7 +105,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		// Speculare Maps
+		// Specular Maps
 		vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
@@ -129,20 +129,22 @@ vector<Texture> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType 
 		*/
 		bool skip = false;
 		for (unsigned int j = 0; j < textures_loaded.size(); j++) {
-
 			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
+				std::cout << "Skipping texture: " << str.C_Str() << std::endl;
 				textures.push_back(textures_loaded[j]);
 				skip = true;
 				break;
 			}
 		}
-		
-		Texture texture;
-		texture.id = TextureFromFile(str.C_Str(), directory);
-		texture.type = typeName;
-		texture.path = str.C_Str();
-		textures.push_back(texture);
-		textures_loaded.push_back(texture);
+		if (!skip) {
+			std::cout << "Loading texture: " << str.C_Str() << std::endl;
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), directory);
+			texture.type = typeName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+			textures_loaded.push_back(texture);
+		}
 	}
 
 	return textures;
@@ -151,7 +153,7 @@ vector<Texture> Model::LoadMaterialTextures(aiMaterial* material, aiTextureType 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma) {
 
 	string filename = string(path);
-	filename = directory + '/' + filename;
+	filename = directory + '\\' + filename;
 
 	unsigned int textureID;
 

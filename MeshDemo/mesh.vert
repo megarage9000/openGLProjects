@@ -2,8 +2,8 @@
 
 layout(location = 0)in vec3 vertex_position;
 layout(location = 1)in vec3 vertex_normal;
-layout(location = 3)in vec4 vertex_colour;
-layout(location = 2)in vec2 texture_coordinates;
+layout(location = 2)in vec4 vertex_colour;
+layout(location = 3)in vec2 texture_coordinates;
 
 uniform mat4 transform_matrix, view, projection;
 

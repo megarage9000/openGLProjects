@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#include <algorithm>
+#include <iterator>
 
 void Mesh::SetupMesh() {
 
@@ -33,15 +35,6 @@ void Mesh::SetupMesh() {
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
 	glEnableVertexAttribArray(3);
 
-	/*
-		Doing the above reads the vertices buffer as following 
-
-		vertices = [Vertex [ position (vec3), normal (vec3), texture (array of 2), ...]
-
-		ARRAY_BUFFER = [ (position.x ,position.y, position.z), (normal.x, normal.y, normal.z), (texture.u, texture.v), ...]
-					 = [ position.x ,position.y, position.z, normal.x, normal.y, normal.z, texture.u, texture.v, ...]
-	*/
-
 	glBindVertexArray(0);
 }
 
@@ -50,33 +43,42 @@ void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 
+	std::vector<unsigned int> diffuseSet;
+	std::fill_n(std::back_inserter(diffuseSet), 32, 0);
+	std::vector<unsigned int> specularSet;
+	std::fill_n(std::back_inserter(specularSet), 32, 0);
+
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		string number;
 
 		string name = textures[i].type;
-		if (name == "texture_diffuse")
-			number = std::to_string(diffuseNr++);
+		if (name == "texture_diffuse") {
+			number = std::to_string(diffuseNr - 1);
+			diffuseSet[diffuseNr - 1] = 1;
+			shader.SetInt(std::string("diffuse_samplers[" + number + "]").c_str(), i);
+			diffuseNr++;
+		}
 		
-		else if (name == "texture_specular")
-			number = std::to_string(specularNr++);
-
-		
+		else if (name == "texture_specular") {
+			number = std::to_string(specularNr - 1);
+			specularSet[diffuseNr - 1] = 1;
+			shader.SetInt(std::string("specular_samplers[" + number + "]").c_str(), i);
+			specularNr++;
+		}
 
 		// Textures named as 'material.texture_diffuse1' for example
-		shader.SetInt(("material." + name + number).c_str(), i);
+		// shader.SetInt(("material." + name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
+
+	shader.UseShader();
+	shader.SetUIntArray("specular_set", specularSet.data(), 32);
+	shader.SetUIntArray("diffuse_set", diffuseSet.data(), 32);
 
 	// Draw Mesh
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	/*try {
-	}
-
-	catch (std::exception& e) {
-		std::cout << "ERROR IN DRAWING: " << e.what() << '\n';
-	}*/
 }

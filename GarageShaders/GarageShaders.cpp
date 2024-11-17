@@ -129,9 +129,6 @@ GLuint Shader::GetShaderUniform(const GLchar* id) {
 	case GL_INVALID_OPERATION:
 		error = "Unable to find uniform value for id " + std::string(id);
 		throw std::runtime_error(error);
-	case -1:
-		error = "The given uniform " + std::string(id) + " is not active or is not found, check and make sure it is being used in the shader";
-		throw std::runtime_error(error);
 	default:
 		return uniform_id;
 	}
@@ -230,5 +227,14 @@ void Shader::SetInt(const char* id, int value, GLsizei count) {
 	glUniform1i(uniform, value);
 }
 
+void Shader::SetIntArray(const char* id, const int* values, GLsizei count) {
+	const GLuint uniform = GetShaderUniform(id);
+	glUniform1iv(uniform, count, values);
+}
+
+void Shader::SetUIntArray(const char* id, const unsigned int* values, GLsizei count){
+	const GLuint uniform = GetShaderUniform(id);
+	glUniform1uiv(uniform, count, values);
+}
 
 #pragma endregion Shader Methods

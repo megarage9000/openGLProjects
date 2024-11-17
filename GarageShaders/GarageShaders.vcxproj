@@ -73,6 +73,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\Libs;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>..\GarageRuleSet.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
