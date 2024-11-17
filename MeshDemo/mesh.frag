@@ -26,6 +26,6 @@ void main()
 			diffuse = diffuse * vec3(texture(diffuse_samplers[i], texture_coordinates_out));
 		}
 	}
-	FragColor = vec4(diffuse + specular, 1.0f);
 
+	FragColor = vec4(diffuse + specular, 1.0f);
 }

@@ -35,15 +35,6 @@ void Mesh::SetupMesh() {
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoordinates));
 	glEnableVertexAttribArray(3);
 
-	/*
-		Doing the above reads the vertices buffer as following 
-
-		vertices = [Vertex [ position (vec3), normal (vec3), texture (array of 2), ...]
-
-		ARRAY_BUFFER = [ (position.x ,position.y, position.z), (normal.x, normal.y, normal.z), (texture.u, texture.v), ...]
-					 = [ position.x ,position.y, position.z, normal.x, normal.y, normal.z, texture.u, texture.v, ...]
-	*/
-
 	glBindVertexArray(0);
 }
 
@@ -78,7 +69,7 @@ void Mesh::Draw(Shader& shader) {
 		}
 
 		// Textures named as 'material.texture_diffuse1' for example
-		//shader.SetInt(("material." + name + number).c_str(), i);
+		// shader.SetInt(("material." + name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 

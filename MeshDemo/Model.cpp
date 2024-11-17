@@ -77,8 +77,10 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 		if (mesh->mTextureCoords[0]) {
 			vertex.textureCoordinates[0] = mesh->mTextureCoords[0][i].x;
 			vertex.textureCoordinates[1] = mesh->mTextureCoords[0][i].y;
+			// std::cout << "texture coords\n" << vertex.textureCoordinates[0] << ", " << vertex.textureCoordinates[1] << '\n';
 		}
 		else {
+			// std::cout << "no texture coords\n";
 			vertex.textureCoordinates[0] = 0.0f;
 			vertex.textureCoordinates[1] = 0.0f;
 		}
