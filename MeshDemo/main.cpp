@@ -19,7 +19,7 @@ double previous_time = 0.0f;
 double elapsed_seconds = 0.0f;
 
 // Movement parameters
-float camera_rotation_sensitivity = 10.0f;
+float camera_rotation_sensitivity = 40.0f;
 float camera_movement_speed = 10.0f;
 
 #pragma region Callbacks
