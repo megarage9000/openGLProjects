@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\AdditionalIncludes;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageShaders;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageEngineObjects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\assimp\include\assimp;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\AdditionalIncludes;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageShaders;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageEngineObjects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GarageGLEngine.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
