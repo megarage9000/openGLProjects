@@ -104,10 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)LibraryIncludes\GLEW;$(SolutionDir)LibraryIncludes\GLFW;$(SolutionDir)GarageEngineObjects;$(SolutionDir)GarageMathLibrary;$(SolutionDir)GarageGLEngine;$(SolutionDir)AdditionalIncludes;$(SolutionDir)GarageShaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +130,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="..\MeshDemo\DebugOutput.cpp" />
+    <ClCompile Include="..\MeshDemo\GLFWHelpers.cpp" />
+    <ClCompile Include="..\MeshDemo\main.cpp" />
+    <ClCompile Include="..\MeshDemo\Mesh.cpp" />
+    <ClCompile Include="..\MeshDemo\Model.cpp" />
+    <ClCompile Include="..\MeshDemo\stb_image.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\MeshDemo\DebugOutput.h" />
+    <ClInclude Include="..\MeshDemo\GLFWHelpers.h" />
+    <ClInclude Include="..\MeshDemo\Mesh.h" />
+    <ClInclude Include="..\MeshDemo\Model.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

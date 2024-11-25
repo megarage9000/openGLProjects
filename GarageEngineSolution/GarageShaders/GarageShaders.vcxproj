@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageMathLibrary;C:\Users\John Ordoyo\source\repos\OpenGLWork\openGLProjects\GarageLog;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)GarageLog;$(SolutionDir)GarageMathLibrary;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\Libs;$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>..\GarageRuleSet.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glew-source\glew-2.1.0\include;C:\Users\John Ordoyo\source\repos\OpenGLWork\GL\glfw-source\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LibraryIncludes\GLFW\include;$(SolutionDir)LibraryIncludes\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
