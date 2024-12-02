@@ -79,7 +79,7 @@ int main() {
 		"mesh.frag");
 
 	// Define Model here
-	Model model{ "..\/testMeshes\/backpack\/backpack.mtl" };
+	Model model{ "..\\testMeshes\\backpack\\backpack.obj" };
 
 	// Define projection matrix
 	Mat4 projection = set_up_projection_matrix();
